@@ -1,4 +1,4 @@
-package org.personal.videotogether.view
+package org.personal.videotogether.view.fragments.user
 
 import android.os.Bundle
 import android.text.Editable
@@ -104,8 +104,8 @@ constructor(
 
     // 리스너 등록
     private fun setListener() {
-        emailED.addTextChangedListener(this)
-        passwordED.addTextChangedListener(this)
+        emailET.addTextChangedListener(this)
+        passwordET.addTextChangedListener(this)
         signUpBtn.setOnClickListener(this)
     }
 
@@ -116,8 +116,8 @@ constructor(
 
                 if (isEmailValid) {
                     if (isPasswordValid) {
-                        val userEmail = emailED.text.toString()
-                        val userPassword = passwordED.text.toString()
+                        val userEmail = emailET.text.toString()
+                        val userPassword = passwordET.text.toString()
 
                         // 서버에 유저 업로드 요청
                         viewModel.setStateEvent(UserStateEvent.UploadUser(userEmail, userPassword))
@@ -138,7 +138,7 @@ constructor(
     // 이메일과 패스워드 유효성 검사
     override fun afterTextChanged(s: Editable?) {
         when (s.hashCode()) {
-            emailED.text.hashCode() -> {
+            emailET.text.hashCode() -> {
                 val isEmailFormatValid = android.util.Patterns.EMAIL_ADDRESS.matcher(s.toString()).matches()
                 emailValidationTV.visibility = View.VISIBLE
 
@@ -149,7 +149,7 @@ constructor(
                 }
             }
 
-            passwordED.text.hashCode() -> {
+            passwordET.text.hashCode() -> {
                 val regex = Regex("^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[\$@!%*#?&]).{8,15}.\$")
                 PWValidationTV.visibility = View.VISIBLE
 

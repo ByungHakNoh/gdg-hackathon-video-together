@@ -35,7 +35,7 @@
             android:paddingBottom="150dp">
 
             <EditText
-                android:id="@+id/emailED"
+                android:id="@+id/emailET"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
@@ -47,13 +47,13 @@
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
                 android:padding="10dp"
-                app:layout_constraintBottom_toTopOf="@+id/passwordED"
+                app:layout_constraintBottom_toTopOf="@+id/passwordET"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:id="@+id/passwordED"
+                android:id="@+id/passwordET"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
@@ -68,7 +68,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/signInBtn"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/emailED" />
+                app:layout_constraintTop_toBottomOf="@id/emailET" />
 
             <TextView
                 android:id="@+id/checkInputTV"
@@ -80,8 +80,8 @@
                 android:textColor="@color/red"
                 android:textSize="12sp"
                 android:visibility="invisible"
-                app:layout_constraintLeft_toLeftOf="@+id/passwordED"
-                app:layout_constraintTop_toBottomOf="@id/passwordED" />
+                app:layout_constraintLeft_toLeftOf="@+id/passwordET"
+                app:layout_constraintTop_toBottomOf="@id/passwordET" />
 
             <Button
                 android:id="@+id/signInBtn"
@@ -98,7 +98,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/signUpTV"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/passwordED" />
+                app:layout_constraintTop_toBottomOf="@id/passwordET" />
 
             <TextView
                 android:id="@+id/signUpTV"

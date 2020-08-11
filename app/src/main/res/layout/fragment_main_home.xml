@@ -4,30 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.fragments.SplashFragment">
+    tools:context=".view.fragments.main.MainHomeFragment">
 
-    <TextView
-        android:id="@+id/appNameTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_title"
-        android:textColor="@color/black"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/splashAnimLA"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/homeFragmentContainer"
+        android:name="org.personal.videotogether.view.HomeNavHostFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationBN"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:navGraph="@navigation/home_nav_graph" />
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/splashAnimLA"
-        android:layout_width="wrap_content"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationBN"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:itemBackground="@color/mainBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appNameTV"
-        app:lottie_rawRes="@raw/lottie_splash" />
+        app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

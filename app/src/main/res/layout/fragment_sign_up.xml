@@ -41,13 +41,13 @@
                 android:layout_marginTop="80dp"
                 android:text="@string/greeting"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@id/emailED"
+                app:layout_constraintBottom_toTopOf="@id/emailET"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:id="@+id/emailED"
+                android:id="@+id/emailET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
@@ -56,7 +56,7 @@
                 android:autofillHints=""
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
-                app:layout_constraintBottom_toTopOf="@+id/passwordED"
+                app:layout_constraintBottom_toTopOf="@+id/passwordET"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/greetingTV" />
@@ -72,10 +72,10 @@
                 android:textStyle="bold"
                 android:visibility="gone"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/emailED" />
+                app:layout_constraintTop_toBottomOf="@+id/emailET" />
 
             <EditText
-                android:id="@+id/passwordED"
+                android:id="@+id/passwordET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
@@ -87,7 +87,7 @@
                 app:layout_constraintBottom_toTopOf="@id/signUpBtn"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/emailED" />
+                app:layout_constraintTop_toBottomOf="@+id/emailET" />
 
             <!--    비밀번호 사용 가능한지 여부 알림-->
             <TextView
@@ -100,7 +100,7 @@
                 android:textStyle="bold"
                 android:visibility="gone"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/passwordED" />
+                app:layout_constraintTop_toBottomOf="@+id/passwordET" />
 
             <Button
                 android:id="@+id/signUpBtn"
@@ -118,7 +118,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/passwordED" />
+                app:layout_constraintTop_toBottomOf="@id/passwordET" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

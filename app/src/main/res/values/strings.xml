@@ -4,6 +4,15 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!--  쉐어드 키값  -->
+    <string name="firebase_messaging_token">firebaseMessageToken</string>
+
+    <!--  네비게이션 카테고리  -->
+    <string name="friend_list">친구목록</string>
+    <string name="chat">채팅</string>
+    <string name="youtube">유투브</string>
+    <string name="notice">알림</string>
+
     <!--  유저 관련  -->
     <string name="sign_up">회원가입</string>
     <string name="sign_in">로그인</string>

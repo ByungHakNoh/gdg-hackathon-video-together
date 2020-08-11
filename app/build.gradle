@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android-extensions'
 // Google - hilt
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
+// Google - firebase message
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 30
@@ -37,11 +39,15 @@ android {
     }
 }
 
+kapt {
+    correctErrorTypes true
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.3.1'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
@@ -55,20 +61,48 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
-    // hilt
+    // Hilt
     def hilt_version = "2.28-alpha"
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 
-    // hilt - view model
+    // Hilt - view model
     def hilt_view_model_version = "1.0.0-alpha02"
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hilt_view_model_version"
     kapt "androidx.hilt:hilt-compiler:$hilt_view_model_version"
+
+    // Room
+    def room_version = "2.2.5"
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version" // Kotlin Extensions and Coroutines support for Room
+    kapt "androidx.room:room-compiler:$room_version"
+
+    // View Model & ActivityResultContracts
+    def fragment_ktx = "1.3.0-alpha07"
+    implementation "androidx.fragment:fragment-ktx:$fragment_ktx"
+
+    // Lifecycle
+    def lifecycle_ktx = "2.2.0"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_ktx"
+
+    // firebase cloud messaging
+    def firebase_version = "20.2.4"
+    implementation "com.google.firebase:firebase-messaging:$firebase_version"
 
     // ------------------------ External library ------------------------
     // retrofit - http 통신
     def retrofit_version = "2.9.0"
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-scalars:$retrofit_version"
+
+    def ok_http_version = "3.14.9"
+    implementation "com.squareup.okhttp3:okhttp:$ok_http_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$ok_http_version"
+
+    def glide_version = "4.10.0"
+    implementation "com.github.bumptech.glide:glide:$glide_version"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
 
     // Lottie
     def lottieVersion = "3.4.0"

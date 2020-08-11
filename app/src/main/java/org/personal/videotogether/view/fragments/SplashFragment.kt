@@ -1,4 +1,4 @@
-package org.personal.videotogether.view
+package org.personal.videotogether.view.fragments
 
 import android.os.Bundle
 import android.os.Handler
@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_splash.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,7 +29,7 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
 
         // TODO : splash 시간 정하기
         Handler(Looper.getMainLooper()).postDelayed({
-            navController.navigate(R.id.action_signInFragment_to_signUpFragment)
+            navController.navigate(R.id.action_splashFragment_to_signInFragment)
         }, 0)
     }
 }

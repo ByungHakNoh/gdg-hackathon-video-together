@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/friendsListFragment"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="@string/friend_list" />
+
+    <item
+        android:id="@+id/chatListFragment"
+        android:icon="@drawable/ic_baseline_chat_24"
+        android:title="@string/chat" />
+
+    <item
+        android:id="@+id/youtubeFragment"
+        android:icon="@drawable/ic_baseline_video_library_24"
+        android:title="@string/youtube" />
+</menu>

@@ -1,4 +1,4 @@
-package org.personal.videotogether.util
+package org.personal.videotogether.util.view
 
 import android.util.Log
 import androidx.fragment.app.FragmentManager
@@ -11,7 +11,9 @@ class DataStateHandler(private val loadingDialog: LoadingDialog) {
     // 로딩 다이얼로그
     fun displayLoadingDialog(isDisplayed: Boolean, childFragmentManager: FragmentManager) {
         if (isDisplayed) {
-            loadingDialog.show(childFragmentManager, "LoadingDialog")
+            if (!loadingDialog.isAdded) {
+                loadingDialog.show(childFragmentManager, "LoadingDialog")
+            }
         } else {
             loadingDialog.dismiss()
         }

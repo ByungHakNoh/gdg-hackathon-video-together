@@ -1,7 +1,7 @@
-package org.personal.videotogether.model.local
+package org.personal.videotogether.room
 
 import androidx.room.*
-import org.personal.videotogether.model.local.entity.UserCacheEntity
+import org.personal.videotogether.room.entity.UserCacheEntity
 
 @Dao
 interface UserDAO {

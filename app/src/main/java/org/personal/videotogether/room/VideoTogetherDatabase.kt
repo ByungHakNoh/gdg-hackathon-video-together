@@ -1,9 +1,9 @@
-package org.personal.videotogether.model.local
+package org.personal.videotogether.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import org.personal.videotogether.model.local.entity.FriendCacheEntity
-import org.personal.videotogether.model.local.entity.UserCacheEntity
+import org.personal.videotogether.room.entity.FriendCacheEntity
+import org.personal.videotogether.room.entity.UserCacheEntity
 
 @Database(
     entities = [
@@ -16,6 +16,6 @@ abstract class VideoTogetherDatabase : RoomDatabase() {
     abstract fun friendDAO(): FriendDAO
 
     companion object {
-        val DATABASE_NAME: String = "video_together"
+        const val DATABASE_NAME: String = "video_together"
     }
 }

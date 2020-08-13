@@ -15,8 +15,7 @@ import javax.inject.Inject
 class HomeFragmentFactory
 @Inject
 constructor(
-    private val dataStateHandler: DataStateHandler,
-    private val imageHandler : ImageHandler
+    private val dataStateHandler: DataStateHandler
 ) : FragmentFactory() {
 
     @RequiresApi(Build.VERSION_CODES.P)

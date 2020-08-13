@@ -29,8 +29,6 @@ class ChatListFragment
 
     private val TAG by lazy { javaClass.name }
 
-    private lateinit var mainNavController: NavController
-
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
     private val chatViewModel by lazy { ViewModelProvider(requireActivity())[ChatViewModel::class.java] }
 
@@ -40,7 +38,6 @@ class ChatListFragment
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mainNavController = Navigation.findNavController(view)
         subscribeObservers()
         buildRecyclerView()
         chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomList(userViewModel.userData.value!!.id))

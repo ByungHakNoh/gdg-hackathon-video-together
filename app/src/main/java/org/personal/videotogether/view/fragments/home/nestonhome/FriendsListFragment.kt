@@ -18,7 +18,7 @@ import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.FriendData
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.view.adapter.FriendListAdapter
-import org.personal.videotogether.view.fragments.home.MainHomeFragmentDirections
+import org.personal.videotogether.view.fragments.nestonmain.HomeFragmentDirections
 import org.personal.videotogether.viewmodel.FriendStateEvent
 import org.personal.videotogether.viewmodel.FriendViewModel
 import org.personal.videotogether.viewmodel.UserStateEvent
@@ -98,7 +98,7 @@ constructor(
     override fun onItemClick(view: View?, itemPosition: Int) {
         val selectedFriendData = friendList[itemPosition]
         val action =
-            MainHomeFragmentDirections.actionMainHomeFragmentToProfileFriendFragment(selectedFriendData)
+            HomeFragmentDirections.actionMainHomeFragmentToProfileFriendFragment(selectedFriendData)
         mainNavController.navigate(action)
     }
 }

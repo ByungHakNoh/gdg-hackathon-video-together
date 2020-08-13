@@ -1,4 +1,4 @@
-package org.personal.videotogether.view
+package org.personal.videotogether.view.fragments
 
 import android.content.Context
 import androidx.navigation.fragment.NavHostFragment

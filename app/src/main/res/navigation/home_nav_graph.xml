@@ -6,23 +6,29 @@
 
     <fragment
         android:id="@+id/friendsListFragment"
-        android:name="org.personal.videotogether.view.fragments.main.FriendsListFragment"
-        android:label="fragment_friends_list"
+        android:name="org.personal.videotogether.view.fragments.home.nestonhome.FriendsListFragment"
+        android:label="친구 목록"
         tools:layout="@layout/fragment_friends_list" >
-        <action
-            android:id="@+id/action_friendsListFragment_to_chatListFragment2"
-            app:destination="@id/chatListFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/chatListFragment"
-        android:name="org.personal.videotogether.view.fragments.main.ChatListFragment"
-        android:label="fragment_chat_list"
-        tools:layout="@layout/fragment_chat_list" />
+        android:name="org.personal.videotogether.view.fragments.home.nestonhome.ChatListFragment"
+        android:label="채팅 목록"
+        tools:layout="@layout/fragment_chat_list" >
+    </fragment>
 
     <fragment
         android:id="@+id/youtubeFragment"
-        android:name="org.personal.videotogether.view.fragments.main.YoutubeFragment"
-        android:label="fragment_youtube"
-        tools:layout="@layout/fragment_youtube" />
+        android:name="org.personal.videotogether.view.fragments.home.nestonhome.YoutubeFragment"
+        android:label="유투브"
+        tools:layout="@layout/fragment_youtube" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/youtubeSearchFragment"
+        android:name="org.personal.videotogether.view.fragments.home.nestonhome.YoutubeSearchFragment"
+        android:label="fragment_youtube_search"
+        tools:layout="@layout/fragment_youtube_search" />
+
 </navigation>

@@ -13,16 +13,26 @@
     <string name="youtube">유투브</string>
     <string name="notice">알림</string>
 
+    <!--  상단 앱 바 카테고리  -->
+    <string name="youtube_search">유투브 검색</string>
+    <string name="search">검색</string>
+    <string name="add_friend">친구 추가</string>
+    <string name="add_chat_room">채팅방 추가</string>
+
+
     <!--  유저 관련  -->
     <string name="sign_up">회원가입</string>
     <string name="sign_in">로그인</string>
     <string name="email">이메일</string>
     <string name="password">비밀번호</string>
+    <string name="passwordCheck">비밀번호 확인</string>
     <string name="greeting">VIDEO TOGETHER에 오신 것을 환영합니다.\n회원가입을 진행해 주세요.</string>
     <string name="email_invalid">이메일 형식에 맞지 않습니다</string>
     <string name="email_duplicated">중복된 이메일 입니다</string>
+    <string name="email_check_loading">중복 체크 중…</string>
     <string name="password_validation">8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요</string>
     <string name="valid">사용가능 합니다</string>
     <string name="check_password">비밀번호를 확인해주세요</string>
+    <string name="password_check_invalid">비밀번호와 일치하지 않습니다</string>
     <string name="check_email">이메일을 확인해주세요</string>
 </resources>

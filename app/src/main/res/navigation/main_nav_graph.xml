@@ -8,7 +8,7 @@
     <!--  Splash -->
     <fragment
         android:id="@+id/splashFragment"
-        android:name="org.personal.videotogether.view.fragments.SplashFragment"
+        android:name="org.personal.videotogether.view.fragments.nestonmain.SplashFragment"
         android:label="fragment_splash"
         tools:layout="@layout/fragment_splash">
         <action
@@ -16,15 +16,12 @@
             app:destination="@id/signInFragment"
             app:popUpTo="@id/splashFragment"
             app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_splashFragment_to_mainHomeFragment"
-            app:destination="@id/mainHomeFragment" />
     </fragment>
 
     <!--  Sign In  -->
     <fragment
         android:id="@+id/signInFragment"
-        android:name="org.personal.videotogether.view.fragments.user.SignInFragment"
+        android:name="org.personal.videotogether.view.fragments.nestonmain.SignInFragment"
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in">
         <action
@@ -32,49 +29,87 @@
             app:destination="@id/signUpFragment" />
         <action
             android:id="@+id/action_signInFragment_to_mainHomeFragment"
-            app:destination="@id/mainHomeFragment"
-            app:popUpTo="@id/signInFragment"
-            app:popUpToInclusive="true" />
+            app:destination="@id/mainHomeFragment" />
     </fragment>
 
     <!--  Sign Up  -->
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="org.personal.videotogether.view.fragments.user.SignUpFragment"
+        android:name="org.personal.videotogether.view.fragments.nestonmain.SignUpFragment"
         android:label="SignUpFragment">
         <action
             android:id="@+id/action_signUpFragment_to_setProfileFragment"
             app:destination="@id/setProfileFragment"
-            app:popUpTo="@id/signInFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpTo="@id/signUpFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <!--  Set Profile  -->
     <fragment
         android:id="@+id/setProfileFragment"
-        android:name="org.personal.videotogether.view.fragments.user.SetProfileFragment"
+        android:name="org.personal.videotogether.view.fragments.nestonmain.SetProfileFragment"
         android:label="fragment_set_profile"
         tools:layout="@layout/fragment_set_profile">
         <action
             android:id="@+id/action_setProfileFragment_to_mainHomeFragment"
             app:destination="@id/mainHomeFragment"
-            app:popUpTo="@id/signInFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpTo="@id/setProfileFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
         android:id="@+id/mainHomeFragment"
-        android:name="org.personal.videotogether.view.fragments.main.MainHomeFragment"
+        android:name="org.personal.videotogether.view.fragments.nestonmain.HomeFragment"
         android:label="fragment_main_home"
         tools:layout="@layout/fragment_main_home">
         <action
-            android:id="@+id/action_mainHomeFragment_to_chattingFragment"
-            app:destination="@id/chattingFragment" />
+            android:id="@+id/action_mainHomeFragment_to_addFriendFragment"
+            app:destination="@id/addFriendFragment" />
+        <action
+            android:id="@+id/action_mainHomeFragment_to_profileFriendFragment"
+            app:destination="@id/profileFriendFragment" />
+        <action
+            android:id="@+id/action_mainHomeFragment_to_profileMineFragment"
+            app:destination="@id/profileMineFragment" />
+        <action
+            android:id="@+id/action_mainHomeFragment_to_addChatRoomFragment"
+            app:destination="@id/addChatRoomFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/chattingFragment"
-        android:name="org.personal.videotogether.view.fragments.main.ChattingFragment"
+        android:name="org.personal.videotogether.view.fragments.nestonmain.ChattingFragment"
         android:label="fragment_chatting"
         tools:layout="@layout/fragment_chatting" />
+
+    <fragment
+        android:id="@+id/addFriendFragment"
+        android:name="org.personal.videotogether.view.fragments.nestonmain.AddFriendFragment"
+        android:label="fragment_add_friend"
+        tools:layout="@layout/fragment_add_friend" />
+
+    <fragment
+        android:id="@+id/profileFriendFragment"
+        android:name="org.personal.videotogether.view.fragments.nestonmain.ProfileFriendFragment"
+        android:label="fragment_profile_friend"
+        tools:layout="@layout/fragment_profile_friend">
+        <action
+            android:id="@+id/action_profileFriendFragment_to_chattingFragment"
+            app:destination="@id/chattingFragment" />
+        <argument
+            android:name="friendData"
+            app:argType="org.personal.videotogether.domianmodel.FriendData" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileMineFragment"
+        android:name="org.personal.videotogether.view.fragments.nestonmain.ProfileMineFragment"
+        android:label="fragment_profile_mine"
+        tools:layout="@layout/fragment_profile_mine" />
+
+    <fragment
+        android:id="@+id/addChatRoomFragment"
+        android:name="org.personal.videotogether.view.fragments.nestonmain.AddChatRoomFragment"
+        android:label="fragment_add_chat_room"
+        tools:layout="@layout/fragment_add_chat_room" />
 </navigation>

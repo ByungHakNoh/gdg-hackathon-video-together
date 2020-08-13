@@ -1,4 +1,4 @@
-package org.personal.videotogether.model
+package org.personal.videotogether.domianmodel
 
 data class UserData(
     val id : Int,

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "204186870381",
+    "firebase_url": "https://video-together.firebaseio.com",
+    "project_id": "video-together",
+    "storage_bucket": "video-together.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:204186870381:android:05cfaa8ab0b466c322d564",
+        "android_client_info": {
+          "package_name": "org.personal.videotogether"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "204186870381-c5hdhqsansls3ogjprku9h640c2ocvt4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoLw5pvtc9uo7SEemQG0L4V1_0iANAmLg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "204186870381-c5hdhqsansls3ogjprku9h640c2ocvt4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

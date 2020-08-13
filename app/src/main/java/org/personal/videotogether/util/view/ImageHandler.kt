@@ -1,4 +1,4 @@
-package org.personal.videotogether.util
+package org.personal.videotogether.util.view
 
 import android.content.ContentResolver
 import android.content.Context
@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.personal.videotogether.util.DataState
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
 

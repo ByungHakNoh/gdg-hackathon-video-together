@@ -3,26 +3,65 @@ package org.personal.videotogether.di
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
-import org.personal.videotogether.model.server.RetrofitRequest
-import org.personal.videotogether.model.local.entity.UserCacheMapper
-import org.personal.videotogether.model.local.UserDAO
-import org.personal.videotogether.model.repository.UserRepository
-import org.personal.videotogether.model.server.entity.UserDataMapper
-import javax.inject.Singleton
+import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.android.scopes.ActivityRetainedScoped
+import org.personal.videotogether.room.FriendDAO
+import org.personal.videotogether.server.RetrofitRequest
+import org.personal.videotogether.room.entity.UserCacheMapper
+import org.personal.videotogether.room.UserDAO
+import org.personal.videotogether.room.entity.FriendCacheMapper
+import org.personal.videotogether.repository.ChatRepository
+import org.personal.videotogether.repository.FriendRepository
+import org.personal.videotogether.repository.UserRepository
+import org.personal.videotogether.repository.YoutubeRepository
+import org.personal.videotogether.server.entity.ChatRoomMapper
+import org.personal.videotogether.server.entity.FriendMapper
+import org.personal.videotogether.server.entity.UserMapper
+import org.personal.videotogether.server.entity.YoutubeMapper
 
-@InstallIn(ApplicationComponent::class)
+@InstallIn(ActivityRetainedComponent::class)
 @Module
 object RepositoryModule {
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideUserRepository(
         retrofitRequest: RetrofitRequest,
         userDAO: UserDAO,
         userCacheMapper: UserCacheMapper,
-        userDataMapper: UserDataMapper
+        userMapper: UserMapper
     ): UserRepository {
-        return UserRepository(retrofitRequest, userDAO, userCacheMapper, userDataMapper)
+        return UserRepository(retrofitRequest, userDAO, userCacheMapper, userMapper)
+    }
+
+    @ActivityRetainedScoped
+    @Provides
+    fun provideFriendRepository(
+        retrofitRequest: RetrofitRequest,
+        friendDAO: FriendDAO,
+        friendCacheMapper: FriendCacheMapper,
+        friendMapper: FriendMapper
+    ): FriendRepository {
+        return FriendRepository(retrofitRequest, friendDAO, friendCacheMapper, friendMapper)
+    }
+
+    @ActivityRetainedScoped
+    @Provides
+    fun provideYoutubeRepository(
+        retrofitRequest: RetrofitRequest,
+        youtubeMapper: YoutubeMapper
+    ): YoutubeRepository {
+        return YoutubeRepository(retrofitRequest, youtubeMapper)
+    }
+
+    @ActivityRetainedScoped
+    @Provides
+    fun provideChatRepository(
+        retrofitRequest: RetrofitRequest,
+        chatRoomMapper: ChatRoomMapper,
+        userMapper: UserMapper,
+        friendMapper: FriendMapper
+    ): ChatRepository {
+        return ChatRepository(retrofitRequest, chatRoomMapper, userMapper, friendMapper)
     }
 }

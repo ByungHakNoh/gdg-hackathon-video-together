@@ -1,4 +1,4 @@
-package org.personal.videotogether.view.fragments
+package org.personal.videotogether.view.fragments.nestonmain
 
 import android.os.Bundle
 import android.os.Handler
@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_splash.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi

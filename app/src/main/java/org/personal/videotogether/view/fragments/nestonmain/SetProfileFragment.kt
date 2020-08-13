@@ -1,4 +1,4 @@
-package org.personal.videotogether.view.fragments.user
+package org.personal.videotogether.view.fragments.nestonmain
 
 import android.Manifest.permission.*
 import android.content.ContentValues
@@ -18,8 +18,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.activity.result.registerForActivityResult
 import androidx.annotation.RequiresApi
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,8 +30,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.personal.videotogether.R
 import org.personal.videotogether.util.DataState
-import org.personal.videotogether.util.DataStateHandler
-import org.personal.videotogether.util.ImageHandler
+import org.personal.videotogether.util.view.DataStateHandler
+import org.personal.videotogether.util.view.ImageHandler
 import org.personal.videotogether.view.dialog.ChoiceDialog
 import org.personal.videotogether.viewmodel.UserStateEvent
 import org.personal.videotogether.viewmodel.UserViewModel
@@ -48,7 +48,7 @@ constructor(
     private val TAG = javaClass.name
 
     private lateinit var navController: NavController
-    private val viewModel: UserViewModel by viewModels()
+    private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
 
     // 프로필 이미지 관련 변수
     private lateinit var cameraImage: Uri
@@ -63,14 +63,14 @@ constructor(
 
     private fun subscribeObservers() {
         // live data : 이메일 프로필 업로드
-        viewModel.uploadUserProfileState.observe(viewLifecycleOwner, Observer { dataState ->
+        userViewModel.uploadUserProfileState.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
                 is DataState.Success<Boolean?> -> {
                     Log.i(TAG, "subscribeObservers: Success")
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)
                     navController.navigate(R.id.action_setProfileFragment_to_mainHomeFragment)
                 }
-                is DataState.ResponseError -> {
+                is DataState.NoData -> {
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)
                     Log.i(TAG, "subscribeObservers: ${dataState.serverError}")
                 }
@@ -108,7 +108,7 @@ constructor(
                             imageHandler.bitmapToString(profileImageBitmap).onEach { dataState ->
                                 when (dataState) {
                                     is DataState.Success<String> -> {
-                                        viewModel.setStateEvent(UserStateEvent.UploadUserProfile(dataState.data, nameET.text.toString()))
+                                        userViewModel.setStateEvent(UserStateEvent.UploadUserProfile(dataState.data, nameET.text.toString()))
                                     }
                                     is DataState.Error -> {
                                         Log.i(TAG, "onClick: ${dataState.exception}")
@@ -214,7 +214,7 @@ constructor(
 
     // 카메라로 찍은 이미지 비트맵으로 전환해서 받아오기
     private val getCameraImage by lazy {
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             CoroutineScope(Main).launch {
                 imageHandler.imageUriToBitmap(requireContext(), cameraImage).onEach { dataState ->
                     when (dataState) {

@@ -1,6 +1,6 @@
-package org.personal.videotogether.model.server.entity
+package org.personal.videotogether.server.entity
 
-import org.personal.videotogether.model.UserData
+import org.personal.videotogether.domianmodel.UserData
 import org.personal.videotogether.util.EntityMapper
 import javax.inject.Inject
 

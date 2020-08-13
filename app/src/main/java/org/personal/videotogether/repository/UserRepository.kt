@@ -3,6 +3,7 @@ package org.personal.videotogether.model.repository
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.personal.videotogether.model.UserData
 import org.personal.videotogether.model.local.entity.UserCacheEntity
 import org.personal.videotogether.model.local.entity.UserCacheMapper
 import org.personal.videotogether.model.local.UserDAO
@@ -20,7 +21,22 @@ constructor(
     private val userDataMapper: UserDataMapper
 ) {
 
-    private val TAG = javaClass.name
+    private val TAG by lazy { javaClass.name }
+
+    suspend fun getUserDataFromLocal (): Flow<UserData?> = flow {
+
+        try {
+            val userCacheEntity = userDAO.getUserData()
+            Log.i(TAG, "getUserDataFromLocal: $userCacheEntity")
+            val userData = userCacheMapper.mapFromEntity(userCacheEntity[0])
+
+            emit(userData)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e(TAG, "getUserDataFromLocal: 룸 쿼리 도중 에러발생($e)")
+            emit(null)
+        }
+    }
 
     // 회원가입 시 이메일 중복 체크하는 요청
     suspend fun postCheckEmailValid(email: String): Flow<DataState<Boolean?>> = flow {
@@ -50,7 +66,7 @@ constructor(
         emit(DataState.Loading)
 
         try {
-            val postData = HashMap<String,Any?>().apply {
+            val postData = HashMap<String, Any?>().apply {
                 put("email", email)
                 put("password", password)
             }
@@ -66,7 +82,7 @@ constructor(
                 userDAO.insertUserData(userCacheEntity)
                 emit(DataState.Success(true))
             }
-            if (response.code() == 204) emit(DataState.ResponseError("uploadUser : 서버에서 문제 발생"))
+            if (response.code() == 204) emit(DataState.NoData("uploadUser : 서버에서 문제 발생"))
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -80,7 +96,7 @@ constructor(
         emit(DataState.Loading)
 
         try {
-            val userTableId  = userDAO.getUserData()[0].id
+            val userTableId = userDAO.getUserData()[0].id
             val postData = HashMap<String, Any?>().apply {
                 put("id", userTableId)
                 put("base64Image", base64Image)
@@ -89,14 +105,8 @@ constructor(
             val requestData = RequestData("uploadUserProfile", postData)
             val response = retrofitRequest.uploadUserProfile(requestData)
 
-            if (response.code() == 200) {
-                val userData = userDataMapper.mapFromEntity(response.body()!!)
-                val userCacheEntity = userCacheMapper.mapToEntity(userData)
-                userDAO.updateUserData(userCacheEntity)
-
-                emit(DataState.Success(true))
-            }
-            if (response.code() == 204) emit(DataState.ResponseError("uploadUserProfile : 서버에서 문제 발생"))
+            if (response.code() == 200) emit(DataState.Success(true))
+            if (response.code() == 204) emit(DataState.NoData("uploadUserProfile : 서버에서 문제 발생"))
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -105,7 +115,10 @@ constructor(
         }
     }
 
-    suspend fun signIn(email: String, password: String) : Flow<DataState<Boolean>>  = flow {
+    // 로그인
+    suspend fun signIn(email: String, password: String): Flow<DataState<UserData?>> = flow {
+        emit(DataState.Loading)
+
         try {
             val postData = HashMap<String, Any?>().apply {
                 put("email", email)
@@ -120,10 +133,10 @@ constructor(
                 val userCacheEntity = userCacheMapper.mapToEntity(userData)
                 userDAO.deleteAllUserData()
                 userDAO.insertUserData(userCacheEntity)
-                Log.i(TAG, "signIn: ${userDAO.getUserData()}")
-                emit(DataState.Success(true))
+
+                emit(DataState.Success(userData))
             }
-            if (response.code() == 204) emit(DataState.ResponseError("signIn : 서버에 데이터 없음"))
+            if (response.code() == 204) emit(DataState.NoData("signIn : 서버에 데이터 없음"))
 
         } catch (e: Exception) {
             e.printStackTrace()

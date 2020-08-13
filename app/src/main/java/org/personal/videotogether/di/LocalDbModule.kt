@@ -7,8 +7,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import org.personal.videotogether.model.local.UserDAO
-import org.personal.videotogether.model.local.VideoTogetherDatabase
+import org.personal.videotogether.room.FriendDAO
+import org.personal.videotogether.room.UserDAO
+import org.personal.videotogether.room.VideoTogetherDatabase
 import org.personal.videotogether.util.SharedPreferenceHelper
 import javax.inject.Singleton
 
@@ -33,9 +34,16 @@ object LocalDbModule {
             .fallbackToDestructiveMigration()
             .build()
     }
+
     @Singleton
     @Provides
     fun provideUserDAO(videoTogetherDatabase: VideoTogetherDatabase) : UserDAO {
         return videoTogetherDatabase.userDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideFriendDAO(videoTogetherDatabase: VideoTogetherDatabase) : FriendDAO {
+        return videoTogetherDatabase.friendDAO()
     }
 }

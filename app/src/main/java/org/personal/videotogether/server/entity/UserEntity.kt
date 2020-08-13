@@ -1,4 +1,4 @@
-package org.personal.videotogether.model.server.entity
+package org.personal.videotogether.server.entity
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName

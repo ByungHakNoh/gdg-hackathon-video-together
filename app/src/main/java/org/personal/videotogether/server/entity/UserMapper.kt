@@ -4,7 +4,7 @@ import org.personal.videotogether.domianmodel.UserData
 import org.personal.videotogether.util.EntityMapper
 import javax.inject.Inject
 
-class UserDataMapper
+class UserMapper
 @Inject
 constructor() : EntityMapper<UserEntity, UserData> {
 

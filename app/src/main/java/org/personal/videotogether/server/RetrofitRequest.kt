@@ -1,9 +1,9 @@
-package org.personal.videotogether.model.server
+package org.personal.videotogether.server
 
-import org.personal.videotogether.model.ChatRoomData
-import org.personal.videotogether.model.YoutubeVideoData
-import org.personal.videotogether.model.server.entity.FriendEntity
-import org.personal.videotogether.model.server.entity.UserEntity
+import org.personal.videotogether.server.entity.ChatRoomEntity
+import org.personal.videotogether.server.entity.FriendEntity
+import org.personal.videotogether.server.entity.UserEntity
+import org.personal.videotogether.server.entity.YoutubeEntity
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -37,25 +37,25 @@ interface RetrofitRequest {
     @GET("friends-list")
     suspend fun getFriendsList(@Body requestData: RequestData): Response<List<UserEntity>>
 
-    // TODO : 채팅 부분 서버 구축해야함
+
     @POST("chat")
-    suspend fun addChatRoom(@Body requestData: RequestData): Response<ChatRoomData>
+    suspend fun addChatRoom(@Body requestData: RequestData): Response<ChatRoomEntity>
 
     @GET("chat")
     suspend fun getChatRoomList(
         @Query("request") request: String,
         @Query("userId") userId: Int
-    ): Response<List<ChatRoomData>?>
+    ): Response<List<ChatRoomEntity>?>
 
     @GET("youtube")
     suspend fun getDefaultYoutubeList(
         @Query("request") request: String,
         @Query("youtubeChannel") channel: String
-    ): Response<List<YoutubeVideoData>?>
+    ): Response<List<YoutubeEntity>?>
 
     @GET("youtube")
     suspend fun getSearchedYoutubeList(
         @Query("request") request: String,
         @Query("searchRequest") searchRequest: String
-    ): Response<List<YoutubeVideoData>?>
+    ): Response<List<YoutubeEntity>?>
 }

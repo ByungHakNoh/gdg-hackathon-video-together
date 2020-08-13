@@ -6,21 +6,21 @@ import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.personal.videotogether.model.server.RetrofitRequest
+import org.personal.videotogether.server.RetrofitRequest
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(ActivityRetainedComponent::class)
 object RetrofitModule {
 
     // ------------------ Gson 객체 ------------------
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideGsonBuilder(): Gson {
         return GsonBuilder()
@@ -31,7 +31,7 @@ object RetrofitModule {
 
 
     // ------------------ Logging 을 위한 OkHttp 객체(Interceptor 탑재) ------------------
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideHttpLogging(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { message ->
@@ -39,7 +39,7 @@ object RetrofitModule {
         }).setLevel(HttpLoggingInterceptor.Level.BODY)
     }
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
@@ -48,7 +48,7 @@ object RetrofitModule {
     }
 
     // ------------------ Retrofit2 객체 ------------------
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient): Retrofit.Builder {
         return Retrofit.Builder()
@@ -58,9 +58,9 @@ object RetrofitModule {
             .addConverterFactory(GsonConverterFactory.create(gson))
     }
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
-    fun provideExampleService(retrofit: Retrofit.Builder): RetrofitRequest {
+    fun provideMainService(retrofit: Retrofit.Builder): RetrofitRequest {
         return retrofit
             .build()
             .create(RetrofitRequest::class.java)

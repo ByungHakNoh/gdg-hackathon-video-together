@@ -18,17 +18,17 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
 
     private val TAG = javaClass.name
 
-    private lateinit var navController: NavController
+    private lateinit var mainNavController: NavController
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        navController = Navigation.findNavController(view)
+        mainNavController = Navigation.findNavController(view)
         splashAnimLA.playAnimation() // 로띠 애니메이션 재생
 
         // TODO : splash 시간 정하기
         Handler(Looper.getMainLooper()).postDelayed({
-            navController.navigate(R.id.action_splashFragment_to_signInFragment)
+            mainNavController.navigate(R.id.action_splashFragment_to_signInFragment)
         }, 0)
     }
 }

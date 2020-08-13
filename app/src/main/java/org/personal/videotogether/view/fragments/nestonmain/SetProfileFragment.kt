@@ -1,6 +1,7 @@
 package org.personal.videotogether.view.fragments.nestonmain
 
 import android.Manifest.permission.*
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
@@ -47,7 +48,7 @@ constructor(
 
     private val TAG = javaClass.name
 
-    private lateinit var navController: NavController
+    private lateinit var mainNavController: NavController
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
 
     // 프로필 이미지 관련 변수
@@ -56,19 +57,19 @@ constructor(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
+        mainNavController = Navigation.findNavController(view)
         subscribeObservers()
         setListener()
     }
 
+    @SuppressLint("RestrictedApi")
     private fun subscribeObservers() {
         // live data : 이메일 프로필 업로드
         userViewModel.uploadUserProfileState.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
                 is DataState.Success<Boolean?> -> {
-                    Log.i(TAG, "subscribeObservers: Success")
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)
-                    navController.navigate(R.id.action_setProfileFragment_to_mainHomeFragment)
+                    mainNavController.navigate(R.id.action_setProfileFragment_to_mainHomeFragment)
                 }
                 is DataState.NoData -> {
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)

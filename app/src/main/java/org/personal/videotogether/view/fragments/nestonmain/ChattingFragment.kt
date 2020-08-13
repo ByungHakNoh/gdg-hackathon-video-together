@@ -17,7 +17,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
 import org.personal.videotogether.viewmodel.UserViewModel
 
-
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class ChattingFragment : Fragment(R.layout.fragment_chatting) {
@@ -40,7 +39,6 @@ class ChattingFragment : Fragment(R.layout.fragment_chatting) {
                 }
 
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                    multiImageTest.addImage(resource)
                 }
             })
         }

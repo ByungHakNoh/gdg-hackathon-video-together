@@ -31,7 +31,7 @@ constructor(
 
     private val TAG = javaClass.name
 
-    private lateinit var navController: NavController
+    private lateinit var mainNavController: NavController
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
 
     // 이메일, 패스워드 유효한지 확인 -> 회원가입 재확인할 때 사용
@@ -42,7 +42,7 @@ constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        navController = Navigation.findNavController(view)
+        mainNavController = Navigation.findNavController(view)
         subscribeObservers()
         setListener()
     }
@@ -68,7 +68,7 @@ constructor(
             when (dataState) {
                 is DataState.Success<Boolean?> -> {
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)
-                    navController.navigate(R.id.action_signUpFragment_to_setProfileFragment)
+                    mainNavController.navigate(R.id.action_signUpFragment_to_setProfileFragment)
                 }
                 is DataState.NoData -> {
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)

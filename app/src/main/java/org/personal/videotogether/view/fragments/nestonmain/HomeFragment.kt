@@ -1,5 +1,6 @@
 package org.personal.videotogether.view.fragments.nestonmain
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -22,7 +23,7 @@ import org.personal.videotogether.R
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class MainHomeFragment : Fragment(R.layout.fragment_main_home), NavController.OnDestinationChangedListener {
+class HomeFragment : Fragment(R.layout.fragment_main_home), NavController.OnDestinationChangedListener {
 
     private val TAG = javaClass.name
 
@@ -70,7 +71,9 @@ class MainHomeFragment : Fragment(R.layout.fragment_main_home), NavController.On
     }
 
     // ------------------ 상단 앱 바 아이템 클릭 리스너 모음 ------------------
+    @SuppressLint("RestrictedApi")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.i(TAG, "onOptionsItemSelected: ${homeNavController.getBackStackEntry(R.id.friendsListFragment)}")
         when(item.itemId) {
             R.id.youtubeSearchFragment -> {
                 NavigationUI.onNavDestinationSelected(item, homeNavController)

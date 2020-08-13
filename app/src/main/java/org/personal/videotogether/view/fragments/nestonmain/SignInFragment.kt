@@ -30,14 +30,14 @@ constructor(
 
     private val TAG = javaClass.name
 
-    private lateinit var navController: NavController
+    private lateinit var mainNavController: NavController
     private val viewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        navController = Navigation.findNavController(view)
-//        navController.navigate(R.id.action_signInFragment_to_mainHomeFragment) // TODO : 테스트 용
+        mainNavController = Navigation.findNavController(view)
+        mainNavController.navigate(R.id.action_signInFragment_to_mainHomeFragment) // TODO : 테스트 용
         subscribeObservers()
         setListener()
     }
@@ -52,7 +52,7 @@ constructor(
                 }
                 is DataState.Success<UserData?> -> {
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)
-                    navController.navigate(R.id.action_signInFragment_to_mainHomeFragment)
+                    mainNavController.navigate(R.id.action_signInFragment_to_mainHomeFragment)
                 }
                 is DataState.NoData -> {
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)
@@ -90,7 +90,7 @@ constructor(
             }
 
             R.id.signUpTV -> {
-                navController.navigate(R.id.action_signInFragment_to_signUpFragment)
+                mainNavController.navigate(R.id.action_signInFragment_to_signUpFragment)
             }
         }
     }

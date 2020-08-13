@@ -1,4 +1,4 @@
-package org.personal.videotogether.view
+package org.personal.videotogether.view.fragments
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -8,10 +8,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.util.view.ImageHandler
 import org.personal.videotogether.util.view.ViewHandler
-import org.personal.videotogether.view.fragments.main.friendlist.AddFriendFragment
-import org.personal.videotogether.view.fragments.user.SetProfileFragment
-import org.personal.videotogether.view.fragments.user.SignInFragment
-import org.personal.videotogether.view.fragments.user.SignUpFragment
+import org.personal.videotogether.view.fragments.nestonmain.AddChatRoomFragment
+import org.personal.videotogether.view.fragments.nestonmain.AddFriendFragment
+import org.personal.videotogether.view.fragments.nestonmain.SetProfileFragment
+import org.personal.videotogether.view.fragments.nestonmain.SignInFragment
+import org.personal.videotogether.view.fragments.nestonmain.SignUpFragment
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -41,6 +42,10 @@ constructor(
 
             AddFriendFragment::class.java.name -> {
                 AddFriendFragment(dataStateHandler, imageHandler, viewHandler)
+            }
+
+            AddChatRoomFragment::class.java.name -> {
+                AddChatRoomFragment(dataStateHandler)
             }
 
             else -> super.instantiate(classLoader, className)

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.fragments.nestonmain.AddFriendFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/homeAppBarAB"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/mainBackground"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/homeToolbarTB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:title="친구 추가" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <EditText
+        android:id="@+id/friendEmailET"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:hint="친구 이메일 주소"
+        android:padding="15dp"
+        android:lines="1"
+        android:inputType="text"
+        android:imeOptions="actionSearch"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/homeAppBarAB" />
+
+    <TextView
+        android:id="@+id/noInputWarningTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="사용자 이메일을 입력해주세요"
+        android:textColor="@color/red"
+        android:textSize="12sp"
+        android:visibility="invisible"
+        app:layout_constraintLeft_toLeftOf="@+id/friendEmailET"
+        app:layout_constraintTop_toBottomOf="@id/friendEmailET" />
+
+    <ImageButton
+        android:id="@+id/clearTextIB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparency"
+        android:src="@drawable/ic_baseline_clear_24"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/friendEmailET"
+        app:layout_constraintRight_toRightOf="@id/friendEmailET"
+        app:layout_constraintTop_toTopOf="@id/friendEmailET" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/friendInfoContainerCL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/friendEmailET">
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/profileContainerCV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:layout_constraintBottom_toTopOf="@id/friendNameTV"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/friendProfileIV"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_baseline_person_add_24" />
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/friendNameTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="이름"
+            android:textColor="@color/mainText"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@id/addFriendBtn"
+            app:layout_constraintLeft_toLeftOf="@id/profileContainerCV"
+            app:layout_constraintRight_toRightOf="@id/profileContainerCV"
+            app:layout_constraintTop_toBottomOf="@id/profileContainerCV" />
+
+        <Button
+            android:id="@+id/addFriendBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20sp"
+            android:background="@drawable/shape_rounded"
+            android:backgroundTint="@color/mainBackground"
+            android:paddingStart="30sp"
+            android:paddingEnd="30sp"
+            android:text="친구 추가"
+            android:textColor="@color/mainText"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/friendNameTV"
+            app:layout_constraintRight_toRightOf="@id/friendNameTV"
+            app:layout_constraintTop_toBottomOf="@id/friendNameTV" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

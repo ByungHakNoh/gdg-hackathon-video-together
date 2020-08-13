@@ -1,15 +1,15 @@
-package org.personal.videotogether.model.repository
+package org.personal.videotogether.repository
 
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.personal.videotogether.model.UserData
-import org.personal.videotogether.model.local.entity.UserCacheEntity
-import org.personal.videotogether.model.local.entity.UserCacheMapper
-import org.personal.videotogether.model.local.UserDAO
-import org.personal.videotogether.model.server.entity.UserDataMapper
-import org.personal.videotogether.model.server.RetrofitRequest
-import org.personal.videotogether.model.server.RequestData
+import org.personal.videotogether.domianmodel.UserData
+import org.personal.videotogether.room.entity.UserCacheEntity
+import org.personal.videotogether.room.entity.UserCacheMapper
+import org.personal.videotogether.room.UserDAO
+import org.personal.videotogether.server.entity.UserMapper
+import org.personal.videotogether.server.RetrofitRequest
+import org.personal.videotogether.server.RequestData
 import org.personal.videotogether.util.DataState
 import java.lang.Exception
 
@@ -18,7 +18,7 @@ constructor(
     private val retrofitRequest: RetrofitRequest,
     private val userDAO: UserDAO,
     private val userCacheMapper: UserCacheMapper,
-    private val userDataMapper: UserDataMapper
+    private val userMapper: UserMapper
 ) {
 
     private val TAG by lazy { javaClass.name }
@@ -129,7 +129,7 @@ constructor(
             val response = retrofitRequest.signIn(requestData)
 
             if (response.code() == 200) {
-                val userData = userDataMapper.mapFromEntity(response.body()!!)
+                val userData = userMapper.mapFromEntity(response.body()!!)
                 val userCacheEntity = userCacheMapper.mapToEntity(userData)
                 userDAO.deleteAllUserData()
                 userDAO.insertUserData(userCacheEntity)

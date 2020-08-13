@@ -1,4 +1,4 @@
-package org.personal.videotogether.model.local.entity
+package org.personal.videotogether.room.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

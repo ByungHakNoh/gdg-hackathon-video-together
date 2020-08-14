@@ -89,9 +89,9 @@ constructor(
         selectedFriendListRV.layoutManager = horizontalLayoutManager
         selectedFriendListRV.adapter = selectedFriendAdapter
 
-        selectablefriendsListRV.setHasFixedSize(true)
-        selectablefriendsListRV.layoutManager = layoutManager
-        selectablefriendsListRV.adapter = selectableFriendAdapter
+        selectableFriendsListRV.setHasFixedSize(true)
+        selectableFriendsListRV.layoutManager = layoutManager
+        selectableFriendsListRV.adapter = selectableFriendAdapter
     }
 
     override fun onClick(view: View?) {

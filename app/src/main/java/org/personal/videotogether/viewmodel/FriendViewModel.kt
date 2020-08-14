@@ -19,23 +19,39 @@ constructor(
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    // 룸에 저장되어 있는 친구 목록
     private val _friendList: MutableLiveData<List<FriendData>?> = MutableLiveData()
     val friendList: LiveData<List<FriendData>?> get() = _friendList
+
+    // ------------------ Friend List live data ------------------
+    // 서버에서 최신화된 친구 목록 가져오기
+    private val _updatedFriendList: MutableLiveData<DataState<List<FriendData>?>> = MutableLiveData()
+    val updatedFriendList: LiveData<DataState<List<FriendData>?>> get() = _updatedFriendList
 
     // ------------------ Add Friend live data ------------------
     private val _searchFriend: MutableLiveData<DataState<FriendData?>> = MutableLiveData()
     val searchFriend: LiveData<DataState<FriendData?>> get() = _searchFriend
 
-    private val _addFriendList: MutableLiveData<DataState<List<FriendData>?>> = MutableLiveData()
-    val addFriendList: LiveData<DataState<List<FriendData>?>> get() = _addFriendList
+    private val _addFriendList: MutableLiveData<DataState<Boolean?>> = MutableLiveData()
+    val addFriendList: LiveData<DataState<Boolean?>> get() = _addFriendList
 
     fun setStateEvent(friendStateEvent: FriendStateEvent) {
         viewModelScope.launch {
             when (friendStateEvent) {
 
+                // ------------------ Friend List ------------------
                 is FriendStateEvent.GetFriendListFromLocal -> {
                     friendRepository.getFriendListFromLocal().onEach { dataState ->
                         _friendList.value = dataState
+                    }.launchIn(viewModelScope)
+                }
+
+                is FriendStateEvent.GetFriendListFromServer -> {
+                    friendRepository.getFriendListFromServer(friendStateEvent.userId).onEach { dataState ->
+                        _updatedFriendList.value = dataState
+
+                        // 서버에서 데이터를 가져오면 친구목록 live data 업데이트
+                        if (dataState is DataState.Success) _friendList.value = dataState.data
                     }.launchIn(viewModelScope)
                 }
 

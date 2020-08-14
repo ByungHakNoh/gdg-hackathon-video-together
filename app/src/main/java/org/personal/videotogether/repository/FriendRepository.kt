@@ -21,6 +21,49 @@ constructor(
 ) {
     private val TAG by lazy { javaClass.name }
 
+    suspend fun getFriendListFromLocal(): Flow<List<FriendData>?> = flow {
+        try {
+            val friendCacheEntityList = friendDAO.getFriendList()
+            val friendList = friendCacheMapper.mapFromEntityList(friendCacheEntityList)
+            Log.i(TAG, "getFriendListFromLocal: $friendList")
+            emit(friendList)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e(TAG, "getFriendListFromLocal: 룸 쿼리 중 에러발생($e)")
+            emit(null)
+        }
+    }
+
+    suspend fun getFriendListFromServer(userId : Int) : Flow<DataState<List<FriendData>?>> = flow {
+        emit(DataState.Loading)
+
+        try {
+            val response = retrofitRequest.getFriendsList("getFriendList", userId)
+
+            if (response.code()== 200) {
+                val serverFriendList = friendMapper.mapFromEntityList(response.body()!!)
+                val friendCacheEntityList = friendCacheMapper.mapToEntityList(serverFriendList)
+
+                friendDAO.deleteAllFriendsData()
+                friendCacheEntityList.forEach { friendCacheEntity ->
+                    friendDAO.insertFriendsData(friendCacheEntity)
+                }
+                val localFriendList = friendCacheMapper.mapFromEntityList(friendDAO.getFriendList())
+                emit(DataState.Success(localFriendList))
+            }
+            if (response.code() == 204) {
+                friendDAO.deleteAllFriendsData()
+                emit(DataState.NoData("getFriendListFromServer : 데이터 없음"))
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e(TAG, "getFriendListFromServer: 서버 통신 에러발생($e)")
+            emit(DataState.Error(e))
+        }
+    }
+
     // 회원가입 시 이메일 중복 체크하는 요청
     suspend fun searchFriend(userId: Int, friendEmail: String): Flow<DataState<FriendData?>> = flow {
         emit(DataState.Loading)
@@ -45,7 +88,7 @@ constructor(
     }
 
     // 회원가입 시 이메일 중복 체크하는 요청
-    suspend fun addFriend(userId: Int, friendUserData: FriendData): Flow<DataState<List<FriendData>?>> = flow {
+    suspend fun addFriend(userId: Int, friendUserData: FriendData): Flow<DataState<Boolean?>> = flow {
         emit(DataState.Loading)
 
         try {
@@ -57,35 +100,12 @@ constructor(
             val requestData = RequestData("addFriend", postData)
             val response = retrofitRequest.addFriend(requestData)
 
-            if (response.code() == 200) {
-                val friendList = friendMapper.mapFromEntityList(response.body()!!)
-                val friendCacheEntityList = friendCacheMapper.mapToEntityList(friendList)
-
-                friendCacheEntityList.forEach { friendCacheEntity ->
-                    friendDAO.insertFriendsData(friendCacheEntity)
-                }
-                Log.i(TAG, "addFriend: ${friendDAO.getFriendList()}")
-                emit(DataState.Success(friendList))
-            }
+            if (response.code() == 200) emit(DataState.Success(true))
 
         } catch (e: Exception) {
             e.printStackTrace()
             Log.e(TAG, "postCheckEmailValid: 서버 통신 에러발생($e)")
             emit(DataState.Error(e))
-        }
-    }
-
-    suspend fun getFriendListFromLocal(): Flow<List<FriendData>?> = flow {
-        try {
-            val friendCacheEntityList = friendDAO.getFriendList()
-            val friendList = friendCacheMapper.mapFromEntityList(friendCacheEntityList)
-            Log.i(TAG, "getFriendListFromLocal: $friendList")
-            emit(friendList)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e(TAG, "postCheckEmailValid: 서버 통신 에러발생($e)")
-            emit(null)
         }
     }
 }

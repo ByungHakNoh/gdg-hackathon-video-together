@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.fragment_friends_list.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.FriendData
+import org.personal.videotogether.util.DataState
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.view.adapter.FriendListAdapter
 import org.personal.videotogether.view.fragments.nestonmain.HomeFragmentDirections
@@ -63,17 +64,34 @@ constructor(
         userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
             Glide.with(requireContext()).load(userData!!.profileImageUrl).into(profileIV)
             nameTV.text = userData.name
+            friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData.id))
         })
 
         // 친구 목록 불러오기
         friendViewModel.friendList.observe(viewLifecycleOwner, Observer { dataState ->
             friendList.clear()
-            Log.i(TAG, "subscribeObservers: $dataState")
             dataState!!.forEach { friendData ->
-                Log.i(TAG, "subscribeObservers: $friendData")
                 friendList.add(friendData)
             }
             friendListAdapter.notifyDataSetChanged()
+        })
+
+        friendViewModel.updatedFriendList.observe(viewLifecycleOwner, Observer { dataState ->
+            when(dataState) {
+                is DataState.Loading -> {
+                    Log.i(TAG, "updatedFriendList: 로딩")
+                }
+                is DataState.Success<List<FriendData>?> -> {
+                    Log.i(TAG, "updatedFriendList: 성공")
+                }
+                is DataState.NoData -> {
+                    friendList.removeAll(friendList)
+                    friendListAdapter.notifyDataSetChanged()
+                }
+                is DataState.Error -> {
+                    Log.i(TAG, "updatedFriendList: 에러 발생")
+                }
+            }
         })
     }
 

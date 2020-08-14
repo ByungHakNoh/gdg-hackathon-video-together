@@ -33,7 +33,7 @@ constructor(
     val searchFriend: LiveData<DataState<FriendData?>> get() = _searchFriend
 
     private val _addFriendList: MutableLiveData<DataState<Boolean?>> = MutableLiveData()
-    val addFriendList: LiveData<DataState<Boolean?>> get() = _addFriendList
+    val addFriend: LiveData<DataState<Boolean?>> get() = _addFriendList
 
     fun setStateEvent(friendStateEvent: FriendStateEvent) {
         viewModelScope.launch {

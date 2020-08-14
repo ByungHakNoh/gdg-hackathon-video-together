@@ -86,12 +86,12 @@ constructor(
         // 친구 추가하기
         friendViewModel.addFriendList.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
-                is DataState.Success<List<FriendData>?> -> {
-                    Log.i(TAG, "subscribeObservers: ${dataState.data}")
+                is DataState.Success<Boolean?> -> {
                     requireActivity().onBackPressed()
                 }
                 is DataState.NoData -> {
                     friendInfoContainerCL.visibility = View.GONE
+                    // TODO : UI로 보여주기
                     Toast.makeText(requireContext(), "사용자를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
                 }
                 is DataState.Error -> {

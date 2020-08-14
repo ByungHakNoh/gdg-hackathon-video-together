@@ -53,7 +53,7 @@ constructor(
         userViewModel.validationDataState.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
                 is DataState.Loading -> {
-                    changeValidationStyle(emailValidationTV, R.string.email_check_loading, R.color.black)
+                    changeValidationStyle(emailValidationTV, R.string.email_check_loading, R.color.white)
                 }
                 is DataState.Success<Boolean?> -> {
                     checkDuplicatedEmail(dataState.data!!)
@@ -89,7 +89,7 @@ constructor(
     private fun checkDuplicatedEmail(isValid: Boolean) {
 
         isEmailValid = if (isValid) {
-            changeValidationStyle(emailValidationTV, R.string.valid, R.color.green)
+            changeValidationStyle(emailValidationTV, R.string.valid, R.color.valid)
             true
         } else {
             changeValidationStyle(emailValidationTV, R.string.email_duplicated, R.color.red)
@@ -154,7 +154,7 @@ constructor(
                 PWValidationTV.visibility = View.VISIBLE
 
                 isPasswordValid = if (editor.toString().matches(regex)) {
-                    changeValidationStyle(PWValidationTV, R.string.valid, R.color.green)
+                    changeValidationStyle(PWValidationTV, R.string.valid, R.color.valid)
                     true
                 } else {
                     changeValidationStyle(PWValidationTV, R.string.password_validation, R.color.red)
@@ -172,7 +172,7 @@ constructor(
 
     private fun checkPasswordCheck(editor: Editable?, textView: TextView) {
         isPasswordCheckValid = if (editor.toString() == textView.text.toString()) {
-            changeValidationStyle(PWCheckValidationTV, R.string.valid, R.color.green)
+            changeValidationStyle(PWCheckValidationTV, R.string.valid, R.color.valid)
             true
         } else {
             changeValidationStyle(PWCheckValidationTV, R.string.password_check_invalid, R.color.red)

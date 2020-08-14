@@ -9,6 +9,7 @@ import retrofit2.http.*
 
 interface RetrofitRequest {
 
+    // ------------------------ 로그인/회원가입 관련 ------------------------
     @POST("sign-up")
     suspend fun checkEmailValidation(@Body requestData: RequestData): Response<*>
 
@@ -21,32 +22,34 @@ interface RetrofitRequest {
     @POST("sign-in")
     suspend fun signIn(@Body requestData: RequestData): Response<UserEntity>
 
+    // ------------------------ 친구 관련 ------------------------
+    @GET("friend-list")
+    suspend fun getFriendsList(
+        @Query("request") request:String,
+        @Query("userId") userId : Int
+    ): Response<List<FriendEntity>?>
+
     @GET("add-friend")
     suspend fun searchFriend(
         @Query("request") request: String,
         @Query("userId") userId: Int,
         @Query("email") friendEmail: String
-    ): Response<UserEntity>
+    ): Response<UserEntity?>
 
     @POST("add-friend")
     suspend fun addFriend(@Body requestData: RequestData): Response<List<FriendEntity>>
 
-    @GET("friends-list")
-    suspend fun getMyProfile(@Body requestData: RequestData): Response<UserEntity>
-
-    @GET("friends-list")
-    suspend fun getFriendsList(@Body requestData: RequestData): Response<List<UserEntity>>
-
-
-    @POST("chat")
-    suspend fun addChatRoom(@Body requestData: RequestData): Response<ChatRoomEntity>
-
-    @GET("chat")
+    // ------------------------ 채팅 관련 ------------------------
+    @GET("chat-room-list")
     suspend fun getChatRoomList(
         @Query("request") request: String,
         @Query("userId") userId: Int
     ): Response<List<ChatRoomEntity>?>
 
+    @POST("add-chat-room")
+    suspend fun addChatRoom(@Body requestData: RequestData): Response<ChatRoomEntity>
+
+    // ------------------------ 유투브 관련 ------------------------
     @GET("youtube")
     suspend fun getDefaultYoutubeList(
         @Query("request") request: String,

@@ -48,10 +48,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10sp"
-        android:text="이름"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:text="@string/name"
+        style="@style/LargeTextStyle"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profileContainerCV" />
@@ -59,7 +57,7 @@
     <View
         android:id="@+id/line"
         android:layout_width="wrap_content"
-        android:layout_height="5px"
+        android:layout_height="1dp"
         android:layout_margin="10dp"
         android:background="@color/grey"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -71,8 +69,8 @@
 
     <ImageButton
         android:id="@+id/editProfileBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30sp"
+        android:layout_height="30sp"
         android:layout_marginTop="20sp"
         android:backgroundTint="@color/transparency"
         android:src="@drawable/ic_baseline_edit_24"
@@ -85,12 +83,11 @@
         android:id="@+id/editProfileTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="프로필 변경"
-        android:textSize="12sp"
-        android:textStyle="bold"
+        android:layout_marginTop="10sp"
+        android:text="@string/chang_profile"
+        style="@style/SmallTextStyle"
         app:layout_constraintLeft_toLeftOf="@id/editProfileBtn"
         app:layout_constraintRight_toRightOf="@id/editProfileBtn"
         app:layout_constraintTop_toBottomOf="@id/editProfileBtn" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

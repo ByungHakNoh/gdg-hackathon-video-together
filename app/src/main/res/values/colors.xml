@@ -13,7 +13,13 @@
     <color name="chatBackground">#CCFF33</color>
 
     <!--  앱에서 자주 사용하는 색  -->
-    <color name="mainBackground">#61BFAD</color>
-    <color name="editBackground">#dcdc</color>
-    <color name="mainText">#000000</color>
+    <color name="logoBackground">#ba000d</color>
+    <color name="mainBackground">#424242</color>
+    <color name="bar">#484848</color>
+    <color name="editBackground">#6d6d6d</color>
+    <color name="buttonBackground">#ba000d</color>
+    <color name="bottomNavActive">#ffffff</color>
+    <color name="bottomNavInActive">#aeaeae</color>
+    <color name="error">#cf6679</color>
+    <color name="valid">#03dac6</color>
 </resources>

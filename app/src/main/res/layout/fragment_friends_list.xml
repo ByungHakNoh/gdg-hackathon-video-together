@@ -52,10 +52,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20sp"
-                    android:text="이름"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
+                    android:text="@string/name"
+                    style="@style/SecondLargeTextStyle"
                     app:layout_constraintBottom_toBottomOf="@id/profileContainerCV"
                     app:layout_constraintLeft_toRightOf="@id/profileContainerCV"
                     app:layout_constraintTop_toTopOf="@id/profileContainerCV" />
@@ -65,7 +63,7 @@
             <View
                 android:id="@+id/line"
                 android:layout_width="wrap_content"
-                android:layout_height="3px"
+                android:layout_height="2dp"
                 android:layout_margin="10dp"
                 android:background="@color/grey"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -77,8 +75,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="친구목록"
-                android:textSize="12sp"
+                android:text="@string/friend_list"
+                style="@style/SmallTextStyle"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/line" />
 

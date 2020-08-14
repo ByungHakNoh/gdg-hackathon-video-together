@@ -10,7 +10,7 @@
         android:id="@+id/homeAppBarAB"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/mainBackground"
+        android:backgroundTint="@color/bar"
         app:layout_constraintBottom_toTopOf="@id/homeFragmentContainer"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -22,8 +22,9 @@
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/homeToolbarTB"
+                style="@style/AppDarkTheme"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="45dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -31,17 +32,20 @@
 
                 <EditText
                     android:id="@+id/searchET"
+                    style="@style/AverageTextStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginTop="7dp"
                     android:layout_marginEnd="50dp"
+                    android:layout_marginBottom="7dp"
                     android:background="@drawable/shape_rounded"
-                    android:backgroundTint="@color/grey"
-                    android:hint="검색을 해보세요"
-                    android:padding="8dp"
+                    android:backgroundTint="@color/editBackground"
+                    android:hint="@string/search_by_youtube"
+                    android:paddingStart="10sp"
+                    android:paddingEnd="10sp"
                     android:visibility="gone" />
 
             </androidx.appcompat.widget.Toolbar>
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -61,8 +65,10 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationBN"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/mainBackground"
+        android:layout_height="45dp"
+        android:background="@color/bar"
+        app:itemIconTint="@drawable/selector_bottom_nav"
+        app:itemTextColor="@drawable/selector_bottom_nav"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

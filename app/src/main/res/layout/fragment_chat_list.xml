@@ -6,7 +6,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.fragments.home.nestonhome.ChatListFragment">
 
-        <!--    그리드 뷰로 (인스타 그램 프로필과 비슷한 컨셉)-->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chatRoomListRV"
             android:layout_width="0dp"

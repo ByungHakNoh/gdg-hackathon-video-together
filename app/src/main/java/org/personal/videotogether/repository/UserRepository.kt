@@ -24,13 +24,13 @@ constructor(
     private val TAG by lazy { javaClass.name }
 
     suspend fun getUserDataFromLocal (): Flow<UserData?> = flow {
-
         try {
             val userCacheEntity = userDAO.getUserData()
             Log.i(TAG, "getUserDataFromLocal: $userCacheEntity")
             val userData = userCacheMapper.mapFromEntity(userCacheEntity[0])
 
             emit(userData)
+
         } catch (e: Exception) {
             e.printStackTrace()
             Log.e(TAG, "getUserDataFromLocal: 룸 쿼리 도중 에러발생($e)")

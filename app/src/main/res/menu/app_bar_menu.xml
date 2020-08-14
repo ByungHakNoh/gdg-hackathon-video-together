@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/searchFragment"
-        android:icon="@drawable/ic_baseline_search_24"
-        android:title="@string/youtube_search"
+        android:icon="@drawable/search"
+        android:title="@string/search"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/youtubeSearchFragment"
@@ -18,7 +18,7 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/addChatRoomFragment"
-        android:icon="@drawable/ic_baseline_add_comment_24"
+        android:icon="@drawable/chat_add"
         android:title="@string/add_chat_room"
         app:showAsAction="ifRoom" />
 </menu>

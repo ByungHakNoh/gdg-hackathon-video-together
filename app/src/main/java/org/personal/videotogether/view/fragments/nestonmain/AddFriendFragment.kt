@@ -84,7 +84,7 @@ constructor(
         })
 
         // 친구 추가하기
-        friendViewModel.addFriendList.observe(viewLifecycleOwner, Observer { dataState ->
+        friendViewModel.addFriend.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
                 is DataState.Success<Boolean?> -> {
                     requireActivity().onBackPressed()

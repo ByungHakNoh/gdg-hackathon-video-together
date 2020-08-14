@@ -37,7 +37,6 @@ constructor(
     // 네비게이션 + 뷰모델
     private lateinit var mainNavController: NavController
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
-    private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
 
     // 리사이클러 뷰
     private val friendList by lazy { ArrayList<FriendData>() }
@@ -51,8 +50,6 @@ constructor(
         setListener()
         subscribeObservers()
         buildRecyclerView()
-        userViewModel.setStateEvent(UserStateEvent.GetUserDataFromLocal)
-        friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromLocal)
     }
 
     private fun setListener() {
@@ -60,13 +57,6 @@ constructor(
     }
 
     private fun subscribeObservers() {
-        // 사용자 정보를 room 으로부터 가져옴
-        userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
-            Glide.with(requireContext()).load(userData!!.profileImageUrl).into(profileIV)
-            nameTV.text = userData.name
-            friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData.id))
-        })
-
         // 친구 목록 불러오기
         friendViewModel.friendList.observe(viewLifecycleOwner, Observer { dataState ->
             friendList.clear()
@@ -85,11 +75,11 @@ constructor(
                     Log.i(TAG, "updatedFriendList: 성공")
                 }
                 is DataState.NoData -> {
-                    friendList.removeAll(friendList)
-                    friendListAdapter.notifyDataSetChanged()
+                    // TODO: 데이터가 없으면 친구 추가 문구 띄워주기
                 }
                 is DataState.Error -> {
                     Log.i(TAG, "updatedFriendList: 에러 발생")
+                    friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromLocal)
                 }
             }
         })

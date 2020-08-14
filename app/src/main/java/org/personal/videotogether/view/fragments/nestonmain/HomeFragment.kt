@@ -9,6 +9,8 @@ import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
@@ -16,10 +18,16 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
+import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_friends_list.*
 import kotlinx.android.synthetic.main.fragment_main_home.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
+import org.personal.videotogether.viewmodel.FriendStateEvent
+import org.personal.videotogether.viewmodel.FriendViewModel
+import org.personal.videotogether.viewmodel.UserStateEvent
+import org.personal.videotogether.viewmodel.UserViewModel
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -29,6 +37,9 @@ class HomeFragment : Fragment(R.layout.fragment_main_home), NavController.OnDest
 
     private lateinit var mainNavController: NavController
     private lateinit var homeNavController: NavController
+
+    private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
+    private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,8 +52,19 @@ class HomeFragment : Fragment(R.layout.fragment_main_home), NavController.OnDest
         val nestedNavHostFragment = childFragmentManager.findFragmentById(R.id.homeFragmentContainer)
         homeNavController = nestedNavHostFragment!!.findNavController()
         mainNavController = Navigation.findNavController(view)
+        subscribeObservers()
         (requireActivity() as AppCompatActivity).setSupportActionBar(homeToolbarTB)
         setBottomNav()
+        userViewModel.setStateEvent(UserStateEvent.GetUserDataFromLocal)
+    }
+
+    private fun subscribeObservers() {
+        // 사용자 정보를 room 으로부터 가져옴
+        userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
+            Glide.with(requireContext()).load(userData!!.profileImageUrl).into(profileIV)
+            nameTV.text = userData.name
+            friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData.id))
+        })
     }
 
     // 상단 앱 바 아이템 추가
@@ -76,7 +98,7 @@ class HomeFragment : Fragment(R.layout.fragment_main_home), NavController.OnDest
         Log.i(TAG, "onOptionsItemSelected: ${homeNavController.getBackStackEntry(R.id.friendsListFragment)}")
         when(item.itemId) {
             R.id.youtubeSearchFragment -> {
-                NavigationUI.onNavDestinationSelected(item, homeNavController)
+                homeNavController.navigate(R.id.action_youtubeFragment_to_youtubeSearchFragment)
             }
             else ->{
                 NavigationUI.onNavDestinationSelected(item, mainNavController)

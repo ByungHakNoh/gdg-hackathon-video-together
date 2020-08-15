@@ -24,10 +24,7 @@ import kotlinx.android.synthetic.main.fragment_friends_list.*
 import kotlinx.android.synthetic.main.fragment_main_home.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
-import org.personal.videotogether.viewmodel.FriendStateEvent
-import org.personal.videotogether.viewmodel.FriendViewModel
-import org.personal.videotogether.viewmodel.UserStateEvent
-import org.personal.videotogether.viewmodel.UserViewModel
+import org.personal.videotogether.viewmodel.*
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -40,10 +37,12 @@ class HomeFragment : Fragment(R.layout.fragment_main_home), NavController.OnDest
 
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
+    private val chatViewModel by lazy { ViewModelProvider(requireActivity())[ChatViewModel::class.java] }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true) // 상단 앱 바 사용
+        Log.i(TAG, "onCreate: ")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,18 +51,20 @@ class HomeFragment : Fragment(R.layout.fragment_main_home), NavController.OnDest
         val nestedNavHostFragment = childFragmentManager.findFragmentById(R.id.homeFragmentContainer)
         homeNavController = nestedNavHostFragment!!.findNavController()
         mainNavController = Navigation.findNavController(view)
-        subscribeObservers()
         (requireActivity() as AppCompatActivity).setSupportActionBar(homeToolbarTB)
+        subscribeObservers()
         setBottomNav()
         userViewModel.setStateEvent(UserStateEvent.GetUserDataFromLocal)
     }
 
     private fun subscribeObservers() {
         // 사용자 정보를 room 으로부터 가져옴
+        // 유저 정보를 이용해 친구 데이터 업데이트, 채팅 소켓 등록을 함
         userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
-            Glide.with(requireContext()).load(userData!!.profileImageUrl).into(profileIV)
-            nameTV.text = userData.name
-            friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData.id))
+            friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData!!.id))
+            chatViewModel.setStateEvent(ChatStateEvent.RegisterSocket(userData))
+            chatViewModel.setStateEvent(ChatStateEvent.ReceiveFromTCPServer)
+            Log.i(TAG, "subscribeObservers: 한번?")
         })
     }
 
@@ -109,7 +110,6 @@ class HomeFragment : Fragment(R.layout.fragment_main_home), NavController.OnDest
     }
 
     // ------------------ homeNavController 리스너 모음 ------------------
-    // TODO: 더 좋은 방법 있을 것 같음
     // 네비게이션 아이템을 클릭해서 destination 이 변경 될때마다 상단 앱 바 메뉴 아이템 변경
     override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
         val removeItemList = ArrayList<Int>()

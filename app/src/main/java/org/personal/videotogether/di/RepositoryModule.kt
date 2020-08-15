@@ -14,6 +14,8 @@ import org.personal.videotogether.repository.ChatRepository
 import org.personal.videotogether.repository.FriendRepository
 import org.personal.videotogether.repository.UserRepository
 import org.personal.videotogether.repository.YoutubeRepository
+import org.personal.videotogether.room.ChatRoomDAO
+import org.personal.videotogether.room.entity.ChatRoomCacheMapper
 import org.personal.videotogether.server.entity.ChatRoomMapper
 import org.personal.videotogether.server.entity.FriendMapper
 import org.personal.videotogether.server.entity.UserMapper
@@ -58,10 +60,12 @@ object RepositoryModule {
     @Provides
     fun provideChatRepository(
         retrofitRequest: RetrofitRequest,
+        chatRoomDAO: ChatRoomDAO,
         chatRoomMapper: ChatRoomMapper,
+        chatRoomCacheMapper: ChatRoomCacheMapper,
         userMapper: UserMapper,
         friendMapper: FriendMapper
     ): ChatRepository {
-        return ChatRepository(retrofitRequest, chatRoomMapper, userMapper, friendMapper)
+        return ChatRepository(retrofitRequest, chatRoomDAO, chatRoomMapper, chatRoomCacheMapper,userMapper, friendMapper)
     }
 }

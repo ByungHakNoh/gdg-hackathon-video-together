@@ -3,6 +3,7 @@ package org.personal.videotogether.viewmodel
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -36,7 +37,7 @@ constructor(
     val addFriend: LiveData<DataState<Boolean?>> get() = _addFriendList
 
     fun setStateEvent(friendStateEvent: FriendStateEvent) {
-        viewModelScope.launch {
+        viewModelScope.launch(IO) {
             when (friendStateEvent) {
 
                 // ------------------ Friend List ------------------

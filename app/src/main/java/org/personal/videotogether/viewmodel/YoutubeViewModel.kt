@@ -3,6 +3,7 @@ package org.personal.videotogether.viewmodel
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -24,7 +25,7 @@ constructor(
 
 
     fun setStateEvent(youtubeStateEvent: YoutubeStateEvent) {
-        viewModelScope.launch {
+        viewModelScope.launch(IO) {
             when (youtubeStateEvent) {
                 is YoutubeStateEvent.GetDefaultYoutubeVideos -> {
                     youtubeRepository.getDefaultYoutubeList(youtubeStateEvent.youtubeChannel).onEach { dataState ->

@@ -1,12 +1,10 @@
 package org.personal.videotogether.room.entity
 
-import dagger.hilt.android.scopes.ActivityRetainedScoped
 import org.personal.videotogether.domianmodel.UserData
 import org.personal.videotogether.util.EntityMapper
 import javax.inject.Inject
 
 class UserCacheMapper
-@ActivityRetainedScoped
 @Inject
 constructor() : EntityMapper<UserCacheEntity, UserData> {
     override fun mapFromEntity(entity: UserCacheEntity): UserData {
@@ -27,5 +25,18 @@ constructor() : EntityMapper<UserCacheEntity, UserData> {
             name = domainModel.name,
             profile_image_url = domainModel.profileImageUrl
         )
+    }
+
+
+    fun mapToEntityList(domainModelList: List<UserData>) :List<UserCacheEntity> {
+        return domainModelList.map {domainModel ->
+            mapToEntity(domainModel)
+        }
+    }
+
+    fun mapFromEntityList(entityList: List<UserCacheEntity>) : List<UserData> {
+        return entityList.map {UserCacheEntity ->
+            mapFromEntity(UserCacheEntity)
+        }
     }
 }

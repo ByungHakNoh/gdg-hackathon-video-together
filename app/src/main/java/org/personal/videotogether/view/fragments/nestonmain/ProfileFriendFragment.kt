@@ -22,7 +22,7 @@ class ProfileFriendFragment : Fragment(R.layout.fragment_profile_friend), View.O
     private lateinit var mainNavController: NavController
 
     private val argument: ProfileFriendFragmentArgs by navArgs()
-    private val friendData : FriendData by lazy { argument.friendData }
+    private val friendData  by lazy { argument.friendData }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -48,7 +48,8 @@ class ProfileFriendFragment : Fragment(R.layout.fragment_profile_friend), View.O
                 requireActivity().onBackPressed()
             }
             R.id.chatBtn -> {
-                mainNavController.navigate(R.id.action_profileFriendFragment_to_chattingFragment)
+                //TODO : 1 대 1 채팅으로 넘어가기
+//                mainNavController.navigate(R.id.action_profileFriendFragment_to_chattingFragment)
             }
         }
     }

@@ -1,10 +1,12 @@
 package org.personal.videotogether.server.entity
 
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import org.personal.videotogether.domianmodel.UserData
 import org.personal.videotogether.util.EntityMapper
 import javax.inject.Inject
 
 class UserMapper
+@ActivityRetainedScoped
 @Inject
 constructor() : EntityMapper<UserEntity, UserData> {
 

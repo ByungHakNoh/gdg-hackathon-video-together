@@ -1,10 +1,12 @@
 package org.personal.videotogether.room.entity
 
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import org.personal.videotogether.domianmodel.FriendData
 import org.personal.videotogether.util.EntityMapper
 import javax.inject.Inject
 
 class FriendCacheMapper
+@ActivityRetainedScoped
 @Inject
 constructor() : EntityMapper<FriendCacheEntity, FriendData> {
     override fun mapFromEntity(entity: FriendCacheEntity): FriendData {

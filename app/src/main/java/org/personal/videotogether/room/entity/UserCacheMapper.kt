@@ -1,10 +1,12 @@
 package org.personal.videotogether.room.entity
 
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import org.personal.videotogether.domianmodel.UserData
 import org.personal.videotogether.util.EntityMapper
 import javax.inject.Inject
 
 class UserCacheMapper
+@ActivityRetainedScoped
 @Inject
 constructor() : EntityMapper<UserCacheEntity, UserData> {
     override fun mapFromEntity(entity: UserCacheEntity): UserData {

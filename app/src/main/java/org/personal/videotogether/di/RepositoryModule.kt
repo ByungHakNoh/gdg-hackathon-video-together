@@ -5,21 +5,19 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
+import org.personal.videotogether.repository.*
 import org.personal.videotogether.room.FriendDAO
 import org.personal.videotogether.server.RetrofitRequest
 import org.personal.videotogether.room.entity.UserCacheMapper
 import org.personal.videotogether.room.UserDAO
 import org.personal.videotogether.room.entity.FriendCacheMapper
-import org.personal.videotogether.repository.ChatRepository
-import org.personal.videotogether.repository.FriendRepository
-import org.personal.videotogether.repository.UserRepository
-import org.personal.videotogether.repository.YoutubeRepository
 import org.personal.videotogether.room.ChatRoomDAO
 import org.personal.videotogether.room.entity.ChatRoomCacheMapper
 import org.personal.videotogether.server.entity.ChatRoomMapper
 import org.personal.videotogether.server.entity.FriendMapper
 import org.personal.videotogether.server.entity.UserMapper
 import org.personal.videotogether.server.entity.YoutubeMapper
+import java.net.Socket
 
 @InstallIn(ActivityRetainedComponent::class)
 @Module
@@ -67,5 +65,13 @@ object RepositoryModule {
         friendMapper: FriendMapper
     ): ChatRepository {
         return ChatRepository(retrofitRequest, chatRoomDAO, chatRoomMapper, chatRoomCacheMapper,userMapper, friendMapper)
+    }
+
+    @ActivityRetainedScoped
+    @Provides
+    fun provideSocketRepository(
+        retrofitRequest: RetrofitRequest
+    ): SocketRepository {
+        return SocketRepository(retrofitRequest)
     }
 }

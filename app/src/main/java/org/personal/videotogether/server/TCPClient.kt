@@ -1,7 +1,6 @@
 package org.personal.videotogether.server
 
 import android.util.Log
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.*
 import java.net.Socket
 
@@ -29,7 +28,6 @@ class TCPClient(private val serverName: String, private val serverPort: Int) {
         return true
     }
 
-    // 커플 ID - 나의 ID - 이름 - 이미지 url - message
     fun writeMessage(message: String) {
         val writer = PrintWriter(serverOutPut!!)
         writer.println(message)
@@ -38,12 +36,7 @@ class TCPClient(private val serverName: String, private val serverPort: Int) {
 
     fun readMessage(): String? {
         if (!socket!!.isClosed) {
-            val response: String? = bufferedReader?.readLine()
-            if (response != null) {
-                Log.i(TAG, "제대로 : $response")
-                Log.i(TAG, "메시지 전송 완료")
-            }
-            return response
+            return bufferedReader?.readLine()
         }
         return null
     }

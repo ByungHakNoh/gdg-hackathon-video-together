@@ -1,12 +1,10 @@
 package org.personal.videotogether.server.entity
 
-import dagger.hilt.android.scopes.ActivityRetainedScoped
 import org.personal.videotogether.domianmodel.UserData
 import org.personal.videotogether.util.EntityMapper
 import javax.inject.Inject
 
 class UserMapper
-@ActivityRetainedScoped
 @Inject
 constructor() : EntityMapper<UserEntity, UserData> {
 
@@ -28,5 +26,17 @@ constructor() : EntityMapper<UserEntity, UserData> {
             name = domainModel.name,
             profile_image_url = domainModel.profileImageUrl
         )
+    }
+
+    fun mapFromEntityList(entityList: List<UserEntity>): List<UserData> {
+        return entityList.map { userEntity ->
+            mapFromEntity(userEntity)
+        }
+    }
+
+    fun mapToEntityList(entityList: List<UserData>): List<UserEntity> {
+        return entityList.map { userData ->
+            mapToEntity(userData)
+        }
     }
 }

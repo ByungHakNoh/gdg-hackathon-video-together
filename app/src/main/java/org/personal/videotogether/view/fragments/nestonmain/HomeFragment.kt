@@ -18,9 +18,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
-import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_friends_list.*
 import kotlinx.android.synthetic.main.fragment_main_home.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
@@ -38,11 +36,11 @@ class HomeFragment : Fragment(R.layout.fragment_main_home), NavController.OnDest
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
     private val chatViewModel by lazy { ViewModelProvider(requireActivity())[ChatViewModel::class.java] }
+    private val socketViewModel by lazy { ViewModelProvider(requireActivity())[SocketViewModel::class.java] }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true) // 상단 앱 바 사용
-        Log.i(TAG, "onCreate: ")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,6 +49,7 @@ class HomeFragment : Fragment(R.layout.fragment_main_home), NavController.OnDest
         val nestedNavHostFragment = childFragmentManager.findFragmentById(R.id.homeFragmentContainer)
         homeNavController = nestedNavHostFragment!!.findNavController()
         mainNavController = Navigation.findNavController(view)
+
         (requireActivity() as AppCompatActivity).setSupportActionBar(homeToolbarTB)
         subscribeObservers()
         setBottomNav()
@@ -62,8 +61,8 @@ class HomeFragment : Fragment(R.layout.fragment_main_home), NavController.OnDest
         // 유저 정보를 이용해 친구 데이터 업데이트, 채팅 소켓 등록을 함
         userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
             friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData!!.id))
-            chatViewModel.setStateEvent(ChatStateEvent.RegisterSocket(userData))
-            chatViewModel.setStateEvent(ChatStateEvent.ReceiveFromTCPServer)
+            socketViewModel.setStateEvent(SocketStateEvent.RegisterSocket(userData))
+            socketViewModel.setStateEvent(SocketStateEvent.ReceiveFromTCPServer)
             Log.i(TAG, "subscribeObservers: 한번?")
         })
     }

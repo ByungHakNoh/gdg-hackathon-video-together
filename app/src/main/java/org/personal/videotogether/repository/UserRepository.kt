@@ -125,7 +125,6 @@ constructor(
                 put("password", password)
             }
             val requestData = RequestData("signIn", postData)
-
             val response = retrofitRequest.signIn(requestData)
 
             if (response.code() == 200) {

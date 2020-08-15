@@ -1,5 +1,6 @@
 package org.personal.videotogether.viewmodel
 
+import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
@@ -33,18 +34,8 @@ constructor(
     private val _getChatRoomList: MutableLiveData<DataState<List<ChatRoomData>?>> = MutableLiveData()
     val getChatRoomList: LiveData<DataState<List<ChatRoomData>?>> get() = _getChatRoomList
 
-    // ------------------ TCP 통신 live data ------------------
-    private val _connectToTCPServer: MutableLiveData<Boolean?> = MutableLiveData()
-    val connectToTCPServer: LiveData<Boolean?> get() = _connectToTCPServer
-
-    private val _receivedMessage: MutableLiveData<String?> = MutableLiveData()
-    val receivedMessage: LiveData<String?> get() = _receivedMessage
-
-    private val _sendMessage: MutableLiveData<DataState<Boolean>?> = MutableLiveData()
-    val sendMessage: LiveData<DataState<Boolean>?> get() = _sendMessage
-
     fun setStateEvent(chatStateEvent: ChatStateEvent) {
-        viewModelScope.launch {
+        viewModelScope.launch(IO) {
             when (chatStateEvent) {
 
                 is ChatStateEvent.GetChatRoomsFromLocal -> {
@@ -66,24 +57,6 @@ constructor(
                     chatRepository.addChatRoom(chatStateEvent.userData, chatStateEvent.participantList).onEach { dataState ->
                         _addChatRoom.value = dataState
                         _addChatRoom.value = null
-                    }.launchIn(viewModelScope)
-                }
-
-                is ChatStateEvent.ConnectToTCPServer -> {
-                    chatRepository.connectToTCPServer()
-                }
-
-                is ChatStateEvent.ReceiveFromTCPServer -> {
-                    withContext(Dispatchers.Default) {
-                        chatRepository.receiveFromTCPServer().onEach { dataState ->
-                            _receivedMessage.value = dataState
-                        }.launchIn(viewModelScope)
-                    }
-                }
-
-                is ChatStateEvent.SendToTCPServer -> {
-                    chatRepository.sendToTCPServer(chatStateEvent.message).onEach { dataState ->
-                        _sendMessage.value = dataState
                     }.launchIn(viewModelScope)
                 }
             }

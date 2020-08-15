@@ -37,6 +37,7 @@ constructor(
     // 네비게이션 + 뷰모델
     private lateinit var mainNavController: NavController
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
+    private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
 
     // 리사이클러 뷰
     private val friendList by lazy { ArrayList<FriendData>() }
@@ -50,6 +51,7 @@ constructor(
         setListener()
         subscribeObservers()
         buildRecyclerView()
+        friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromLocal)
     }
 
     private fun setListener() {
@@ -57,6 +59,12 @@ constructor(
     }
 
     private fun subscribeObservers() {
+        // 사용자 정보를 room 으로부터 가져옴
+        userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
+            Glide.with(requireContext()).load(userData!!.profileImageUrl).into(profileIV)
+            nameTV.text = userData.name
+        })
+
         // 친구 목록 불러오기
         friendViewModel.friendList.observe(viewLifecycleOwner, Observer { dataState ->
             friendList.clear()
@@ -67,7 +75,7 @@ constructor(
         })
 
         friendViewModel.updatedFriendList.observe(viewLifecycleOwner, Observer { dataState ->
-            when(dataState) {
+            when (dataState) {
                 is DataState.Loading -> {
                     Log.i(TAG, "updatedFriendList: 로딩")
                 }
@@ -79,7 +87,6 @@ constructor(
                 }
                 is DataState.Error -> {
                     Log.i(TAG, "updatedFriendList: 에러 발생")
-                    friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromLocal)
                 }
             }
         })
@@ -105,8 +112,7 @@ constructor(
     // ------------------ 리사이클러 뷰 아이템 클릭 리스너 메소드 모음 ------------------
     override fun onItemClick(view: View?, itemPosition: Int) {
         val selectedFriendData = friendList[itemPosition]
-        val action =
-            HomeFragmentDirections.actionMainHomeFragmentToProfileFriendFragment(selectedFriendData)
+        val action = HomeFragmentDirections.actionMainHomeFragmentToProfileFriendFragment(selectedFriendData)
         mainNavController.navigate(action)
     }
 }

@@ -1,12 +1,10 @@
 package org.personal.videotogether.server.entity
 
-import dagger.hilt.android.scopes.ActivityRetainedScoped
 import org.personal.videotogether.domianmodel.YoutubeData
 import org.personal.videotogether.util.EntityMapper
 import javax.inject.Inject
 
 class YoutubeMapper
-@ActivityRetainedScoped
 @Inject
 constructor() : EntityMapper<YoutubeEntity, YoutubeData> {
     override fun mapFromEntity(entity: YoutubeEntity): YoutubeData {

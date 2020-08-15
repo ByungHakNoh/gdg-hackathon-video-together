@@ -13,7 +13,7 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/addFriendFragment"
-        android:icon="@drawable/ic_baseline_person_add_24"
+        android:icon="@drawable/ic_baseline_person_add_22"
         android:title="@string/add_friend"
         app:showAsAction="ifRoom" />
     <item

@@ -48,8 +48,8 @@ constructor(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val chatRoomData = chatRoomList[position]
-        Glide.with(context).load(chatRoomData.participantsList[1].profile_image_url).into(holder.chatRoomProfileIV)
-        holder.nameTV.text = chatRoomData.participantsList[1].name
+        Glide.with(context).load(chatRoomData.participantList[1].profileImageUrl).into(holder.chatRoomProfileIV)
+        holder.nameTV.text = chatRoomData.participantList[1].name
         holder.latestChatMessageTV.text = chatRoomData.lastChatMessage
     }
 

@@ -1,19 +1,19 @@
 package org.personal.videotogether.server.entity
 
-import dagger.hilt.android.scopes.ActivityRetainedScoped
 import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.util.EntityMapper
 import javax.inject.Inject
 
 class ChatRoomMapper
-@ActivityRetainedScoped
 @Inject
-constructor() : EntityMapper<ChatRoomEntity, ChatRoomData> {
+constructor(
+    private val userMapper: UserMapper
+) : EntityMapper<ChatRoomEntity, ChatRoomData> {
     override fun mapFromEntity(entity: ChatRoomEntity): ChatRoomData {
         return ChatRoomData(
             id = entity.id,
             lastChatMessage = entity.lastChatMessage,
-            participantList = entity.participantList
+            participantList = userMapper.mapFromEntityList(entity.participantList)
         )
     }
 
@@ -21,7 +21,7 @@ constructor() : EntityMapper<ChatRoomEntity, ChatRoomData> {
         return ChatRoomEntity(
             id = domainModel.id,
             lastChatMessage = domainModel.lastChatMessage,
-            participantList = domainModel.participantList
+            participantList = userMapper.mapToEntityList(domainModel.participantList)
         )
     }
 

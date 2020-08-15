@@ -12,7 +12,7 @@ data class ChatRoomEntity (
     @Expose
     val lastChatMessage: String?,
 
-    @SerializedName("participants_list")
+    @SerializedName("participant_list")
     @Expose
-    val participantsList: List<UserEntity>
+    val participantList: List<UserEntity>
 )

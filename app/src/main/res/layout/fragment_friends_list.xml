@@ -43,7 +43,7 @@
                         android:id="@+id/profileIV"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/ic_baseline_person_add_24" />
+                        android:src="@drawable/ic_baseline_person_add_22" />
 
                 </androidx.cardview.widget.CardView>
 

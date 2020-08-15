@@ -95,7 +95,7 @@
                 android:id="@+id/friendProfileIV"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/ic_baseline_person_add_24" />
+                android:src="@drawable/ic_baseline_person_add_22" />
 
         </androidx.cardview.widget.CardView>
 
@@ -116,7 +116,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20sp"
-            android:background="@drawable/shape_rounded"
+            android:background="@drawable/shape_rounded_5dp"
             android:backgroundTint="@color/mainBackground"
             android:paddingStart="30sp"
             android:paddingEnd="30sp"

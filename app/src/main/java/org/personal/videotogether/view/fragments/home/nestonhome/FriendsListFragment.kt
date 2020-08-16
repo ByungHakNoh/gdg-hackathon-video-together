@@ -1,6 +1,5 @@
 package org.personal.videotogether.view.fragments.home.nestonhome
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,11 +9,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_friends_list.*
+import kotlinx.android.synthetic.main.fragment_friend_list.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.FriendData
@@ -32,7 +30,7 @@ import org.personal.videotogether.viewmodel.UserViewModel
 class FriendsListFragment
 constructor(
     private val dataStateHandler: DataStateHandler
-) : Fragment(R.layout.fragment_friends_list), ItemClickListener, View.OnClickListener {
+) : Fragment(R.layout.fragment_friend_list), ItemClickListener, View.OnClickListener {
 
     private val TAG = javaClass.name
 

@@ -40,7 +40,7 @@
                 app:title="유투브" />
 
             <ImageButton
-                android:id="@+id/addFriendBtn"
+                android:id="@+id/youtubeSearchBtn"
                 style="@style/ToolbarBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -122,12 +122,10 @@ constructor(
 
                 // 선택됬는지 판별
                 if (friendData.isSelected!!) {
-
                     selectedFriendList.add(friendData)
                     selectedFriendAdapter.notifyDataSetChanged()
 
                 } else {
-
                     if (selectedFriendList.contains(friendData)) {
                         selectedFriendList.remove(friendData)
                         selectedFriendAdapter.notifyDataSetChanged()

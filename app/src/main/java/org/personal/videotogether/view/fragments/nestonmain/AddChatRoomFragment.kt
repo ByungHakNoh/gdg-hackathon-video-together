@@ -1,6 +1,7 @@
 package org.personal.videotogether.view.fragments.nestonmain
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
@@ -18,6 +19,7 @@ import org.personal.videotogether.domianmodel.FriendData
 import org.personal.videotogether.util.DataState
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.view.adapter.FriendListAdapter
+import org.personal.videotogether.view.adapter.ItemClickListener
 import org.personal.videotogether.view.adapter.SelectedFriendAdapter
 import org.personal.videotogether.viewmodel.ChatStateEvent
 import org.personal.videotogether.viewmodel.ChatViewModel
@@ -29,7 +31,7 @@ import org.personal.videotogether.viewmodel.UserViewModel
 class AddChatRoomFragment
 constructor(
     private val dataStateHandler: DataStateHandler
-) : Fragment(R.layout.fragment_add_chat_room), FriendListAdapter.ItemClickListener, SelectedFriendAdapter.ItemClickListener, View.OnClickListener {
+) : Fragment(R.layout.fragment_add_chat_room), ItemClickListener, View.OnClickListener {
 
     private val TAG by lazy { javaClass.name }
 
@@ -107,34 +109,40 @@ constructor(
     }
 
     override fun onItemClick(view: View?, itemPosition: Int) {
-        selectedFriendListRV.visibility = View.VISIBLE
-        val friendData = friendList[itemPosition]
 
-        if (friendData.isSelected == null) friendData.isSelected = false
-        friendData.isSelected = !friendData.isSelected!!
-        selectableFriendAdapter.notifyItemChanged(itemPosition)
+        when(view?.id) {
 
-        // 선택됬는지 판별
-        if (friendData.isSelected!!) {
+            R.id.friendItemCL -> {
+                selectedFriendListRV.visibility = View.VISIBLE
+                val friendData = friendList[itemPosition]
 
-            selectedFriendList.add(friendData)
-            selectedFriendAdapter.notifyDataSetChanged()
+                if (friendData.isSelected == null) friendData.isSelected = false
+                friendData.isSelected = !friendData.isSelected!!
+                selectableFriendAdapter.notifyItemChanged(itemPosition)
 
-        } else {
+                // 선택됬는지 판별
+                if (friendData.isSelected!!) {
 
-            if (selectedFriendList.contains(friendData)) {
-                selectedFriendList.remove(friendData)
+                    selectedFriendList.add(friendData)
+                    selectedFriendAdapter.notifyDataSetChanged()
+
+                } else {
+
+                    if (selectedFriendList.contains(friendData)) {
+                        selectedFriendList.remove(friendData)
+                        selectedFriendAdapter.notifyDataSetChanged()
+                    }
+                }
+            }
+
+            R.id.deleteBtn -> {
+                val friendListIndex = friendList.indexOf(selectedFriendList[itemPosition])
+                friendList[friendListIndex].isSelected = !friendList[friendListIndex].isSelected!!
+
+                selectedFriendList.removeAt(itemPosition)
+                selectableFriendAdapter.notifyItemChanged(friendListIndex)
                 selectedFriendAdapter.notifyDataSetChanged()
             }
         }
-    }
-
-    override fun onSelectedItemClick(view: View?, itemPosition: Int) {
-        val friendListIndex = friendList.indexOf(selectedFriendList[itemPosition])
-        friendList[friendListIndex].isSelected = !friendList[friendListIndex].isSelected!!
-
-        selectedFriendList.removeAt(itemPosition)
-        selectableFriendAdapter.notifyItemChanged(friendListIndex)
-        selectedFriendAdapter.notifyDataSetChanged()
     }
 }

@@ -29,11 +29,11 @@ constructor(
         val friendName: TextView = itemView.findViewById(R.id.nameTV)
         private val deleteBtn: ImageButton = itemView.findViewById(R.id.deleteBtn)
 
-        override fun onClick(v: View?) {
+        override fun onClick(view: View?) {
 
             if (adapterPosition != RecyclerView.NO_POSITION) {
 
-                itemClickListener.onSelectedItemClick(deleteBtn, adapterPosition)
+                itemClickListener.onItemClick(view, adapterPosition)
             }
         }
     }
@@ -51,9 +51,5 @@ constructor(
         val friendData = friendList[position]
         Glide.with(context).load(friendData.profileImageUrl).into(holder.friendProfileIV)
         holder.friendName.text = friendData.name
-    }
-
-    interface ItemClickListener {
-        fun onSelectedItemClick(view: View?, itemPosition: Int)
     }
 }

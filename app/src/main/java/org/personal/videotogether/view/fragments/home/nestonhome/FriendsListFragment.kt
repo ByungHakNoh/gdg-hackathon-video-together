@@ -19,6 +19,7 @@ import org.personal.videotogether.domianmodel.FriendData
 import org.personal.videotogether.util.DataState
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.view.adapter.FriendListAdapter
+import org.personal.videotogether.view.adapter.ItemClickListener
 import org.personal.videotogether.view.fragments.nestonmain.HomeFragmentDirections
 import org.personal.videotogether.viewmodel.FriendStateEvent
 import org.personal.videotogether.viewmodel.FriendViewModel
@@ -30,7 +31,7 @@ import org.personal.videotogether.viewmodel.UserViewModel
 class FriendsListFragment
 constructor(
     private val dataStateHandler: DataStateHandler
-) : Fragment(R.layout.fragment_friends_list), FriendListAdapter.ItemClickListener, View.OnClickListener {
+) : Fragment(R.layout.fragment_friends_list), ItemClickListener, View.OnClickListener {
 
     private val TAG = javaClass.name
 

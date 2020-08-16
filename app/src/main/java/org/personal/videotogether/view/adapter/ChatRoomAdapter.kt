@@ -28,11 +28,11 @@ constructor(
         val nameTV: TextView = itemView.findViewById(R.id.nameTV)
         val latestChatMessageTV: TextView = itemView.findViewById(R.id.latestChatMessageTV)
 
-        override fun onClick(v: View?) {
+        override fun onClick(view: View?) {
 
             if (adapterPosition != RecyclerView.NO_POSITION) {
 
-                itemClickListener.onItemClick(itemView, adapterPosition)
+                itemClickListener.onItemClick(view, adapterPosition)
             }
         }
     }
@@ -51,9 +51,5 @@ constructor(
         Glide.with(context).load(chatRoomData.participantList[1].profileImageUrl).into(holder.chatRoomProfileIV)
         holder.nameTV.text = chatRoomData.participantList[1].name
         holder.latestChatMessageTV.text = chatRoomData.lastChatMessage
-    }
-
-    interface ItemClickListener {
-        fun onItemClick(view: View?, itemPosition: Int)
     }
 }

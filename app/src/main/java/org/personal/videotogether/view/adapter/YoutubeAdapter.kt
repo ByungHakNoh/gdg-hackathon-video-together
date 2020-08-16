@@ -32,11 +32,11 @@ constructor(
         val videoTitleTV : TextView = itemView.findViewById(R.id.videoTitleTV)
         val channelTitleTV: TextView = itemView.findViewById(R.id.channelTitleTV)
 
-        override fun onClick(v: View?) {
+        override fun onClick(view: View?) {
 
             if (adapterPosition != RecyclerView.NO_POSITION) {
 
-                itemClickListener.onItemClick(itemView, adapterPosition)
+                itemClickListener.onItemClick(view, adapterPosition)
             }
         }
     }
@@ -64,9 +64,5 @@ constructor(
         Glide.with(fragment.requireContext()).load(youtubeData.channelThumbnail).into(holder.channelThumbnailIV)
         holder.videoTitleTV.text = youtubeData.title
         holder.channelTitleTV.text = youtubeData.channelTitle
-    }
-
-    interface ItemClickListener {
-        fun onItemClick(view: View?, itemPosition: Int)
     }
 }

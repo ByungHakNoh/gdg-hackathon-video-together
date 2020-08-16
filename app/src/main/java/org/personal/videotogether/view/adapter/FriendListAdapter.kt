@@ -31,11 +31,10 @@ constructor(
         val friendName: TextView = itemView.findViewById(R.id.nameTV)
         val checkBox: CheckBox = itemView.findViewById(R.id.checkboxCB)
 
-        override fun onClick(v: View?) {
+        override fun onClick(view: View?) {
 
             if (adapterPosition != RecyclerView.NO_POSITION) {
-
-                itemClickListener.onItemClick(itemView, adapterPosition)
+                itemClickListener.onItemClick(view, adapterPosition)
             }
         }
     }
@@ -63,9 +62,5 @@ constructor(
                 Log.i("TAG", "onBindViewHolder: always null")
             }
         }
-    }
-
-    interface ItemClickListener {
-        fun onItemClick(view: View?, itemPosition: Int)
     }
 }

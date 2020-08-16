@@ -18,6 +18,7 @@ import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.util.DataState
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.view.adapter.ChatRoomAdapter
+import org.personal.videotogether.view.adapter.ItemClickListener
 import org.personal.videotogether.view.fragments.nestonmain.HomeFragmentDirections
 import org.personal.videotogether.viewmodel.ChatStateEvent
 import org.personal.videotogether.viewmodel.ChatViewModel
@@ -28,7 +29,7 @@ import org.personal.videotogether.viewmodel.UserViewModel
 class ChatListFragment
 constructor(
     private val dataStateHandler: DataStateHandler
-) : Fragment(R.layout.fragment_chat_list), ChatRoomAdapter.ItemClickListener {
+) : Fragment(R.layout.fragment_chat_list), ItemClickListener {
 
     private val TAG by lazy { javaClass.name }
 

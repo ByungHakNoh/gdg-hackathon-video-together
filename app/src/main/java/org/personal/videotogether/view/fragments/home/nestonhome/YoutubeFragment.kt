@@ -13,13 +13,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.YoutubeData
 import org.personal.videotogether.util.DataState
+import org.personal.videotogether.view.adapter.ItemClickListener
 import org.personal.videotogether.view.adapter.YoutubeAdapter
 import org.personal.videotogether.viewmodel.YoutubeStateEvent
 import org.personal.videotogether.viewmodel.YoutubeViewModel
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class YoutubeFragment : Fragment(R.layout.fragment_youtube), YoutubeAdapter.ItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private val TAG by lazy { javaClass.name }
 

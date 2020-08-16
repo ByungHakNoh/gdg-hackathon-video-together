@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_detail_graph"
+    app:startDestination="@id/homeDetailBlankFragment">
+
+    <fragment
+        android:id="@+id/addFriendFragment"
+        android:name="org.personal.videotogether.view.fragments.home.nestonhomedetail.AddFriendFragment"
+        android:label="fragment_add_friend"
+        tools:layout="@layout/fragment_add_friend" />
+
+    <fragment
+        android:id="@+id/profileMineFragment"
+        android:name="org.personal.videotogether.view.fragments.home.nestonhomedetail.ProfileMineFragment"
+        android:label="fragment_profile_mine"
+        tools:layout="@layout/fragment_profile_mine" />
+
+    <fragment
+        android:id="@+id/profileFriendFragment"
+        android:name="org.personal.videotogether.view.fragments.home.nestonhomedetail.ProfileFriendFragment"
+        android:label="fragment_profile_friend"
+        tools:layout="@layout/fragment_profile_friend">
+        <argument
+            android:name="friendData"
+            app:argType="org.personal.videotogether.domianmodel.FriendData" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/chattingFragment"
+        android:name="org.personal.videotogether.view.fragments.home.nestonhomedetail.ChattingFragment"
+        android:label="fragment_chatting"
+        tools:layout="@layout/fragment_chatting">
+        <argument
+            android:name="chatRoomData"
+            app:argType="org.personal.videotogether.domianmodel.ChatRoomData" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addChatRoomFragment"
+        android:name="org.personal.videotogether.view.fragments.home.nestonhomedetail.AddChatRoomFragment"
+        android:label="fragment_add_chat_room"
+        tools:layout="@layout/fragment_add_chat_room" />
+
+    <fragment
+        android:id="@+id/homeDetailBlankFragment"
+        android:name="org.personal.videotogether.view.fragments.home.nestonhomedetail.HomeDetailBlankFragment"
+        android:label="fragment_home_detail_blank"
+        tools:layout="@layout/fragment_home_detail_blank" >
+        <action
+            android:id="@+id/action_homeDetailBlankFragment_to_addChatRoomFragment"
+            app:destination="@id/addChatRoomFragment" />
+        <action
+            android:id="@+id/action_homeDetailBlankFragment_to_chattingFragment"
+            app:destination="@id/chattingFragment" />
+        <action
+            android:id="@+id/action_homeDetailBlankFragment_to_addFriendFragment"
+            app:destination="@id/addFriendFragment" />
+        <action
+            android:id="@+id/action_homeDetailBlankFragment_to_profileMineFragment"
+            app:destination="@id/profileMineFragment" />
+        <action
+            android:id="@+id/action_homeDetailBlankFragment_to_profileFriendFragment"
+            app:destination="@id/profileFriendFragment" />
+    </fragment>
+</navigation>

@@ -9,7 +9,7 @@
     tools:ignore="contentDescription">
 
     <FrameLayout
-        android:id="@+id/playerContainer"
+        android:id="@+id/playerOverlayFL"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/recyclerview_container"
@@ -34,11 +34,9 @@
         app:layout_constraintStart_toStartOf="@id/playerContainerCL"
         app:layout_constraintTop_toTopOf="@id/playerContainerCL"
         app:showFullScreenButton="false"
-        app:autoPlay="true"
         app:showSeekBar="false"
-        app:showYouTubeButton="false"
-        app:videoId="69kA1xiVvkU" />
-
+        app:showYouTubeButton="false" />
+    <!--    app:videoId="69kA1xiVvkU"-->
     <ImageView
         android:id="@+id/image_play"
         android:layout_width="wrap_content"
@@ -59,6 +57,7 @@
         app:layout_constraintEnd_toEndOf="@id/playerContainerCL"
         app:layout_constraintTop_toTopOf="@id/playerContainerCL" />
 
+    <!--  비디오 하단 리사이클러 뷰  -->
     <FrameLayout
         android:id="@+id/recyclerview_container"
         android:layout_width="0dp"
@@ -69,17 +68,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/playerContainerCL" />
 
-    <ImageView
-        android:id="@+id/closeBtn"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:alpha="0"
-        android:src="@drawable/ic_baseline_clear_24"
-        app:layout_constraintBottom_toBottomOf="@id/playerContainer"
-        app:layout_constraintRight_toRightOf="@id/playerContainer"
-        app:layout_constraintTop_toTopOf="@id/playerContainer" />
-
-    <!--  비디오 하단 뷰  -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_front"
         android:layout_width="0dp"
@@ -88,5 +76,57 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/playerContainerCL" />
+
+    <!--  축소 시 보여지는 뷰  -->
+    <TextView
+        android:id="@+id/videoTitleTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:lines="1"
+        android:paddingStart="10sp"
+        android:paddingEnd="10sp"
+        android:text="@string/name"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/channelTitleTV"
+        app:layout_constraintLeft_toRightOf="@id/youtubePlayerYP"
+        app:layout_constraintRight_toLeftOf="@id/playerControlBtn"
+        app:layout_constraintTop_toTopOf="@id/playerOverlayFL" />
+
+    <TextView
+        android:id="@+id/channelTitleTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:lines="1"
+        android:paddingStart="10sp"
+        android:paddingEnd="10sp"
+        android:text="@string/name"
+        android:textColor="@color/InActive"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/playerOverlayFL"
+        app:layout_constraintLeft_toLeftOf="@id/videoTitleTV"
+        app:layout_constraintRight_toRightOf="@id/videoTitleTV"
+        app:layout_constraintTop_toBottomOf="@id/videoTitleTV" />
+
+    <ImageView
+        android:id="@+id/playerControlBtn"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:alpha="0"
+        android:src="@drawable/ic_baseline_pause_24"
+        app:layout_constraintBottom_toBottomOf="@id/playerOverlayFL"
+        app:layout_constraintRight_toLeftOf="@id/closePlayerBtn"
+        app:layout_constraintTop_toTopOf="@id/playerOverlayFL" />
+
+    <ImageView
+        android:id="@+id/closePlayerBtn"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:alpha="0"
+        android:src="@drawable/ic_baseline_clear_24"
+        app:layout_constraintBottom_toBottomOf="@id/playerOverlayFL"
+        app:layout_constraintRight_toRightOf="@id/playerOverlayFL"
+        app:layout_constraintTop_toTopOf="@id/playerOverlayFL" />
 
 </org.personal.videotogether.util.view.SingleViewTouchableMotionLayout>

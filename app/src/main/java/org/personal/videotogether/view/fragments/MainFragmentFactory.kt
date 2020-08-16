@@ -8,8 +8,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.util.view.ImageHandler
 import org.personal.videotogether.util.view.ViewHandler
-import org.personal.videotogether.view.fragments.nestonmain.AddChatRoomFragment
-import org.personal.videotogether.view.fragments.nestonmain.AddFriendFragment
+import org.personal.videotogether.view.fragments.home.nestonhomedetail.AddChatRoomFragment
+import org.personal.videotogether.view.fragments.home.nestonhomedetail.AddFriendFragment
 import org.personal.videotogether.view.fragments.nestonmain.SetProfileFragment
 import org.personal.videotogether.view.fragments.nestonmain.SignInFragment
 import org.personal.videotogether.view.fragments.nestonmain.SignUpFragment

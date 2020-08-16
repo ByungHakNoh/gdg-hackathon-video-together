@@ -1,4 +1,4 @@
-package org.personal.videotogether.view.fragments.home.nestonvideo
+package org.personal.videotogether.view.fragments.home.nestonhomedetail
 
 import android.os.Bundle
 import android.util.Log

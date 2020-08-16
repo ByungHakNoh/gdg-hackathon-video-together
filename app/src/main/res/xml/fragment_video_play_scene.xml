@@ -18,7 +18,7 @@
             <Constraint
                 android:id="@id/playerContainerCL"
                 android:layout_width="0dp"
-                android:layout_height="233dp"
+                android:layout_height="250dp"
                 motion:layout_constraintEnd_toEndOf="parent"
                 motion:layout_constraintStart_toStartOf="parent"
                 motion:layout_constraintTop_toTopOf="parent" />
@@ -50,6 +50,34 @@
                 motion:layout_constraintStart_toStartOf="parent"
                 motion:layout_constraintTop_toBottomOf="@id/playerContainerCL" />
 
+            <Constraint
+                android:id="@+id/videoTitleTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                motion:layout_constraintRight_toRightOf="@id/playerOverlayFL" />
+
+            <Constraint
+                android:id="@+id/channelTitleTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                motion:layout_constraintRight_toRightOf="@id/playerOverlayFL" />
+
+            <Constraint
+                android:id="@+id/playerControlBtn"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                motion:layout_constraintRight_toRightOf="@id/playerOverlayFL" />
+
+            <Constraint
+                android:id="@+id/closePlayerBtn"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                motion:layout_constraintRight_toRightOf="@id/playerOverlayFL" />
+
             <Constraint android:id="@id/image_play">
                 <PropertySet motion:alpha="0" />
             </Constraint>
@@ -68,19 +96,10 @@
                 android:layout_height="80dp"
                 android:layout_marginStart="0dp"
                 android:layout_marginEnd="0dp"
-                android:layout_marginBottom="56dp"
+                android:layout_marginBottom="46dp"
                 motion:layout_constraintBottom_toBottomOf="parent"
                 motion:layout_constraintEnd_toEndOf="parent"
                 motion:layout_constraintStart_toStartOf="parent" />
-
-            <Constraint
-                android:id="@+id/closeBtn"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_marginRight="16dp"
-                motion:layout_constraintBottom_toBottomOf="@id/playerContainer"
-                motion:layout_constraintRight_toRightOf="@id/playerContainer"
-                motion:layout_constraintTop_toTopOf="@id/playerContainer"  />
 
             <Constraint
                 android:id="@id/youtubePlayerYP"
@@ -99,7 +118,7 @@
                 android:layout_height="0dp"
                 android:layout_marginStart="0dp"
                 android:layout_marginEnd="0dp"
-                android:layout_marginBottom="56dp"
+                android:layout_marginBottom="46dp"
                 motion:layout_constraintBottom_toBottomOf="parent"
                 motion:layout_constraintEnd_toEndOf="parent"
                 motion:layout_constraintStart_toStartOf="parent"
@@ -114,6 +133,44 @@
                 motion:layout_constraintEnd_toEndOf="@id/playerContainerCL"
                 motion:layout_constraintStart_toStartOf="@id/playerContainerCL"
                 motion:layout_constraintTop_toBottomOf="@id/playerContainerCL" />
+
+            <Constraint
+                android:id="@+id/videoTitleTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/name"
+                motion:layout_constraintBottom_toTopOf="@id/channelTitleTV"
+                motion:layout_constraintLeft_toRightOf="@id/youtubePlayerYP"
+                motion:layout_constraintRight_toLeftOf="@id/playerControlBtn"
+                motion:layout_constraintTop_toTopOf="@id/playerOverlayFL" />
+
+            <Constraint
+                android:id="@+id/channelTitleTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/name"
+                motion:layout_constraintBottom_toBottomOf="@id/playerOverlayFL"
+                motion:layout_constraintLeft_toLeftOf="@id/videoTitleTV"
+                motion:layout_constraintRight_toRightOf="@id/videoTitleTV"
+                motion:layout_constraintTop_toBottomOf="@id/videoTitleTV" />
+
+            <Constraint
+                android:id="@+id/playerControlBtn"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginRight="16dp"
+                motion:layout_constraintBottom_toBottomOf="@id/playerOverlayFL"
+                motion:layout_constraintRight_toLeftOf="@id/closePlayerBtn"
+                motion:layout_constraintTop_toTopOf="@id/playerOverlayFL" />
+
+            <Constraint
+                android:id="@+id/closePlayerBtn"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginRight="16dp"
+                motion:layout_constraintBottom_toBottomOf="@id/playerOverlayFL"
+                motion:layout_constraintRight_toRightOf="@id/playerOverlayFL"
+                motion:layout_constraintTop_toTopOf="@id/playerOverlayFL" />
 
             <Constraint android:id="@id/image_play">
                 <PropertySet motion:alpha="1" />

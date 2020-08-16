@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.fragments.nestonmain.AddChatRoomFragment">
+    tools:context=".view.fragments.home.nestonhomedetail.AddChatRoomFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/homeAppBarAB"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/bar"
+        android:backgroundTint="@color/bar"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -19,24 +19,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageButton
+                android:id="@+id/backBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10sp"
+                android:background="@color/transparency"
+                android:src="@drawable/ic_baseline_arrow_back_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/homeToolbarTB"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="45dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/backBtn"
                 app:layout_constraintTop_toTopOf="parent"
                 app:title="대화상대 초대" />
 
             <Button
                 android:id="@+id/confirmBtn"
+                style="@style/AverageTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/transparency"
                 android:text="@string/check"
-                android:textStyle="bold"
                 android:textColor="@color/InActive"
-                style="@style/AverageTextStyle"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -72,13 +83,13 @@
 
     <TextView
         android:id="@+id/friendTV"
+        style="@style/SmallTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15sp"
         android:layout_marginTop="15sp"
         android:layout_marginBottom="10sp"
         android:text="@string/friend"
-        style="@style/SmallTextStyle"
         app:layout_constraintBottom_toTopOf="@+id/selectableFriendsListRV"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchFriendET" />

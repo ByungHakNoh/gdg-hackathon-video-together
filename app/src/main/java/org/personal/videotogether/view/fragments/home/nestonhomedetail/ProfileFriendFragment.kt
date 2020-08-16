@@ -1,27 +1,27 @@
-package org.personal.videotogether.view.fragments.nestonmain
+package org.personal.videotogether.view.fragments.home.nestonvideo
 
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_profile_mine.*
+import kotlinx.android.synthetic.main.fragment_profile_friend.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
-import org.personal.videotogether.viewmodel.UserViewModel
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class ProfileMineFragment : Fragment(R.layout.fragment_profile_mine), View.OnClickListener {
+class ProfileFriendFragment : Fragment(R.layout.fragment_profile_friend), View.OnClickListener {
 
     private val TAG = javaClass.name
 
     private lateinit var mainNavController: NavController
 
-    private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
+    private val argument: ProfileFriendFragmentArgs by navArgs()
+    private val friendData  by lazy { argument.friendData }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,13 +32,13 @@ class ProfileMineFragment : Fragment(R.layout.fragment_profile_mine), View.OnCli
     }
 
     private fun setInitView() {
-        val userData = userViewModel.userData.value!!
-        Glide.with(requireContext()).load(userData.profileImageUrl).into(profileIV)
-        nameTV.text = userData.name
+        Glide.with(requireContext()).load(friendData.profileImageUrl).into(profileIV)
+        nameTV.text = friendData.name
     }
 
     private fun setListener() {
         closeBtn.setOnClickListener(this)
+        chatBtn.setOnClickListener(this)
     }
 
     override fun onClick(view: View?) {
@@ -47,9 +47,9 @@ class ProfileMineFragment : Fragment(R.layout.fragment_profile_mine), View.OnCli
                 requireActivity().onBackPressed()
             }
             R.id.chatBtn -> {
-                // TODO : 채팅방으로 넘어가기
+                //TODO : 1 대 1 채팅으로 넘어가기
+//                mainNavController.navigate(R.id.action_profileFriendFragment_to_chattingFragment)
             }
         }
     }
-
 }

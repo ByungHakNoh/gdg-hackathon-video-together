@@ -1,5 +1,6 @@
 package org.personal.videotogether.view.fragments.home.nestonhome
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,10 +22,9 @@ import org.personal.videotogether.util.DataState
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.view.adapter.FriendListAdapter
 import org.personal.videotogether.view.adapter.ItemClickListener
-import org.personal.videotogether.view.fragments.nestonmain.HomeFragmentDirections
+import org.personal.videotogether.view.fragments.home.nestonhomedetail.HomeDetailBlankFragmentDirections
 import org.personal.videotogether.viewmodel.FriendStateEvent
 import org.personal.videotogether.viewmodel.FriendViewModel
-import org.personal.videotogether.viewmodel.UserStateEvent
 import org.personal.videotogether.viewmodel.UserViewModel
 
 @ExperimentalCoroutinesApi
@@ -36,7 +37,7 @@ constructor(
     private val TAG = javaClass.name
 
     // 네비게이션 + 뷰모델
-    private lateinit var mainNavController: NavController
+    private lateinit var homeDetailNavController: NavController
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
 
@@ -47,8 +48,8 @@ constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val mainFragmentContainer: FragmentContainerView = view.rootView.findViewById(R.id.mainFragmentContainer)
-        mainNavController = Navigation.findNavController(mainFragmentContainer)
+        val homeDetailFragmentContainer:FragmentContainerView = view.rootView.findViewById(R.id.homeDetailFragmentContainer)
+        homeDetailNavController = Navigation.findNavController(homeDetailFragmentContainer)
         setListener()
         subscribeObservers()
         buildRecyclerView()
@@ -105,7 +106,7 @@ constructor(
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.myProfileContainerCL -> {
-                mainNavController.navigate(R.id.action_mainHomeFragment_to_profileMineFragment)
+                homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_profileMineFragment)
             }
         }
     }
@@ -113,7 +114,7 @@ constructor(
     // ------------------ 리사이클러 뷰 아이템 클릭 리스너 메소드 모음 ------------------
     override fun onItemClick(view: View?, itemPosition: Int) {
         val selectedFriendData = friendList[itemPosition]
-        val action = HomeFragmentDirections.actionMainHomeFragmentToProfileFriendFragment(selectedFriendData)
-        mainNavController.navigate(action)
+        val action = HomeDetailBlankFragmentDirections.actionHomeDetailBlankFragmentToProfileFriendFragment(selectedFriendData)
+        homeDetailNavController.navigate(action)
     }
 }

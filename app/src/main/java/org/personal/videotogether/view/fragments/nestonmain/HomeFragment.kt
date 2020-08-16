@@ -36,6 +36,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
     private val chatViewModel by lazy { ViewModelProvider(requireActivity())[ChatViewModel::class.java] }
+    private val youtubeViewModel: YoutubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
     private val socketViewModel by lazy { ViewModelProvider(requireActivity())[SocketViewModel::class.java] }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,8 +59,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         homeDetailNavController = homeDetailFragment!!.findNavController()
         videoNavController = videoFragmentContainer!!.findNavController()
 
-        Log.e(TAG, "setNavControl: ${childFragmentManager}")
-        Log.e(TAG, "setNavControl: ${homeDetailNavController.currentDestination}")
         // 바텀, 앱 바 관련
         bottomNavBN.setupWithNavController(homeNavController)
 
@@ -93,6 +92,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             socketViewModel.setStateEvent(SocketStateEvent.RegisterSocket(userData))
             socketViewModel.setStateEvent(SocketStateEvent.ReceiveFromTCPServer)
             Log.i(TAG, "subscribeObservers: 한번?")
+        })
+
+        // 유투브 재생 시 하단 유튜브 플레이어 보여주기
+        youtubeViewModel.currentPlayedYoutube.observe(viewLifecycleOwner, Observer { youtubeData ->
+            if (youtubeData == null) videoFragmentContainer.visibility = View.GONE
+            else videoFragmentContainer.visibility = View.VISIBLE
         })
     }
 
@@ -132,57 +137,4 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         return super.onOptionsItemSelected(item)
     }
-
-//    // ------------------ homeNavController 리스너 모음 ------------------
-//// 네비게이션 아이템을 클릭해서 destination 이 변경 될때마다 상단 앱 바 메뉴 아이템 변경
-//    override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
-//        val removeItemList = ArrayList<Int>()
-//        val menu = homeToolbarTB.menu
-//        menu.clear()
-//        searchET.visibility = View.GONE
-//        homeToolbarTB.title = destination.label
-//
-//        when (destination.id) {
-//
-//            R.id.friendsListFragment -> {
-//                removeItemList.apply {
-//                    add(R.id.youtubeSearchFragment)
-//                    add(R.id.addChatRoomFragment)
-//                }
-//                refreshMenuItem(menu, removeItemList)
-//            }
-//
-//            R.id.chatListFragment -> {
-//                removeItemList.apply {
-//                    add(R.id.youtubeSearchFragment)
-//                    add(R.id.addFriendFragment)
-//                }
-//                refreshMenuItem(menu, removeItemList)
-//            }
-//
-//            R.id.youtubeFragment -> {
-//                removeItemList.apply {
-//                    add(R.id.searchFragment)
-//                    add(R.id.addFriendFragment)
-//                    add(R.id.addChatRoomFragment)
-//                }
-//                refreshMenuItem(menu, removeItemList)
-//            }
-//
-//            R.id.youtubeSearchFragment -> {
-//                homeToolbarTB.title = null
-//                searchET.visibility = View.VISIBLE
-//            }
-//        }
-//    }
-//
-//    private fun refreshMenuItem(menu: Menu, removeItemList: ArrayList<Int>) {
-//        val menuInflater = requireActivity().menuInflater
-//        menuInflater.inflate(R.menu.app_bar_menu, menu)
-//
-//        removeItemList.forEach { item ->
-//            menu.removeItem(item)
-//        }
-//        Log.i(TAG, "onDestinationChanged: refresh $menu")
-//    }
 }

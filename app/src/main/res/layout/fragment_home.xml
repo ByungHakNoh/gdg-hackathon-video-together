@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".view.fragments.nestonmain.HomeFragment">
 
+    <!--  Home Detail  -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/homeDetailFragmentContainer"
         android:name="org.personal.videotogether.view.fragments.home.HomeDetailFragment"
@@ -18,28 +19,41 @@
         app:layout_constraintTop_toTopOf="parent"
         app:navGraph="@navigation/home_detail_graph" />
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/homeFragmentContainer"
-        android:name="org.personal.videotogether.view.fragments.home.HomeNavHostFragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavML"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/home_nav_graph" />
-
+    <!--  Video Player  -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/videoFragmentContainer"
         android:name="org.personal.videotogether.view.fragments.home.VideoNavHostFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:elevation="10sp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navGraph="@navigation/video_nav_graph" />
+
+    <!--  Bottom Nav Fragment  -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/homeFragmentContainer"
+        android:name="org.personal.videotogether.view.fragments.home.HomeNavHostFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/line"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/home_nav_graph" />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:background="@color/InActive"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/homeFragmentContainer"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavML"/>
 
     <androidx.constraintlayout.motion.widget.MotionLayout
         android:id="@+id/bottomNavML"

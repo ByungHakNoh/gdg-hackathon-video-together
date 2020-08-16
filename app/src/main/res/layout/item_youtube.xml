@@ -6,6 +6,16 @@
     android:layout_height="wrap_content"
     android:padding="10dp">
 
+    <FrameLayout
+        android:id="@+id/itemContainerFL"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:elevation="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
         android:id="@+id/youtubePlayerYP"
         android:layout_width="0dp"
@@ -16,6 +26,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:showFullScreenButton="false"
         app:showSeekBar="false"
+        app:autoPlay="false"
         app:showYouTubeButton="false" />
 
     <androidx.cardview.widget.CardView
@@ -49,10 +60,10 @@
 
     <TextView
         android:id="@+id/channelTitleTV"
+        style="@style/SmallTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10sp"
-        style="@style/SmallTextStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/channelThumbnailCV"
         app:layout_constraintTop_toBottomOf="@id/videoTitleTV" />

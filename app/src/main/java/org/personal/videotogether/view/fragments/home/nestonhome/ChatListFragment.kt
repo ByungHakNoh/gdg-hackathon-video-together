@@ -19,7 +19,7 @@ import org.personal.videotogether.util.DataState
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.view.adapter.ChatRoomAdapter
 import org.personal.videotogether.view.adapter.ItemClickListener
-import org.personal.videotogether.view.fragments.nestonmain.HomeFragmentDirections
+import org.personal.videotogether.view.fragments.home.nestonhomedetail.HomeDetailBlankFragmentDirections
 import org.personal.videotogether.viewmodel.ChatStateEvent
 import org.personal.videotogether.viewmodel.ChatViewModel
 import org.personal.videotogether.viewmodel.UserViewModel
@@ -33,7 +33,7 @@ constructor(
 
     private val TAG by lazy { javaClass.name }
 
-    private lateinit var mainNavController: NavController
+    private lateinit var homeDetailNavController: NavController
 
 
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
@@ -45,8 +45,8 @@ constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val mainFragmentContainer: FragmentContainerView = view.rootView.findViewById(R.id.mainFragmentContainer)
-        mainNavController = Navigation.findNavController(mainFragmentContainer)
+        val mainFragmentContainer: FragmentContainerView = view.rootView.findViewById(R.id.homeDetailFragmentContainer)
+        homeDetailNavController = Navigation.findNavController(mainFragmentContainer)
         subscribeObservers()
         buildRecyclerView()
         chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
@@ -91,7 +91,9 @@ constructor(
 
     override fun onItemClick(view: View?, itemPosition: Int) {
         val selectedChatRoom = chatRoomList[itemPosition]
-        val action = HomeFragmentDirections.actionMainHomeFragmentToChattingFragment(selectedChatRoom)
-        mainNavController.navigate(action)
+        val action = HomeDetailBlankFragmentDirections.actionHomeDetailBlankFragmentToChattingFragment(selectedChatRoom)
+        Log.i(TAG, "onItemClick: $homeDetailNavController")
+        Log.i(TAG, "onItemClick: $action")
+        homeDetailNavController.navigate(action)
     }
 }

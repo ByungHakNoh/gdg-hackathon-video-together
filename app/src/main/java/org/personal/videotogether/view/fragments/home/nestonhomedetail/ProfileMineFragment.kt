@@ -39,16 +39,14 @@ class ProfileMineFragment : Fragment(R.layout.fragment_profile_mine), View.OnCli
 
     private fun setListener() {
         closeBtn.setOnClickListener(this)
+        editProfileBtn.setOnClickListener(this)
     }
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            R.id.closeBtn -> {
-                requireActivity().onBackPressed()
-            }
-            R.id.chatBtn -> {
-                // TODO : 채팅방으로 넘어가기
-            }
+            R.id.closeBtn -> requireActivity().onBackPressed()
+            // TODO : 프로필 수정 구현하기
+            // R.id.editProfileBtn ->
         }
     }
 

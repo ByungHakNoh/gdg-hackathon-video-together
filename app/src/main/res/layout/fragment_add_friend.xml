@@ -129,7 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20sp"
             android:background="@drawable/shape_rounded_5dp"
-            android:backgroundTint="@color/mainBackground"
+            android:backgroundTint="@color/buttonBackground"
             android:paddingStart="30sp"
             android:paddingEnd="30sp"
             android:text="@string/add_friend"

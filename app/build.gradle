@@ -56,6 +56,10 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
+    // Motion Layout
+    def constraintLayout_version = "2.0.0-rc1"
+    implementation "androidx.constraintlayout:constraintlayout:$constraintLayout_version"
+
     // ------------------------ Google Jetpack  ------------------------
     // Navigation Component
     def nav_version = "2.3.0"

@@ -63,6 +63,7 @@ class ChattingFragment : Fragment(R.layout.fragment_chatting), View.OnClickListe
     }
 
     private fun setListener() {
+        backBtn.setOnClickListener(this)
         sendBtn.setOnClickListener(this)
     }
 
@@ -81,6 +82,7 @@ class ChattingFragment : Fragment(R.layout.fragment_chatting), View.OnClickListe
 
     override fun onClick(view: View?) {
         when(view?.id) {
+            R.id.backBtn -> requireActivity().onBackPressed()
             R.id.sendBtn -> {
                 val message = chattingInputED.text.toString()
 

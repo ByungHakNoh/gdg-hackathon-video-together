@@ -77,6 +77,7 @@ constructor(
     }
 
     private fun setListener() {
+        backBtn.setOnClickListener(this)
         confirmBtn.setOnClickListener(this)
     }
 
@@ -97,6 +98,7 @@ constructor(
 
     override fun onClick(view: View?) {
         when (view?.id) {
+            R.id.backBtn -> requireActivity().onBackPressed()
             R.id.confirmBtn -> {
                 if (selectedFriendList.size == 0) {
                     Toast.makeText(requireContext(), "1명 이상 선택해주세요", Toast.LENGTH_SHORT).show()

@@ -102,6 +102,7 @@ constructor(
     }
 
     private fun setListener() {
+        backBtn.setOnClickListener(this)
         clearTextIB.setOnClickListener(this)
         addFriendBtn.setOnClickListener(this)
         friendEmailET.addTextChangedListener(this)
@@ -117,10 +118,8 @@ constructor(
     // ------------------ 클릭 이벤트 메소드 모음 ------------------
     override fun onClick(view: View?) {
         when (view?.id) {
-            R.id.clearTextIB -> {
-                friendEmailET.text = null
-            }
-
+            R.id.backBtn -> requireActivity().onBackPressed()
+            R.id.clearTextIB -> friendEmailET.text = null
             R.id.addFriendBtn -> {
                 // 유저 id 를 가져오고 room 에서 가져오고 서버에 친구 추가 요청
                 val userId = userViewModel.userData.value!!.id

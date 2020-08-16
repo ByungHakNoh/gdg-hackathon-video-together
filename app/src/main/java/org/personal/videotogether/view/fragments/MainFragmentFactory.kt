@@ -40,14 +40,6 @@ constructor(
                 SetProfileFragment(dataStateHandler, imageHandler)
             }
 
-            AddFriendFragment::class.java.name -> {
-                AddFriendFragment(dataStateHandler, imageHandler, viewHandler)
-            }
-
-            AddChatRoomFragment::class.java.name -> {
-                AddChatRoomFragment(dataStateHandler)
-            }
-
             else -> super.instantiate(classLoader, className)
         }
     }

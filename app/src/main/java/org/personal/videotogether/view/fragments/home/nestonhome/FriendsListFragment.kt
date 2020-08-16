@@ -50,14 +50,12 @@ constructor(
 
         val homeDetailFragmentContainer:FragmentContainerView = view.rootView.findViewById(R.id.homeDetailFragmentContainer)
         homeDetailNavController = Navigation.findNavController(homeDetailFragmentContainer)
-        setListener()
-        subscribeObservers()
-        buildRecyclerView()
-        friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromLocal)
-    }
 
-    private fun setListener() {
-        myProfileContainerCL.setOnClickListener(this)
+        subscribeObservers()
+        setListener()
+        buildRecyclerView()
+
+        friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromLocal)
     }
 
     private fun subscribeObservers() {
@@ -94,6 +92,12 @@ constructor(
         })
     }
 
+    private fun setListener() {
+        myProfileContainerCL.setOnClickListener(this)
+        searchBtn.setOnClickListener(this)
+        addFriendBtn.setOnClickListener(this)
+    }
+
     private fun buildRecyclerView() {
         val layoutManager = LinearLayoutManager(requireContext())
 
@@ -105,9 +109,10 @@ constructor(
     // ------------------ 클릭 리스너 메소드 모음 ------------------
     override fun onClick(view: View?) {
         when (view?.id) {
-            R.id.myProfileContainerCL -> {
-                homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_profileMineFragment)
-            }
+//            R.id.searchBtn -> homeDetailNavController.navigate(R.id.acsea) // TODO: 검색 만들기
+            R.id.addFriendBtn-> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_addFriendFragment)
+            R.id.myProfileContainerCL -> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_profileMineFragment)
+
         }
     }
 

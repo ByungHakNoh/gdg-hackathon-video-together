@@ -5,6 +5,8 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,9 +22,11 @@ import org.personal.videotogether.viewmodel.YoutubeViewModel
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
     private val TAG by lazy { javaClass.name }
+
+    private lateinit var homeNavController: NavController
 
     private val youtubeViewModel: YoutubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
 
@@ -32,15 +36,19 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        homeNavController = Navigation.findNavController(view)
+
         subscribeObservers()
+        setListener()
         buildRecyclerView()
         swipeRefreshSR.setOnRefreshListener(this)
+
         youtubeViewModel.setStateEvent(YoutubeStateEvent.GetDefaultYoutubeVideos("googledevelopers"))
     }
 
     private fun subscribeObservers() {
         // 친구 검색하기
-        youtubeViewModel.youtubeData.observe(viewLifecycleOwner, Observer { dataState ->
+        youtubeViewModel.youtubeList.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
                 is DataState.Loading -> {
                     swipeRefreshSR.isRefreshing = true
@@ -60,6 +68,11 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
         })
     }
 
+    private fun setListener() {
+        backBtn.setOnClickListener(this)
+        youtubeSearchBtn.setOnClickListener(this)
+    }
+
     private fun buildRecyclerView() {
         val layoutManager = LinearLayoutManager(requireContext())
 
@@ -68,11 +81,24 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
         youtubePreviewRV.adapter = youtubeAdapter
     }
 
-    override fun onItemClick(view: View?, itemPosition: Int) {
-
+    // ------------------ 클릭 리스너 메소드 모음 ------------------
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            R.id.backBtn -> requireActivity().onBackPressed()
+            R.id.youtubeSearchBtn -> homeNavController.navigate(R.id.action_youtubeFragment_to_youtubeSearchFragment)
+        }
     }
 
+    // ------------------ 리사이클러뷰 아이템 클릭 리스너 메소드 모음 ------------------
+    override fun onItemClick(view: View?, itemPosition: Int) {
+        val youtubeData = youtubeList[itemPosition]
+        youtubeViewModel.setStateEvent(YoutubeStateEvent.PlaySelectedVideo(youtubeData))
+    }
+
+    // ------------------ 리사이클러뷰 새로고침 리스너 ------------------
     override fun onRefresh() {
         youtubeViewModel.setStateEvent(YoutubeStateEvent.GetDefaultYoutubeVideos("googledevelopers"))
     }
+
+
 }

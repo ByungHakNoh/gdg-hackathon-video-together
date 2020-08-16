@@ -29,7 +29,7 @@ import org.personal.videotogether.viewmodel.UserViewModel
 class ChatListFragment
 constructor(
     private val dataStateHandler: DataStateHandler
-) : Fragment(R.layout.fragment_chat_list), ItemClickListener {
+) : Fragment(R.layout.fragment_chat_list), ItemClickListener, View.OnClickListener {
 
     private val TAG by lazy { javaClass.name }
 
@@ -47,8 +47,11 @@ constructor(
 
         val mainFragmentContainer: FragmentContainerView = view.rootView.findViewById(R.id.homeDetailFragmentContainer)
         homeDetailNavController = Navigation.findNavController(mainFragmentContainer)
+
         subscribeObservers()
+        setListener()
         buildRecyclerView()
+
         chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
     }
 
@@ -81,6 +84,12 @@ constructor(
         })
     }
 
+    private fun setListener() {
+        backBtn.setOnClickListener(this)
+        searchBtn.setOnClickListener(this)
+        addChatRoomBtn.setOnClickListener(this)
+    }
+
     private fun buildRecyclerView() {
         val layoutManager = LinearLayoutManager(requireContext())
 
@@ -89,11 +98,20 @@ constructor(
         chatRoomListRV.adapter = chatRoomAdapter
     }
 
+    // ------------------ 클릭 리스너 ------------------
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            R.id.backBtn -> requireActivity().onBackPressed()
+//            R.id.searchBtn -> // TODO: 검색 만들기
+            R.id.addChatRoomBtn -> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_addChatRoomFragment)
+        }
+    }
+
+    // ------------------ 리사이클러뷰 아이템 클릭 리스너 ------------------
     override fun onItemClick(view: View?, itemPosition: Int) {
         val selectedChatRoom = chatRoomList[itemPosition]
         val action = HomeDetailBlankFragmentDirections.actionHomeDetailBlankFragmentToChattingFragment(selectedChatRoom)
-        Log.i(TAG, "onItemClick: $homeDetailNavController")
-        Log.i(TAG, "onItemClick: $action")
+
         homeDetailNavController.navigate(action)
     }
 }

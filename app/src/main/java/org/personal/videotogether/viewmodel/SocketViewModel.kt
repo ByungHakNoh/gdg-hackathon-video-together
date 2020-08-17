@@ -70,7 +70,10 @@ constructor(
     }
 
     override fun onChatMessage(chatData: ChatData) {
-        handler.post { _chatMessage.value = chatData }
+        handler.post {
+            _chatMessage.value = chatData
+            _chatMessage.value = null
+        }
     }
 
     override fun onYoutubeMessage(youtubeData: String) {

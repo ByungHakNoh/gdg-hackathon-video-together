@@ -57,8 +57,10 @@ class ChattingFragment : Fragment(R.layout.fragment_chatting), View.OnClickListe
     private fun subscribeObservers() {
         socketViewModel.chatMessage.observe(viewLifecycleOwner, Observer { chatData ->
             //TODO : 채팅 서버에 저장하기 유투브 먼저 하고 하자
-            chatList.add(chatData!!)
-            chatAdapter.notifyItemInserted(chatList.size - 1)
+            if (chatData != null) {
+                chatList.add(chatData)
+                chatAdapter.notifyItemInserted(chatList.size - 1)
+            }
         })
     }
 

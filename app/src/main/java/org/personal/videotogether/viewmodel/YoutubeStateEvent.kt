@@ -1,6 +1,9 @@
 package org.personal.videotogether.viewmodel
 
+import org.personal.videotogether.domianmodel.YoutubeData
+
 sealed class YoutubeStateEvent {
-    class GetDefaultYoutubeVideos(val youtubeChannel: String) : YoutubeStateEvent()
-    class GetSearchedYoutubeVideos(val youtubeChannel: String) : YoutubeStateEvent()
+    data class GetDefaultYoutubeVideos(val youtubeChannel: String) : YoutubeStateEvent()
+    data class GetSearchedYoutubeVideos(val youtubeChannel: String) : YoutubeStateEvent()
+    data class SetFrontPlayer(val youtubeData: YoutubeData?) : YoutubeStateEvent()
 }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.personal.videotogether.domianmodel.YoutubeData
 import org.personal.videotogether.repository.YoutubeRepository
 import org.personal.videotogether.util.DataState
@@ -20,17 +21,25 @@ constructor(
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _youtubeData: MutableLiveData<DataState<List<YoutubeData>?>> = MutableLiveData()
-    val youtubeData: LiveData<DataState<List<YoutubeData>?>> get() = _youtubeData
+    private val _youtubeList: MutableLiveData<DataState<List<YoutubeData>?>> = MutableLiveData()
+    val youtubeList: LiveData<DataState<List<YoutubeData>?>> get() = _youtubeList
 
+    private val _currentPlayedYoutube: MutableLiveData<YoutubeData?> = MutableLiveData()
+    val currentPlayedYoutube: LiveData<YoutubeData?> get() = _currentPlayedYoutube
 
     fun setStateEvent(youtubeStateEvent: YoutubeStateEvent) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch {
             when (youtubeStateEvent) {
                 is YoutubeStateEvent.GetDefaultYoutubeVideos -> {
-                    youtubeRepository.getDefaultYoutubeList(youtubeStateEvent.youtubeChannel).onEach { dataState ->
-                        _youtubeData.value = dataState
-                    }.launchIn(viewModelScope)
+                    withContext(IO) {
+                        youtubeRepository.getDefaultYoutubeList(youtubeStateEvent.youtubeChannel).onEach { dataState ->
+                            _youtubeList.value = dataState
+                        }.launchIn(viewModelScope)
+                    }
+                }
+
+                is YoutubeStateEvent.SetFrontPlayer -> {
+                    _currentPlayedYoutube.value = youtubeStateEvent.youtubeData
                 }
             }
         }

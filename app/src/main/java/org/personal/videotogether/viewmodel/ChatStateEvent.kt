@@ -5,6 +5,6 @@ import org.personal.videotogether.domianmodel.UserData
 
 sealed class ChatStateEvent {
     object GetChatRoomsFromLocal : ChatStateEvent()
-    class GetChatRoomsFromServer(val userId: Int) : ChatStateEvent()
-    class AddChatRoom(val userData: UserData, val participantList: List<FriendData>) : ChatStateEvent()
+    data class GetChatRoomsFromServer(val userId: Int) : ChatStateEvent()
+    data class AddChatRoom(val userData: UserData, val participantList: List<FriendData>) : ChatStateEvent()
 }

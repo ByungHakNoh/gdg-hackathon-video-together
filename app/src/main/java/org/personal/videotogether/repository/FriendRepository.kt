@@ -54,7 +54,7 @@ constructor(
             }
             if (response.code() == 204) {
                 friendDAO.deleteAllFriendsData()
-                emit(DataState.NoData("getFriendListFromServer : 데이터 없음"))
+                emit(DataState.NoData)
             }
 
         } catch (e: Exception) {
@@ -76,7 +76,7 @@ constructor(
                 emit(DataState.Success(friendData))
             }
 
-            if (response.code() == 204) emit(DataState.NoData("searchFriend : 서버에 데이터 없음"))
+            if (response.code() == 204) emit(DataState.NoData)
 
         } catch (e: Exception) {
             e.printStackTrace()

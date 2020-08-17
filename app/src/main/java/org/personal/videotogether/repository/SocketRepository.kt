@@ -15,7 +15,8 @@ constructor(
     private val TAG by lazy { javaClass.name }
 
     private lateinit var tcpClient: TCPClient
-    private var isTCPClientStop = false // 클라이언트 연결 여부
+
+    private var isTCPClientStopped = false // 클라이언트 연결 여부
     private var isSocketRegistered = false // 소켓 등록 헀는지 여부
     private var isReceivingMessage = false // 서버에서 데이터 받는지 여부
 
@@ -40,18 +41,30 @@ constructor(
     }
 
     fun disConnectFromTCPServer() {
-        tcpClient.writeMessage("quit")
-        isTCPClientStop = true
-        isSocketRegistered = false
+
+        try {
+            tcpClient.writeMessage("quit")
+            isTCPClientStopped = true
+            isSocketRegistered = false
+
+        }catch (e : Exception) {
+            e.printStackTrace()
+            Log.e(TAG, "disConnectFromTCPServer: $e")
+        }
     }
 
     fun registerSocket(userData: UserData) {
         if (isSocketRegistered) return
         isSocketRegistered = true
 
-        val socketInfo = "registerUserInfo@${userData.id}@${userData.name}@${userData.profileImageUrl}"
-        Log.i(TAG, "registerSocket: registered")
-        tcpClient.writeMessage(socketInfo)
+        try {
+            val socketInfo = "registerUserInfo@${userData.id}@${userData.name}@${userData.profileImageUrl}"
+            tcpClient.writeMessage(socketInfo)
+
+        }catch (e : Exception) {
+            e.printStackTrace()
+            Log.e(TAG, "registerSocket: $e")
+        }
     }
 
     fun receiveFromTCPServer(socketListener: SocketListener) {
@@ -60,7 +73,7 @@ constructor(
 
         try {
             Log.i(TAG, "receiveFromTCPServer: receiving data start")
-            while (!isTCPClientStop) {
+            while (!isTCPClientStopped) {
 
                 val respond = tcpClient.readMessage()
 
@@ -86,6 +99,20 @@ constructor(
         }
     }
 
+    fun sendToTCPServer(flag: String, roomId: String?, message: String?) {
+
+        try {
+            val formedMessage = "$flag@$roomId@$message"
+
+            tcpClient.writeMessage(formedMessage)
+            Log.i(TAG, "전송 완료")
+
+        }catch (e : Exception) {
+            e.printStackTrace()
+            Log.e(TAG, "sendToTCPServer: $e")
+        }
+    }
+
     private fun formChatData(splitMessageData: List<String>): ChatData {
         val roomId = parseInt(splitMessageData[1])
         val userId = parseInt(splitMessageData[2])
@@ -96,15 +123,6 @@ constructor(
 
         return ChatData(roomId, userId, senderName, profileImageUrl, message, messageTime)
     }
-
-    fun sendToTCPServer(flag: String, roomId: String?, message: String?) {
-
-        val formedMessage = "$flag@$roomId@$message"
-
-        tcpClient.writeMessage(formedMessage)
-        Log.i(TAG, "전송 완료")
-    }
-
 
     companion object {
         const val JOIN_CHAT_ROOM = "joinChatRoom"

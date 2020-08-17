@@ -82,7 +82,7 @@ constructor(
                 userDAO.insertUserData(userCacheEntity)
                 emit(DataState.Success(true))
             }
-            if (response.code() == 204) emit(DataState.NoData("uploadUser : 서버에서 문제 발생"))
+            if (response.code() == 204) emit(DataState.NoData)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -106,7 +106,7 @@ constructor(
             val response = retrofitRequest.uploadUserProfile(requestData)
 
             if (response.code() == 200) emit(DataState.Success(true))
-            if (response.code() == 204) emit(DataState.NoData("uploadUserProfile : 서버에서 문제 발생"))
+            if (response.code() == 204) emit(DataState.NoData)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -135,7 +135,7 @@ constructor(
 
                 emit(DataState.Success(userData))
             }
-            if (response.code() == 204) emit(DataState.NoData("signIn : 서버에 데이터 없음"))
+            if (response.code() == 204) emit(DataState.NoData)
 
         } catch (e: Exception) {
             e.printStackTrace()

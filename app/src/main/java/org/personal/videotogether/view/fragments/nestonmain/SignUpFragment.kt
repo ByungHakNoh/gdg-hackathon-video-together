@@ -72,7 +72,7 @@ constructor(
                 }
                 is DataState.NoData -> {
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)
-                    Log.i(TAG, "subscribeObservers: ${dataState.serverError}")
+                    Log.i(TAG, "subscribeObservers:  uploadUserDataState 데이터 없음")
                 }
                 is DataState.Error -> {
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)

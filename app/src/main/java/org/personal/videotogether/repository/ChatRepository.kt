@@ -58,7 +58,7 @@ constructor(
                 val localChatRoomList = chatRoomCacheMapper.mapFromEntityList(chatRoomDAO.getChatRooms())
                 emit(DataState.Success(localChatRoomList))
             }
-            if (response.code() == 204) emit(DataState.NoData("서버에 데이터 없음 -> 에러 발생"))
+            if (response.code() == 204) emit(DataState.NoData)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -87,7 +87,7 @@ constructor(
                 val chatRoomData = chatRoomMapper.mapFromEntity(chatRoomEntity)
                 emit(DataState.Success(chatRoomData))
             }
-            if (response.code() == 204) emit(DataState.NoData("서버에 데이터 없음 -> 에러 발생"))
+            if (response.code() == 204) emit(DataState.NoData)
 
         } catch (e: Exception) {
             e.printStackTrace()

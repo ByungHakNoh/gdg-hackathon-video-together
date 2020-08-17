@@ -28,7 +28,7 @@ constructor(
                 val youtubeList= youtubeMapper.mapFromEntityList (youtubeEntityList)
                 emit(DataState.Success(youtubeList))
             }
-            if (response.code() == 204) emit(DataState.NoData("searchFriend : 서버에 데이터 없음"))
+            if (response.code() == 204) emit(DataState.NoData)
 
         } catch (e: Exception) {
             e.printStackTrace()

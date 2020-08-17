@@ -1,14 +1,17 @@
 package org.personal.videotogether.view.fragments.home.nestonvideo
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_video_play.*
@@ -21,7 +24,7 @@ import org.personal.videotogether.viewmodel.YoutubeViewModel
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickListener, YouTubePlayerListener {
+class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickListener, YouTubePlayerListener, MotionLayout.TransitionListener {
 
     private val TAG by lazy { javaClass.name }
 
@@ -30,10 +33,14 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
 
     private lateinit var youtubePlayer: YouTubePlayer
     private var isYoutubePlaying = false
+    private lateinit var backPressCallback: OnBackPressedCallback
 
+    @SuppressLint("ResourceType")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setListener()
+
+        setBackPressCallback(view as MotionLayout)
+        setListener(view)
     }
 
     private fun subscribeObservers() {
@@ -49,7 +56,15 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
         })
     }
 
-    private fun setListener() {
+    private fun setBackPressCallback(motionLayout: MotionLayout) {
+        backPressCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            motionLayout.transitionToStart()
+            isEnabled = false
+        }
+    }
+
+    private fun setListener(view: View) {
+        (view as MotionLayout).setTransitionListener(this)
         playerControlBtn.setOnClickListener(this)
         closePlayerBtn.setOnClickListener(this)
         youtubePlayerYP.addYouTubePlayerListener(this) // 유투브 플레이어 리스너
@@ -59,7 +74,7 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.playerControlBtn -> if (isYoutubePlaying) youtubePlayer.pause() else youtubePlayer.play()
-            R.id.closePlayerBtn -> youtubeViewModel.setStateEvent(YoutubeStateEvent.CloseFrontPlayer)
+            R.id.closePlayerBtn -> youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(null))
         }
     }
 
@@ -74,13 +89,17 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
     override fun onStateChange(youTubePlayer: YouTubePlayer, state: PlayerConstants.PlayerState) {
         when (state) {
             PlayerConstants.PlayerState.PLAYING -> {
-                playerControlBtn.setImageResource(R.drawable.ic_baseline_pause_24)
-                isYoutubePlaying = true
+                if (playerControlBtn != null) {
+                    playerControlBtn.setImageResource(R.drawable.ic_baseline_pause_24)
+                    isYoutubePlaying = true
+                }
             }
 
             PlayerConstants.PlayerState.PAUSED -> {
-                playerControlBtn.setImageResource(R.drawable.ic_baseline_play_arrow_24)
-                isYoutubePlaying = false
+                if (playerControlBtn != null) {
+                    playerControlBtn.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+                    isYoutubePlaying = false
+                }
             }
             PlayerConstants.PlayerState.UNSTARTED -> Log.i(TAG, "onStateChange: UNSTARTED")
             PlayerConstants.PlayerState.VIDEO_CUED -> Log.i(TAG, "onStateChange: VIDEO_CUED")
@@ -98,4 +117,18 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
     override fun onVideoDuration(youTubePlayer: YouTubePlayer, duration: Float) {}
     override fun onVideoId(youTubePlayer: YouTubePlayer, videoId: String) {}
     override fun onVideoLoadedFraction(youTubePlayer: YouTubePlayer, loadedFraction: Float) {}
+
+    // ------------------ 유투브 플레이어 리스너 메소드 모음 ------------------
+    override fun onTransitionCompleted(motionLayout: MotionLayout?, p1: Int) {
+        // 플레이이어가 펼쳐진 상태인지 여부 확인 후 뷰 모델 데이터 업데이트
+        // 라이브 데이터는 홈에서 뒤로가기 버튼 누를 떄 사용
+        when (motionLayout!!.currentState) {
+            R.id.start -> backPressCallback.isEnabled = true
+            R.id.end -> backPressCallback.isEnabled = false
+        }
+    }
+
+    override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {}
+    override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {}
+    override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {}
 }

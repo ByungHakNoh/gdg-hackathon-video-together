@@ -3,8 +3,6 @@ package org.personal.videotogether.view.fragments.nestonmain
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import android.view.View
@@ -42,14 +40,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setNavControl(view)
+        setNavigation(view)
         subscribeObservers()
-        setBottomNav()
+        setBackPressCallback()
         userViewModel.setStateEvent(UserStateEvent.GetUserDataFromLocal)
     }
 
-    @SuppressLint("RestrictedApi")
-    private fun setNavControl(view: View) {
+    private fun setNavigation(view: View) {
         val homeFragmentContainer = childFragmentManager.findFragmentById(R.id.homeFragmentContainer)
         val homeDetailFragment = childFragmentManager.findFragmentById(R.id.homeDetailFragmentContainer)
         val videoFragmentContainer = childFragmentManager.findFragmentById(R.id.videoFragmentContainer)
@@ -59,9 +56,28 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         homeDetailNavController = homeDetailFragment!!.findNavController()
         videoNavController = videoFragmentContainer!!.findNavController()
 
-        // 바텀, 앱 바 관련
-        bottomNavBN.setupWithNavController(homeNavController)
+        bottomNavBN.setupWithNavController(homeNavController) // 바텀 네비게이션 설정
+    }
 
+    private fun subscribeObservers() {
+        // 사용자 정보를 room 으로부터 가져옴
+        // 유저 정보를 이용해 친구 데이터 업데이트, 채팅 소켓 등록을 함
+        userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
+            friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData!!.id))
+            socketViewModel.setStateEvent(SocketStateEvent.RegisterSocket(userData))
+            socketViewModel.setStateEvent(SocketStateEvent.ReceiveFromTCPServer)
+            Log.i(TAG, "subscribeObservers: 한번?")
+        })
+
+        // 유투브 재생 시 하단 유튜브 플레이어 보여주기
+        youtubeViewModel.currentPlayedYoutube.observe(viewLifecycleOwner, Observer { youtubeData ->
+            if (youtubeData == null) videoFragmentContainer.visibility = View.GONE
+            else videoFragmentContainer.visibility = View.VISIBLE
+        })
+    }
+
+    @SuppressLint("RestrictedApi")
+    private fun setBackPressCallback() {
         // 뒤로가기 버튼 눌렀을 때
         requireActivity().onBackPressedDispatcher.addCallback(this) {
 
@@ -84,43 +100,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         socketViewModel.setStateEvent(SocketStateEvent.DisconnectFromTCPServer)
     }
 
-    private fun subscribeObservers() {
-        // 사용자 정보를 room 으로부터 가져옴
-        // 유저 정보를 이용해 친구 데이터 업데이트, 채팅 소켓 등록을 함
-        userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
-            friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData!!.id))
-            socketViewModel.setStateEvent(SocketStateEvent.RegisterSocket(userData))
-            socketViewModel.setStateEvent(SocketStateEvent.ReceiveFromTCPServer)
-            Log.i(TAG, "subscribeObservers: 한번?")
-        })
-
-        // 유투브 재생 시 하단 유튜브 플레이어 보여주기
-        youtubeViewModel.currentPlayedYoutube.observe(viewLifecycleOwner, Observer { youtubeData ->
-            if (youtubeData == null) videoFragmentContainer.visibility = View.GONE
-            else videoFragmentContainer.visibility = View.VISIBLE
-        })
-    }
-
-    // 상단 앱 바 아이템 추가
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.app_bar_menu, menu)
-        when (homeNavController.currentDestination?.label) {
-            "친구 목록" -> {
-                menu.removeItem(R.id.addChatRoomFragment)
-                menu.removeItem(R.id.youtubeSearchFragment)
-            }
-            "채팅 목록" -> {
-                menu.removeItem(R.id.youtubeSearchFragment)
-                menu.removeItem(R.id.addFriendFragment)
-            }
-        }
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    // 바텀 네비게이션 관련 세팅
-    private fun setBottomNav() {
-
-    }
 
     // ------------------ 상단 앱 바 아이템 클릭 리스너 모음 ------------------
     @SuppressLint("RestrictedApi")

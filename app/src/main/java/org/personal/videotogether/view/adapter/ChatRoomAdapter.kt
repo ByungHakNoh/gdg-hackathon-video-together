@@ -11,12 +11,14 @@ import com.bumptech.glide.Glide
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.domianmodel.UserData
+import org.personal.videotogether.util.view.ViewHandler
 
 class ChatRoomAdapter
 constructor(
     val context: Context,
     private val myUserId: Int,
     private val chatRoomList: ArrayList<ChatRoomData>,
+    private val viewHandler: ViewHandler,
     private val itemClickListener: ItemClickListener
 ) : RecyclerView.Adapter<ChatRoomAdapter.ViewHolder>() {
 
@@ -54,33 +56,12 @@ constructor(
         val participantCount = chatRoomData.participantList.count() - 1
 
         Glide.with(context).load(chatRoomData.participantList[1].profileImageUrl).into(holder.chatRoomProfileIV)
-        holder.nameTV.text = formChatRoomName(chatRoomData.participantList)
+        holder.nameTV.text = viewHandler.formChatRoomName(chatRoomData.participantList, myUserId)
         holder.latestChatMessageTV.text = chatRoomData.lastChatMessage
         holder.participantCountTV.text =  if (participantCount > 1) {
             participantCount.toString()
         }  else {
             ""
         }
-    }
-
-    private fun formChatRoomName(participantList: List<UserData>): String {
-        val stringBuilder = StringBuilder()
-        var isFirstName = true
-
-        participantList.forEach { participant ->
-            if (myUserId != participant.id) {
-
-                if (isFirstName) {
-
-                    stringBuilder.append(participant.name)
-                    isFirstName = false
-
-                } else {
-
-                    stringBuilder.append(", ").append(participant.name)
-                }
-            }
-        }
-        return stringBuilder.toString()
     }
 }

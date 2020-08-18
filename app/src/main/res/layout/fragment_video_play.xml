@@ -12,12 +12,14 @@
         android:id="@+id/playerOverlayFL"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/recyclerview_container"
+        app:layout_constraintBottom_toBottomOf="@+id/detailOverlayFL"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/playerContainerCL" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/playerContainerCL"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?android:attr/windowBackground"
         app:layout_constrainedWidth="true"
@@ -28,105 +30,172 @@
     <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
         android:id="@+id/youtubePlayerYP"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@id/playerContainerCL"
         app:layout_constraintEnd_toEndOf="@id/playerContainerCL"
         app:layout_constraintStart_toStartOf="@id/playerContainerCL"
         app:layout_constraintTop_toTopOf="@id/playerContainerCL"
         app:showFullScreenButton="false"
-        app:showSeekBar="false"
         app:showYouTubeButton="false" />
-    <!--    app:videoId="69kA1xiVvkU"-->
-    <ImageView
-        android:id="@+id/image_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:alpha="0"
-        app:layout_constraintBottom_toBottomOf="@id/playerContainerCL"
-        app:layout_constraintEnd_toStartOf="@id/image_clear"
-        app:layout_constraintTop_toTopOf="@id/playerContainerCL" />
-
-    <ImageView
-        android:id="@+id/image_clear"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:alpha="0"
-        app:layout_constraintBottom_toBottomOf="@id/playerContainerCL"
-        app:layout_constraintEnd_toEndOf="@id/playerContainerCL"
-        app:layout_constraintTop_toTopOf="@id/playerContainerCL" />
 
     <!--  비디오 하단 리사이클러 뷰  -->
     <FrameLayout
-        android:id="@+id/recyclerview_container"
+        android:id="@+id/detailOverlayFL"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="?android:attr/windowBackground"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/playerContainerCL" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview_front"
+    <!--  Expanded : 상세 정보  -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/expandedVideoDetailCL"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/expandedChannelTitleTV"
+        app:layout_constraintLeft_toLeftOf="@id/playerContainerCL"
+        app:layout_constraintRight_toRightOf="@id/playerContainerCL"
+        app:layout_constraintTop_toBottomOf="@id/playerContainerCL">
+
+        <TextView
+            android:id="@+id/expandedVideoTitleTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10sp"
+            android:ellipsize="end"
+            android:lines="2"
+            android:paddingStart="10sp"
+            android:paddingEnd="10sp"
+            android:text="@string/name"
+            android:textSize="14sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/videoTogetherIB"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/expandedChannelTitleTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:paddingStart="10sp"
+            android:paddingEnd="10sp"
+            android:text="@string/name"
+            android:textColor="@color/InActive"
+            android:textSize="13sp"
+            app:layout_constraintLeft_toLeftOf="@id/expandedVideoTitleTV"
+            app:layout_constraintRight_toLeftOf="@id/videoTogetherIB"
+            app:layout_constraintTop_toBottomOf="@id/expandedVideoTitleTV" />
+
+        <ImageButton
+            android:id="@+id/videoTogetherIB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10sp"
+            android:background="@color/transparency"
+            android:src="@drawable/ic_baseline_group_30"
+            app:layout_constraintLeft_toLeftOf="@id/videoTogetherTV"
+            app:layout_constraintRight_toRightOf="@id/videoTogetherTV"
+            app:layout_constraintTop_toTopOf="@id/expandedVideoTitleTV" />
+
+        <TextView
+            android:id="@+id/videoTogetherTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10sp"
+            android:text="@string/watch_together"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/videoTogetherIB" />
+
+        <View
+            android:id="@+id/line"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_margin="80dp"
+            android:background="@color/InActive"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/playListRV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line"
+            tools:listitem="@layout/item_youtube" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--  Folded : 상제 정보  -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/foldedVideoDetailCL"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/playerContainerCL" />
-
-    <!--  축소 시 보여지는 뷰  -->
-    <TextView
-        android:id="@+id/videoTitleTV"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:lines="1"
-        android:paddingStart="10sp"
-        android:paddingEnd="10sp"
-        android:text="@string/name"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@id/channelTitleTV"
+        android:elevation="2dp"
+        app:layout_constraintBottom_toBottomOf="@id/playerOverlayFL"
         app:layout_constraintLeft_toRightOf="@id/youtubePlayerYP"
-        app:layout_constraintRight_toLeftOf="@id/playerControlBtn"
-        app:layout_constraintTop_toTopOf="@id/playerOverlayFL" />
-
-    <TextView
-        android:id="@+id/channelTitleTV"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:lines="1"
-        android:paddingStart="10sp"
-        android:paddingEnd="10sp"
-        android:text="@string/name"
-        android:textColor="@color/InActive"
-        android:textSize="13sp"
-        app:layout_constraintBottom_toBottomOf="@id/playerOverlayFL"
-        app:layout_constraintLeft_toLeftOf="@id/videoTitleTV"
-        app:layout_constraintRight_toRightOf="@id/videoTitleTV"
-        app:layout_constraintTop_toBottomOf="@id/videoTitleTV" />
-
-    <ImageView
-        android:id="@+id/playerControlBtn"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:alpha="0"
-        android:src="@drawable/ic_baseline_pause_24"
-        app:layout_constraintBottom_toBottomOf="@id/playerOverlayFL"
-        app:layout_constraintRight_toLeftOf="@id/closePlayerBtn"
-        app:layout_constraintTop_toTopOf="@id/playerOverlayFL" />
-
-    <ImageView
-        android:id="@+id/closePlayerBtn"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:alpha="0"
-        android:src="@drawable/ic_baseline_clear_24"
-        app:layout_constraintBottom_toBottomOf="@id/playerOverlayFL"
         app:layout_constraintRight_toRightOf="@id/playerOverlayFL"
-        app:layout_constraintTop_toTopOf="@id/playerOverlayFL" />
+        app:layout_constraintTop_toTopOf="@id/playerOverlayFL">
+
+        <TextView
+            android:id="@+id/videoTitleTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:paddingStart="10sp"
+            android:paddingEnd="10sp"
+            android:text="@string/name"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@id/channelTitleTV"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/playerControlBtn"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/channelTitleTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:paddingStart="10sp"
+            android:paddingEnd="10sp"
+            android:text="@string/name"
+            android:textColor="@color/InActive"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/videoTitleTV"
+            app:layout_constraintRight_toRightOf="@id/videoTitleTV"
+            app:layout_constraintTop_toBottomOf="@id/videoTitleTV" />
+
+        <ImageView
+            android:id="@+id/playerControlBtn"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="20sp"
+            android:src="@drawable/ic_baseline_pause_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/closePlayerBtn"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/closePlayerBtn"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="20sp"
+            android:src="@drawable/ic_baseline_clear_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </org.personal.videotogether.util.view.SingleViewTouchableMotionLayout>

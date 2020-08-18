@@ -1,6 +1,8 @@
 package org.personal.videotogether.view.fragments.home.nestonhomedetail
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
@@ -10,7 +12,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_add_chat_room.*
+import kotlinx.android.synthetic.main.fragment_select_friends.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.ChatRoomData
@@ -27,14 +29,14 @@ import org.personal.videotogether.viewmodel.UserViewModel
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class AddChatRoomFragment
+class SelectFriendsFragment
 constructor(
     private val dataStateHandler: DataStateHandler
-) : Fragment(R.layout.fragment_add_chat_room), ItemClickListener, View.OnClickListener {
+) : Fragment(R.layout.fragment_select_friends), ItemClickListener, View.OnClickListener {
 
     private val TAG by lazy { javaClass.name }
 
-    private lateinit var mainNavController: NavController
+    private lateinit var homeDetailNavController: NavController
 
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
@@ -49,7 +51,7 @@ constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mainNavController = Navigation.findNavController(view)
+        homeDetailNavController = Navigation.findNavController(view)
         subscribeObservers()
         setListener()
         buildRecyclerView()
@@ -64,6 +66,7 @@ constructor(
                 }
                 is DataState.Success<ChatRoomData?> -> {
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)
+                    chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
                     requireActivity().onBackPressed()
                 }
                 is DataState.NoData -> {
@@ -85,7 +88,10 @@ constructor(
         val layoutManager = LinearLayoutManager(requireContext())
         val horizontalLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
-        friendViewModel.friendList.value?.forEach { friendData -> friendList.add(friendData) }
+        friendViewModel.friendList.value?.forEach { friendData ->
+            friendData.isSelected = false
+            friendList.add(friendData)
+        }
 
         selectedFriendListRV.setHasFixedSize(true)
         selectedFriendListRV.layoutManager = horizontalLayoutManager
@@ -111,7 +117,7 @@ constructor(
 
     override fun onItemClick(view: View?, itemPosition: Int) {
 
-        when(view?.id) {
+        when (view?.id) {
 
             R.id.friendItemCL -> {
                 selectedFriendListRV.visibility = View.VISIBLE

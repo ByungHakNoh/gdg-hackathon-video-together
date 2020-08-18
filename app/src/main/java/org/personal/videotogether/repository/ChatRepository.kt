@@ -52,6 +52,8 @@ constructor(
                 val chatRoomList = chatRoomMapper.mapFromEntityList(chatRoomEntityList)
                 val chatRoomCacheEntityList = chatRoomCacheMapper.mapToEntityList(chatRoomList)
 
+                chatRoomDAO.deleteAllChatRoomData()
+
                 chatRoomCacheEntityList.forEach { chatRoomEntity ->
                     chatRoomDAO.insertChatRoom(chatRoomEntity)
                 }

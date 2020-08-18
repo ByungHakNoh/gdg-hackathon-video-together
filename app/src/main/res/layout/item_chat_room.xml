@@ -25,28 +25,44 @@
 
     <TextView
         android:id="@+id/nameTV"
+        style="@style/AverageTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20sp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:maxWidth="200dp"
         android:text="@string/name"
-        style="@style/AverageTextStyle"
         app:layout_constraintBottom_toTopOf="@id/latestChatMessageTV"
         app:layout_constraintLeft_toRightOf="@id/chatRoomProfileContainer"
         app:layout_constraintTop_toTopOf="@id/chatRoomProfileContainer" />
 
     <TextView
+        android:id="@+id/participantsCountTV"
+        style="@style/AverageTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5sp"
+        android:text="@string/text_count_20"
+        android:textColor="@color/InActive"
+        app:layout_constraintBottom_toBottomOf="@id/nameTV"
+        app:layout_constraintLeft_toRightOf="@id/nameTV"
+        app:layout_constraintTop_toTopOf="@id/nameTV" />
+
+    <TextView
         android:id="@+id/latestChatMessageTV"
+        style="@style/SmallTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20sp"
         android:text="@string/chat_message"
-        style="@style/SmallTextStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/chatRoomProfileContainer"
         app:layout_constraintTop_toTopOf="@id/chatRoomProfileContainer" />
 
     <TextView
         android:id="@+id/unReadMessageCountTV"
+        style="@style/AverageTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
@@ -57,7 +73,6 @@
         android:paddingTop="2dp"
         android:paddingEnd="6dp"
         android:paddingBottom="2dp"
-        style="@style/AverageTextStyle"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/chatRoomProfileContainer"
         app:layout_constraintRight_toRightOf="parent"

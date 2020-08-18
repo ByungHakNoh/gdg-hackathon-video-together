@@ -52,8 +52,6 @@ constructor(
         subscribeObservers()
         setListener()
         buildRecyclerView()
-
-        friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromLocal)
     }
 
     private fun subscribeObservers() {
@@ -85,6 +83,7 @@ constructor(
                 }
                 is DataState.Error -> {
                     Log.i(TAG, "updatedFriendList: 에러 발생")
+                    friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromLocal)
                 }
             }
         })

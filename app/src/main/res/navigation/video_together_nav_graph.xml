@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/video_together_nav_graph"
+    app:startDestination="@id/videoDetailFragment">
+
+    <fragment
+        android:id="@+id/videoDetailFragment"
+        android:name="org.personal.videotogether.view.fragments.home.nestonvideo.videotogether.nestonvideotogether.VideoDetailFragment"
+        android:label="fragment_video_detail"
+        tools:layout="@layout/fragment_video_detail" >
+        <action
+            android:id="@+id/action_videoDetailFragment_to_hilt_VideoTogetherFragment"
+            app:destination="@id/hilt_VideoTogetherFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/hilt_VideoTogetherFragment"
+        android:name="org.personal.videotogether.view.fragments.home.nestonvideo.videotogether.nestonvideotogether.Hilt_VideoTogetherFragment"
+        android:label="Hilt_VideoTogetherFragment" />
+</navigation>

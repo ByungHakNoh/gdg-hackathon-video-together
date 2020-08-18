@@ -33,13 +33,13 @@
 
             <!--    Expanded : 채널 이름, 비디오 이름      -->
             <Constraint
-                android:id="@+id/expandedVideoDetailCL"
+                android:id="@+id/videoTogetherContainer"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                motion:layout_constraintBottom_toTopOf="@id/expandedChannelTitleTV"
+                android:layout_height="0dp"
                 motion:layout_constraintLeft_toLeftOf="@id/playerContainerCL"
-                motion:layout_constraintRight_toLeftOf="@id/videoTogetherIB"
-                motion:layout_constraintTop_toBottomOf="@id/playerContainerCL" />
+                motion:layout_constraintRight_toRightOf="@id/playerContainerCL"
+                motion:layout_constraintBottom_toBottomOf="parent"
+                motion:layout_constraintTop_toBottomOf="@id/playerContainerCL"/>
 
             <Constraint
                 android:id="@id/detailOverlayFL"
@@ -85,7 +85,7 @@
 
             <!--    Expanded : 채널 이름, 비디오 이름      -->
             <Constraint
-                android:id="@+id/expandedVideoDetailCL"
+                android:id="@+id/videoTogetherContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:visibility="gone"

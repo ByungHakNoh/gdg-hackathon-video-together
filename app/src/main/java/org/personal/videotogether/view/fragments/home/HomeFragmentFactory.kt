@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.util.view.ImageHandler
+import org.personal.videotogether.util.view.ViewHandler
 import org.personal.videotogether.view.fragments.home.nestonhome.ChatListFragment
 import org.personal.videotogether.view.fragments.home.nestonhome.FriendsListFragment
 import javax.inject.Inject
@@ -15,7 +16,8 @@ import javax.inject.Inject
 class HomeFragmentFactory
 @Inject
 constructor(
-    private val dataStateHandler: DataStateHandler
+    private val dataStateHandler: DataStateHandler,
+    private val viewHandler: ViewHandler
 ) : FragmentFactory() {
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -27,7 +29,7 @@ constructor(
             }
 
             ChatListFragment::class.java.name -> {
-                ChatListFragment(dataStateHandler)
+                ChatListFragment(dataStateHandler, viewHandler)
             }
 
             else -> super.instantiate(classLoader, className)

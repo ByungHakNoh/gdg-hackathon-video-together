@@ -5,11 +5,10 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.personal.videotogether.util.SharedPreferenceHelper
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.util.view.ImageHandler
 import org.personal.videotogether.util.view.ViewHandler
-import org.personal.videotogether.view.fragments.home.nestonhomedetail.AddChatRoomFragment
-import org.personal.videotogether.view.fragments.home.nestonhomedetail.AddFriendFragment
 import org.personal.videotogether.view.fragments.nestonmain.SetProfileFragment
 import org.personal.videotogether.view.fragments.nestonmain.SignInFragment
 import org.personal.videotogether.view.fragments.nestonmain.SignUpFragment
@@ -21,7 +20,8 @@ class MainFragmentFactory
 constructor(
     private val dataStateHandler: DataStateHandler,
     private val imageHandler: ImageHandler,
-    private val viewHandler: ViewHandler
+    private val viewHandler: ViewHandler,
+    private val sharedPreferenceHelper: SharedPreferenceHelper
 ) : FragmentFactory() {
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -29,7 +29,7 @@ constructor(
 
         return when (className) {
             SignInFragment::class.java.name -> {
-                SignInFragment(dataStateHandler, viewHandler)
+                SignInFragment(dataStateHandler, viewHandler, sharedPreferenceHelper)
             }
 
             SignUpFragment::class.java.name -> {

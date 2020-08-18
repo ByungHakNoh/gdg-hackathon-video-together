@@ -1,4 +1,4 @@
-package org.personal.videotogether.view.fragments.home.nestonvideo.videotogether
+package org.personal.videotogether.view.fragments.home.nestonvideo.videodetail
 
 import android.content.Context
 import androidx.navigation.fragment.NavHostFragment
@@ -8,10 +8,10 @@ import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class VideoTogetherNaHostFragment : NavHostFragment() {
+class VideoDetailNaHostFragment : NavHostFragment() {
 
     @Inject
-    lateinit var fragmentFactory: VideoTogetherFragmentFactory
+    lateinit var fragmentFactory: VideoDetailFragmentFactory
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

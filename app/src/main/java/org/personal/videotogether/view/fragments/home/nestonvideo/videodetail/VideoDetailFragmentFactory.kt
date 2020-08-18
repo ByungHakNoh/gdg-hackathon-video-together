@@ -1,4 +1,4 @@
-package org.personal.videotogether.view.fragments.home.nestonvideo.videotogether
+package org.personal.videotogether.view.fragments.home.nestonvideo.videodetail
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
@@ -6,7 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
-class VideoTogetherFragmentFactory
+class VideoDetailFragmentFactory
 @Inject
 constructor(
 ) : FragmentFactory() {

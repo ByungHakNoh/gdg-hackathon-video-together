@@ -53,7 +53,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/videoTogetherContainer"
-        android:name="org.personal.videotogether.view.fragments.home.nestonvideo.videotogether.VideoTogetherNaHostFragment"
+        android:name="org.personal.videotogether.view.fragments.home.nestonvideo.videodetail.VideoDetailNaHostFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/mainBackground"

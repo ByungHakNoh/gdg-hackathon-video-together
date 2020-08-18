@@ -50,15 +50,6 @@
                 motion:layout_constraintStart_toStartOf="parent"
                 motion:layout_constraintTop_toBottomOf="@id/playerContainerCL" />
 
-<!--            <Constraint-->
-<!--                android:id="@id/playListRV"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="0dp"-->
-<!--                motion:layout_constraintBottom_toBottomOf="parent"-->
-<!--                motion:layout_constraintEnd_toEndOf="parent"-->
-<!--                motion:layout_constraintStart_toStartOf="parent"-->
-<!--                motion:layout_constraintTop_toBottomOf="@id/expandedVideoDetailCL"/>-->
-
             <Constraint
                 android:id="@+id/foldedVideoDetailCL"
                 android:layout_width="0dp"
@@ -111,14 +102,6 @@
                 motion:layout_constraintEnd_toEndOf="parent"
                 motion:layout_constraintStart_toStartOf="parent"
                 motion:layout_constraintTop_toBottomOf="@id/playerContainerCL" />
-
-<!--            <Constraint-->
-<!--                android:id="@id/playListRV"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="0dp"-->
-<!--                android:layout_marginTop="20sp"-->
-<!--                android:visibility="gone"-->
-<!--                motion:layout_constraintTop_toBottomOf="@id/expandedVideoDetailCL" />-->
 
             <Constraint
                 android:id="@+id/foldedVideoDetailCL"

@@ -1,8 +1,6 @@
 package org.personal.videotogether.view.fragments.home.nestonhomedetail
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
@@ -10,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_select_friends.*
@@ -22,26 +21,31 @@ import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.view.adapter.FriendListAdapter
 import org.personal.videotogether.view.adapter.ItemClickListener
 import org.personal.videotogether.view.adapter.SelectedFriendAdapter
-import org.personal.videotogether.viewmodel.ChatStateEvent
-import org.personal.videotogether.viewmodel.ChatViewModel
-import org.personal.videotogether.viewmodel.FriendViewModel
-import org.personal.videotogether.viewmodel.UserViewModel
+import org.personal.videotogether.viewmodel.*
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class SelectFriendsFragment
+class SelectFriendFragment
 constructor(
     private val dataStateHandler: DataStateHandler
 ) : Fragment(R.layout.fragment_select_friends), ItemClickListener, View.OnClickListener {
 
     private val TAG by lazy { javaClass.name }
 
+    // args : 채팅방 생성, 유투브 같이보기 구분
+    private val argument: SelectFriendFragmentArgs by navArgs()
+    private val whichRequest by lazy { argument.whichRequest }
+
+    // 네비게이션 컨트롤러
     private lateinit var homeDetailNavController: NavController
 
+    // 뷰 모델
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
     private val chatViewModel by lazy { ViewModelProvider(requireActivity())[ChatViewModel::class.java] }
+    private val youtubeViewModel: YoutubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
 
+    // 리사이클러 뷰
     private val selectedFriendList by lazy { ArrayList<FriendData>() }
     private val selectedFriendAdapter by lazy { SelectedFriendAdapter(requireContext(), selectedFriendList, this) }
 
@@ -109,7 +113,10 @@ constructor(
                 if (selectedFriendList.size == 0) {
                     Toast.makeText(requireContext(), "1명 이상 선택해주세요", Toast.LENGTH_SHORT).show()
                 } else {
-                    chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userViewModel.userData.value!!, selectedFriendList))
+                    when (whichRequest) {
+                        "addChatRoom" -> chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userViewModel.userData.value!!, selectedFriendList))
+                        "addVideoTogether" ->{}
+                    }
                 }
             }
         }
@@ -120,8 +127,8 @@ constructor(
         when (view?.id) {
 
             R.id.friendItemCL -> {
-                selectedFriendListRV.visibility = View.VISIBLE
                 val friendData = friendList[itemPosition]
+                selectedFriendListRV.visibility = View.VISIBLE
 
                 if (friendData.isSelected == null) friendData.isSelected = false
                 friendData.isSelected = !friendData.isSelected!!

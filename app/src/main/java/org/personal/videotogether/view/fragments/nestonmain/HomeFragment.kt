@@ -41,8 +41,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
 
         setNavigation(view)
-        subscribeObservers()
         setBackPressCallback()
+        subscribeObservers()
         userViewModel.setStateEvent(UserStateEvent.GetUserDataFromLocal)
     }
 
@@ -57,23 +57,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         videoNavController = videoFragmentContainer!!.findNavController()
 
         bottomNavBN.setupWithNavController(homeNavController) // 바텀 네비게이션 설정
-    }
-
-    private fun subscribeObservers() {
-        // 사용자 정보를 room 으로부터 가져옴
-        // 유저 정보를 이용해 친구 데이터 업데이트, 채팅 소켓 등록을 함
-        userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
-            friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData!!.id))
-            socketViewModel.setStateEvent(SocketStateEvent.RegisterSocket(userData))
-            socketViewModel.setStateEvent(SocketStateEvent.ReceiveFromTCPServer)
-            Log.i(TAG, "subscribeObservers: 한번?")
-        })
-
-        // 유투브 재생 시 하단 유튜브 플레이어 보여주기
-        youtubeViewModel.currentPlayedYoutube.observe(viewLifecycleOwner, Observer { youtubeData ->
-            if (youtubeData == null) videoFragmentContainer.visibility = View.GONE
-            else videoFragmentContainer.visibility = View.VISIBLE
-        })
     }
 
     @SuppressLint("RestrictedApi")
@@ -91,6 +74,23 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
             }
         }
+    }
+
+    private fun subscribeObservers() {
+        // 사용자 정보를 room 으로부터 가져옴
+        // 유저 정보를 이용해 친구 데이터 업데이트, 채팅 소켓 등록을 함
+        userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
+            friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData!!.id))
+            socketViewModel.setStateEvent(SocketStateEvent.RegisterSocket(userData))
+            socketViewModel.setStateEvent(SocketStateEvent.ReceiveFromTCPServer)
+            Log.i(TAG, "subscribeObservers: 한번?")
+        })
+
+        // 유투브 재생 시 하단 유튜브 플레이어 보여주기
+        youtubeViewModel.currentPlayedYoutube.observe(viewLifecycleOwner, Observer { youtubeData ->
+            if (youtubeData == null) videoFragmentContainer.visibility = View.GONE
+            else videoFragmentContainer.visibility = View.VISIBLE
+        })
     }
 
     private fun killProcess() {

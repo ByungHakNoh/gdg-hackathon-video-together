@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.fragments.home.nestonvideo.videotogether.nestonvideotogether.VideoDetailFragment">
+
+    <TextView
+        android:id="@+id/expandedVideoTitleTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10sp"
+        android:ellipsize="end"
+        android:lines="2"
+        android:paddingStart="10sp"
+        android:paddingEnd="10sp"
+        android:text="@string/name"
+        android:textSize="14sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/videoTogetherIB"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/expandedChannelTitleTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:lines="1"
+        android:paddingStart="10sp"
+        android:paddingEnd="10sp"
+        android:text="@string/name"
+        android:textColor="@color/InActive"
+        android:textSize="13sp"
+        app:layout_constraintLeft_toLeftOf="@id/expandedVideoTitleTV"
+        app:layout_constraintRight_toLeftOf="@id/videoTogetherIB"
+        app:layout_constraintTop_toBottomOf="@id/expandedVideoTitleTV" />
+
+    <ImageButton
+        android:id="@+id/videoTogetherIB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10sp"
+        android:background="@color/transparency"
+        android:src="@drawable/ic_baseline_group_30"
+        app:layout_constraintLeft_toLeftOf="@id/videoTogetherTV"
+        app:layout_constraintRight_toRightOf="@id/videoTogetherTV"
+        app:layout_constraintTop_toTopOf="@id/expandedVideoTitleTV" />
+
+    <TextView
+        android:id="@+id/videoTogetherTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10sp"
+        android:text="@string/watch_together"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/videoTogetherIB" />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_margin="80dp"
+        android:background="@color/InActive"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playListRV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/line"
+        tools:listitem="@layout/item_youtube" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

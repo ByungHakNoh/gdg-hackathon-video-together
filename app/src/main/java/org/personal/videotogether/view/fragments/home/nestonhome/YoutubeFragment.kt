@@ -92,7 +92,7 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
     // ------------------ 리사이클러뷰 아이템 클릭 리스너 메소드 모음 ------------------
     override fun onItemClick(view: View?, itemPosition: Int) {
         val youtubeData = youtubeList[itemPosition]
-        youtubeViewModel.setStateEvent(YoutubeStateEvent.PlaySelectedVideo(youtubeData))
+        youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(youtubeData))
     }
 
     // ------------------ 리사이클러뷰 새로고침 리스너 ------------------

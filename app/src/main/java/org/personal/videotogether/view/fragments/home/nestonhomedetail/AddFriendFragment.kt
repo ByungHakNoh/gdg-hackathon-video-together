@@ -87,6 +87,7 @@ constructor(
         friendViewModel.addFriend.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
                 is DataState.Success<Boolean?> -> {
+                    friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userViewModel.userData.value!!.id))
                     requireActivity().onBackPressed()
                 }
                 is DataState.NoData -> {

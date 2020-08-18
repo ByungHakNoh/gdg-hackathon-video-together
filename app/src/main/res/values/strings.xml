@@ -4,6 +4,7 @@
 
     <!--  쉐어드 키값  -->
     <string name="firebase_messaging_token">firebaseMessageToken</string>
+    <string name="auto_sign_in_key">isAutoSignIn</string>
 
     <!--  네비게이션 카테고리  -->
     <string name="friend_list">친구목록</string>
@@ -57,4 +58,6 @@
     <string name="text_count_20">0/20</string>
     <string name="check">확인</string>
     <string name="message_time">메시지 시간</string>
+    <string name="watch_together">같이 보기</string>
+    <string name="auto_sign_in">자동로그인</string>
 </resources>

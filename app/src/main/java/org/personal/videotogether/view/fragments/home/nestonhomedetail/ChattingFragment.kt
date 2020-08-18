@@ -18,6 +18,7 @@ import org.personal.videotogether.domianmodel.ChatData
 import org.personal.videotogether.repository.SocketRepository.Companion.EXIT_CHAT_ROOM
 import org.personal.videotogether.repository.SocketRepository.Companion.JOIN_CHAT_ROOM
 import org.personal.videotogether.repository.SocketRepository.Companion.SEND_CHAT_MESSAGE
+import org.personal.videotogether.util.view.ViewHandler
 import org.personal.videotogether.view.adapter.ChatAdapter
 import org.personal.videotogether.viewmodel.ChatViewModel
 import org.personal.videotogether.viewmodel.SocketStateEvent
@@ -26,7 +27,10 @@ import org.personal.videotogether.viewmodel.UserViewModel
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class ChattingFragment : Fragment(R.layout.fragment_chatting), View.OnClickListener {
+class ChattingFragment
+    constructor(
+        private val viewHandler: ViewHandler
+    ): Fragment(R.layout.fragment_chatting), View.OnClickListener {
 
     private val TAG by lazy { javaClass.name }
 
@@ -47,11 +51,12 @@ class ChattingFragment : Fragment(R.layout.fragment_chatting), View.OnClickListe
         super.onViewCreated(view, savedInstanceState)
 
         mainNavController = Navigation.findNavController(view)
+        homeToolbarTB.title = viewHandler.formChatRoomName(chatRoomData.participantList, userViewModel.userData.value!!.id)
+
         subscribeObservers()
         setListener()
         buildRecyclerview()
         socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(JOIN_CHAT_ROOM, chatRoomData.id.toString()))
-        Log.i(TAG, "onViewCreated: ${chatRoomData.id}")
     }
 
     private fun subscribeObservers() {

@@ -29,7 +29,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var mainNavController: NavController
     private lateinit var homeNavController: NavController
     private lateinit var homeDetailNavController: NavController
-    private lateinit var videoNavController: NavController
 
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
@@ -49,24 +48,21 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun setNavigation(view: View) {
         val homeFragmentContainer = childFragmentManager.findFragmentById(R.id.homeFragmentContainer)
         val homeDetailFragment = childFragmentManager.findFragmentById(R.id.homeDetailFragmentContainer)
-        val videoFragmentContainer = childFragmentManager.findFragmentById(R.id.videoFragmentContainer)
 
         mainNavController = Navigation.findNavController(view)
         homeNavController = homeFragmentContainer!!.findNavController()
         homeDetailNavController = homeDetailFragment!!.findNavController()
-        videoNavController = videoFragmentContainer!!.findNavController()
 
         bottomNavBN.setupWithNavController(homeNavController) // 바텀 네비게이션 설정
     }
 
     @SuppressLint("RestrictedApi")
     private fun setBackPressCallback() {
-        // 뒤로가기 버튼 눌렀을 때
+        // 비디오 모션 레이아웃 관련 뒤로가기 버튼은 VideoPlayFragment 에서 관리
+        // VideoPlayFragment 뒤로가기 콜백이 disable 되면 실행됨
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-
             when {
                 homeDetailNavController.backStack.count() > 2 -> homeDetailNavController.popBackStack()
-                videoNavController.backStack.count() > 2 -> videoNavController.popBackStack()
                 homeNavController.backStack.count() > 2 -> homeNavController.popBackStack()
                 else -> {
                     remove()

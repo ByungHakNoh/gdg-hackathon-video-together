@@ -10,6 +10,7 @@ import org.personal.videotogether.util.view.ImageHandler
 import org.personal.videotogether.util.view.ViewHandler
 import org.personal.videotogether.view.fragments.home.nestonhomedetail.SelectFriendFragment
 import org.personal.videotogether.view.fragments.home.nestonhomedetail.AddFriendFragment
+import org.personal.videotogether.view.fragments.home.nestonhomedetail.ChattingFragment
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -31,6 +32,10 @@ constructor(
 
             SelectFriendFragment::class.java.name -> {
                 SelectFriendFragment(dataStateHandler)
+            }
+
+            ChattingFragment::class.java.name -> {
+                ChattingFragment(viewHandler)
             }
 
             else -> super.instantiate(classLoader, className)

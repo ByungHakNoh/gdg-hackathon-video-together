@@ -53,13 +53,10 @@ constructor(
         val friendData = friendList[position]
         Glide.with(context).load(friendData.profileImageUrl).into(holder.friendProfileIV)
         holder.friendName.text = friendData.name
+
         if (isSelectable) {
-            if (friendData.isSelected != null) {
+            if (friendData.isSelected != null)  {
                 holder.checkBox.isChecked = friendData.isSelected!!
-                Log.i("TAG", "onBindViewHolder: ${holder.checkBox.isChecked}")
-                Log.i("TAG", "onBindViewHolder: ${friendData.isSelected!!}")
-            } else{
-                Log.i("TAG", "onBindViewHolder: always null")
             }
         }
     }

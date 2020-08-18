@@ -23,7 +23,7 @@ constructor(
 
     private val TAG by lazy { javaClass.name }
 
-    suspend fun getUserDataFromLocal (): Flow<UserData?> = flow {
+    suspend fun getUserDataFromLocal(): Flow<UserData?> = flow {
         try {
             val userCacheEntity = userDAO.getUserData()
             Log.i(TAG, "getUserDataFromLocal: $userCacheEntity")
@@ -116,7 +116,8 @@ constructor(
     }
 
     // 로그인
-    suspend fun signIn(email: String, password: String): Flow<DataState<UserData?>> = flow {
+    suspend fun signIn(email: String, password: String): Flow<DataState<UserData>> = flow {
+        Log.i(TAG, "signIn: working?")
         emit(DataState.Loading)
 
         try {
@@ -140,6 +141,27 @@ constructor(
         } catch (e: Exception) {
             e.printStackTrace()
             Log.e(TAG, "postCheckEmailValid: 서버 통신 에러발생($e)")
+            emit(DataState.Error(e))
+        }
+    }
+
+    // TODO : Flow 에러 생긴 것 같음, 무슨 문제인지 알 수 없음, 그냥 Flow 사용 시 메소드 실행조차 안함
+    suspend fun uploadFirebaseToken(userId: Int, firebaseToken: String): Flow<DataState<Boolean>> = flow {
+        emit(DataState.Loading)
+        try {
+            val postData = HashMap<String, Any?>().apply {
+                put("userId", userId)
+                put("token", firebaseToken)
+            }
+            val requestData = RequestData("uploadFirebaseToken", postData)
+            val response = retrofitRequest.uploadFirebaseToken(requestData)
+
+            if (response.code() == 200) emit(DataState.Success(true)) // 업로드가 됬을 때
+            if (response.code() == 204) emit(DataState.DuplicatedData) // 이미 존재할 때
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e(TAG, "uploadFirebaseToken: 서버 통신 에러발생($e)")
             emit(DataState.Error(e))
         }
     }

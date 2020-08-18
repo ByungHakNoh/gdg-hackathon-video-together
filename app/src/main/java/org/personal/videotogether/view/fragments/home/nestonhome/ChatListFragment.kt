@@ -40,7 +40,7 @@ constructor(
     private val chatViewModel by lazy { ViewModelProvider(requireActivity())[ChatViewModel::class.java] }
 
     private val chatRoomList by lazy { ArrayList<ChatRoomData>() }
-    private val chatRoomAdapter by lazy { ChatRoomAdapter(requireContext(), chatRoomList, this) }
+    private val chatRoomAdapter by lazy { ChatRoomAdapter(requireContext(), userViewModel.userData.value!!.id, chatRoomList, this) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,7 +51,6 @@ constructor(
         subscribeObservers()
         setListener()
         buildRecyclerView()
-
         chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
     }
 
@@ -103,7 +102,11 @@ constructor(
         when (view?.id) {
             R.id.backBtn -> requireActivity().onBackPressed()
 //            R.id.searchBtn -> // TODO: 검색 만들기
-            R.id.addChatRoomBtn -> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_addChatRoomFragment)
+            R.id.addChatRoomBtn -> {
+                val request = "addChatRoom"
+                val action = HomeDetailBlankFragmentDirections.actionHomeDetailBlankFragmentToSelectFriendsFragment(request)
+                homeDetailNavController.navigate(action)
+            }
         }
     }
 

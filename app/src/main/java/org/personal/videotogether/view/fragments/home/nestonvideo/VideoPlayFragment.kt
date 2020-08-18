@@ -8,9 +8,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
@@ -18,10 +20,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_video_play.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
-import org.personal.videotogether.domianmodel.YoutubeData
-import org.personal.videotogether.util.DataState
-import org.personal.videotogether.view.adapter.ItemClickListener
-import org.personal.videotogether.view.adapter.YoutubeAdapter
 import org.personal.videotogether.viewmodel.SocketViewModel
 import org.personal.videotogether.viewmodel.YoutubeStateEvent
 import org.personal.videotogether.viewmodel.YoutubeViewModel
@@ -29,17 +27,15 @@ import org.personal.videotogether.viewmodel.YoutubeViewModel
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickListener, YouTubePlayerListener, MotionLayout.TransitionListener, ItemClickListener {
+class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickListener, YouTubePlayerListener, MotionLayout.TransitionListener {
 
     private val TAG by lazy { javaClass.name }
+
+    private lateinit var homeDetailNavController:NavController
 
     // 뷰 모델
     private val youtubeViewModel: YoutubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
     private val socketViewModel by lazy { ViewModelProvider(requireActivity())[SocketViewModel::class.java] }
-
-    // 리사이클러 뷰
-    private val youtubeList by lazy { ArrayList<YoutubeData>() }
-    private val youtubeAdapter by lazy { YoutubeAdapter(this, youtubeList, this) }
 
     private lateinit var backPressCallback: OnBackPressedCallback
     private lateinit var youtubePlayer: YouTubePlayer
@@ -49,9 +45,11 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val homeDetailFragmentContainer: FragmentContainerView = view.rootView.findViewById(R.id.homeDetailFragmentContainer)
+        homeDetailNavController = Navigation.findNavController(homeDetailFragmentContainer)
+
         setBackPressCallback(view as MotionLayout)
         setListener(view)
-        buildRecyclerView()
     }
 
     override fun onDestroyView() {
@@ -59,37 +57,36 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
         backPressCallback.remove()
     }
 
+    // TODO : 뒤로가기 설정 좀 더 나은 방법 생각해보기
+    @SuppressLint("RestrictedApi")
+    private fun setBackPressCallback(motionLayout: MotionLayout) {
+        backPressCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            // 유투브 같이 보기 시 SelectFriendList 로 이동하기 때문에 백스텍 확인
+            if (homeDetailNavController.backStack.count() > 2) {
+
+                homeDetailNavController.popBackStack()
+
+            }else {
+
+                motionLayout.transitionToStart()
+                isEnabled = false
+            }
+        }
+        // 유투브 플레이어가 visible 일 때만 동작하도록 초기 값은 false
+        backPressCallback.isEnabled = false
+    }
+
     private fun subscribeObservers() {
         youtubeViewModel.currentPlayedYoutube.observe(viewLifecycleOwner, Observer { youtubeData ->
             if (youtubeData != null) {
                 videoTitleTV.text = youtubeData.title
-                expandedVideoTitleTV.text = youtubeData.title
                 channelTitleTV.text = youtubeData.channelTitle
-                expandedChannelTitleTV.text = youtubeData.channelTitle
 
                 youtubePlayer.cueVideo(youtubeData.videoId, 0f)
                 youtubePlayer.play()
                 isYoutubePlaying = true
-
-                val youtubeListDataState = youtubeViewModel.youtubeList.value
-
-                if (youtubeListDataState is DataState.Success<List<YoutubeData>?>) {
-                    youtubeList.clear()
-                    youtubeListDataState.data!!.forEach { youtubeList.add(it) }
-                    youtubeAdapter.notifyDataSetChanged()
-                }
             }
         })
-    }
-
-    // TODO : 뒤로가기 설정 좀 더 나은 방법 생각해보기
-    private fun setBackPressCallback(motionLayout: MotionLayout) {
-        backPressCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
-            motionLayout.transitionToStart()
-            isEnabled = false
-        }
-        // 유투브 플레이어가 visible 일 때만 동작하도록 초기 값은 false
-        backPressCallback.isEnabled = false
     }
 
     private fun setListener(view: View) {
@@ -99,14 +96,6 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
         // 버튼 리스너
         playerControlBtn.setOnClickListener(this)
         closePlayerBtn.setOnClickListener(this)
-        videoTogetherIB.setOnClickListener(this)
-    }
-
-    private fun buildRecyclerView() {
-        val layoutManager = LinearLayoutManager(requireContext())
-
-        playListRV.layoutManager = layoutManager
-        playListRV.adapter = youtubeAdapter
     }
 
     // ------------------ 클릭 리스너 메소드 모음 ------------------
@@ -118,16 +107,7 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
                 youtubePlayer.pause()
                 youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(null))
             }
-            R.id.videoTogetherIB-> {
-
-            }
         }
-    }
-
-    // ------------------ 리사이클러뷰 아이템 클릭 리스너 메소드 모음 ------------------
-    override fun onItemClick(view: View?, itemPosition: Int) {
-        val youtubeData = youtubeList[itemPosition]
-        youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(youtubeData))
     }
 
     // ------------------ 유투브 플레이어 리스너 메소드 모음 ------------------

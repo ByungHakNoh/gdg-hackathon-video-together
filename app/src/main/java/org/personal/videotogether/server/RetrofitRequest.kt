@@ -22,6 +22,9 @@ interface RetrofitRequest {
     @POST("sign-in")
     suspend fun signIn(@Body requestData: RequestData): Response<UserEntity>
 
+    @POST("sign-in")
+    suspend fun uploadFirebaseToken(@Body requestData: RequestData) : Response<*>
+
     // ------------------------ 친구 관련 ------------------------
     @GET("friend-list")
     suspend fun getFriendsList(

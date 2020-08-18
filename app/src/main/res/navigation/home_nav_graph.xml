@@ -8,7 +8,7 @@
         android:id="@+id/friendsListFragment"
         android:name="org.personal.videotogether.view.fragments.home.nestonhome.FriendsListFragment"
         android:label="친구 목록"
-        tools:layout="@layout/fragment_friends_list" >
+        tools:layout="@layout/fragment_friend_list" >
     </fragment>
 
     <fragment

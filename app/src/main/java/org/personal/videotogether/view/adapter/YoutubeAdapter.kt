@@ -3,6 +3,7 @@ package org.personal.videotogether.view.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -24,7 +25,7 @@ constructor(
     class ViewHolder(itemView: View, private val itemClickListener: ItemClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
         init {
-            itemView.setOnClickListener(this)
+            itemView.findViewById<FrameLayout>(R.id.itemContainerFL).setOnClickListener(this)
         }
 
         val youtubeVideo: YouTubePlayerView = itemView.findViewById(R.id.youtubePlayerYP)
@@ -58,7 +59,7 @@ constructor(
         youtubeVideo.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 super.onReady(youTubePlayer)
-                youTubePlayer.loadVideo(youtubeData.videoId, 0f)
+                youTubePlayer.cueVideo(youtubeData.videoId, 0f)
             }
         })
         Glide.with(fragment.requireContext()).load(youtubeData.channelThumbnail).into(holder.channelThumbnailIV)

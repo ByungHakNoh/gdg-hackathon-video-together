@@ -52,7 +52,7 @@
         app:layout_constraintTop_toBottomOf="@id/playerContainerCL" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/videoTogetherContainer"
+        android:id="@+id/videoDetailContainer"
         android:name="org.personal.videotogether.view.fragments.home.nestonvideo.videodetail.VideoDetailNaHostFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"

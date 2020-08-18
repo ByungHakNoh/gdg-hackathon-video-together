@@ -33,7 +33,7 @@
 
             <!--    Expanded : 채널 이름, 비디오 이름      -->
             <Constraint
-                android:id="@+id/videoTogetherContainer"
+                android:id="@+id/videoDetailContainer"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 motion:layout_constraintLeft_toLeftOf="@id/playerContainerCL"
@@ -85,7 +85,7 @@
 
             <!--    Expanded : 채널 이름, 비디오 이름      -->
             <Constraint
-                android:id="@+id/videoTogetherContainer"
+                android:id="@+id/videoDetailContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:visibility="gone"

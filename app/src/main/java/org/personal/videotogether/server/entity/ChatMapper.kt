@@ -26,7 +26,7 @@ constructor(): EntityMapper<ChatEntity, ChatData> {
             senderName = domainModel.senderName,
             profileImageUrl = domainModel.profileImageUrl,
             message = domainModel.message,
-            messageTime = domainModel.messageTime!!
+            messageTime = domainModel.messageTime
         )
     }
 

@@ -26,5 +26,5 @@ data class ChatEntity (
 
     @SerializedName("message_time")
     @Expose
-    val messageTime : String
+    val messageTime : String?
 )

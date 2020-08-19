@@ -13,7 +13,8 @@ constructor(
         return ChatRoomData(
             id = entity.id,
             lastChatMessage = entity.lastChatMessage,
-            participantList = userMapper.mapFromEntityList(entity.participantList)
+            participantList = userMapper.mapFromEntityList(entity.participantList),
+            isSelected = false
         )
     }
 

@@ -13,7 +13,7 @@ constructor() : EntityMapper<FriendEntity, FriendData>  {
             email = entity.email,
             name = entity.name,
             profileImageUrl = entity.profile_image_url,
-            isSelected = null
+            isSelected = false
         )
     }
 
@@ -32,7 +32,7 @@ constructor() : EntityMapper<FriendEntity, FriendData>  {
             email = userEntity.email,
             name = userEntity.name,
             profileImageUrl = userEntity.profile_image_url,
-            isSelected = null
+            isSelected = false
         )
     }
 

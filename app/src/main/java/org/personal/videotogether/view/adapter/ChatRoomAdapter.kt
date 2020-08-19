@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +17,7 @@ import org.personal.videotogether.util.view.ViewHandler
 class ChatRoomAdapter
 constructor(
     val context: Context,
+    private val isSelectable: Boolean,
     private val myUserId: Int,
     private val chatRoomList: ArrayList<ChatRoomData>,
     private val viewHandler: ViewHandler,
@@ -32,6 +34,7 @@ constructor(
         val nameTV: TextView = itemView.findViewById(R.id.nameTV)
         val participantCountTV :TextView = itemView.findViewById(R.id.participantsCountTV)
         val latestChatMessageTV: TextView = itemView.findViewById(R.id.latestChatMessageTV)
+        val checkBoxCB : CheckBox = itemView.findViewById(R.id.checkboxCB)
 
         override fun onClick(view: View?) {
 
@@ -44,6 +47,7 @@ constructor(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_room, parent, false)
+        if (isSelectable) view.findViewById<CheckBox>(R.id.checkboxCB).visibility = View.VISIBLE
         return ViewHolder(view, itemClickListener)
     }
 
@@ -62,6 +66,12 @@ constructor(
             participantCount.toString()
         }  else {
             ""
+        }
+
+        if (isSelectable) {
+            if (chatRoomData.isSelected != null)  {
+                holder.checkBoxCB.isChecked = chatRoomData.isSelected!!
+            }
         }
     }
 }

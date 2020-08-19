@@ -61,6 +61,12 @@
         android:id="@+id/homeFragment"
         android:name="org.personal.videotogether.view.fragments.nestonmain.HomeFragment"
         android:label="fragment_main_home"
-        tools:layout="@layout/fragment_home"/>
+        tools:layout="@layout/fragment_home">
+        <argument
+            android:name="youtubeData"
+            app:argType="org.personal.videotogether.domianmodel.YoutubeData"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 
 </navigation>

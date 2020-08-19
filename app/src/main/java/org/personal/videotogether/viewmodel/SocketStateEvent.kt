@@ -7,6 +7,6 @@ sealed class SocketStateEvent {
     object ConnectToTCPServer : SocketStateEvent()
     object DisconnectFromTCPServer: SocketStateEvent()
     data class RegisterSocket(val userData: UserData) : SocketStateEvent()
-    data class SendToTCPServer(val flag: String, val roomId: String? = null, val message: String? = null) : SocketStateEvent()
+    data class SendToTCPServer(val flag: String, val firstMessage: String? = null, val secondMessage: String? = null) : SocketStateEvent()
     object ReceiveFromTCPServer : SocketStateEvent()
 }

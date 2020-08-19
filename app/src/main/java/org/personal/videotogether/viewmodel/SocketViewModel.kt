@@ -11,8 +11,9 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import org.personal.videotogether.domianmodel.ChatData
+import org.personal.videotogether.domianmodel.PlayerStateData
+import org.personal.videotogether.domianmodel.YoutubeJoinRoomData
 import org.personal.videotogether.repository.SocketRepository
-import org.personal.videotogether.util.DataState
 
 @ExperimentalCoroutinesApi
 class SocketViewModel
@@ -30,15 +31,20 @@ constructor(
     private val _chatMessage: MutableLiveData<ChatData?> = MutableLiveData()
     val chatMessage: LiveData<ChatData?> get() = _chatMessage
 
-    private val _sendMessage: MutableLiveData<DataState<Boolean>?> = MutableLiveData()
-    val sendMessage: LiveData<DataState<Boolean>?> get() = _sendMessage
+    private val _youtubePlayerState: MutableLiveData<PlayerStateData?> = MutableLiveData()
+    val youtubePlayerState: LiveData<PlayerStateData?> get() = _youtubePlayerState
 
+    private val _youtubeJoinRoomData: MutableLiveData<YoutubeJoinRoomData?> = MutableLiveData()
+    val youtubeJoinRoomData: LiveData<YoutubeJoinRoomData?> get() = _youtubeJoinRoomData
+
+    private val _youtubeChatMessage: MutableLiveData<ChatData?> = MutableLiveData()
+    val youtubeChatMessage: LiveData<ChatData?> get() = _youtubeChatMessage
+
+    // 액티비티 onCreate 에서 연결한 소켓 제거
     override fun onCleared() {
         super.onCleared()
         Log.i("TAG", "onCleared: cleared")
-        viewModelScope.launch(IO) {
-            socketRepository.disConnectFromTCPServer()
-        }
+        setStateEvent(SocketStateEvent.DisconnectFromTCPServer)
     }
 
     fun setStateEvent(socketStateEvent: SocketStateEvent) {
@@ -63,7 +69,7 @@ constructor(
                 }
 
                 is SocketStateEvent.SendToTCPServer -> {
-                    socketRepository.sendToTCPServer(socketStateEvent.flag, socketStateEvent.roomId, socketStateEvent.message)
+                    socketRepository.sendToTCPServer(socketStateEvent.flag, socketStateEvent.firstMessage, socketStateEvent.secondMessage)
                 }
             }
         }
@@ -76,7 +82,25 @@ constructor(
         }
     }
 
-    override fun onYoutubeMessage(youtubeData: String) {
-        TODO("Not yet implemented")
+    override fun onYoutubeChatMessage(chatData: ChatData) {
+        Log.i("TAG", "onYoutubeChatMessage: $chatData")
+        handler.post {
+            _youtubeChatMessage.value = chatData
+            _youtubeChatMessage.value = null
+        }
+    }
+
+    override fun onYoutubePlayerState(playerStateData: PlayerStateData) {
+        handler.post {
+            _youtubePlayerState.value = playerStateData
+            _youtubePlayerState.value = null
+        }
+    }
+
+    override fun onYoutubeJoinRoom(youtubeJoinRoomData: YoutubeJoinRoomData) {
+        handler.post {
+            _youtubeJoinRoomData.value = youtubeJoinRoomData
+            _youtubeJoinRoomData.value = null
+        }
     }
 }

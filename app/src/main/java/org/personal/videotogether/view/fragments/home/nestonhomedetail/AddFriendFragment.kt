@@ -41,7 +41,6 @@ constructor(
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
 
-
     // 검색이 성공해서 서버로부터 받아온 친구 데이터
     private lateinit var friendUserData: FriendData
 

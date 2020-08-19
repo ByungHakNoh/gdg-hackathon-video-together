@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.fragment_select_chat_room.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.ChatRoomData
-import org.personal.videotogether.repository.SocketRepository
+import org.personal.videotogether.repository.SocketRepository.Companion.CREATE_YOUTUBE_ROOM
 import org.personal.videotogether.util.view.ViewHandler
 import org.personal.videotogether.view.adapter.ChatRoomAdapter
 import org.personal.videotogether.view.adapter.ItemClickListener
@@ -89,7 +89,7 @@ constructor(
                     }
 
                     // 룸 아이디는 userId 로 사용
-                    socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(SocketRepository.JOIN_YOUTUBE_ROOM, userId.toString()))
+                    socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(CREATE_YOUTUBE_ROOM, userId.toString()))
                     youtubeViewModel.setStateEvent(YoutubeStateEvent.InviteVideoTogether(inviterUserData!!, friendsIds,currentYoutubeData))
                     requireActivity().onBackPressed()
                 }

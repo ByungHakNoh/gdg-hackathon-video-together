@@ -2,6 +2,7 @@ package org.personal.videotogether.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import org.personal.videotogether.room.entity.ChatCacheEntity
 import org.personal.videotogether.room.entity.ChatRoomCacheEntity
 import org.personal.videotogether.room.entity.FriendCacheEntity
 import org.personal.videotogether.room.entity.UserCacheEntity
@@ -10,15 +11,17 @@ import org.personal.videotogether.room.entity.UserCacheEntity
     entities = [
         UserCacheEntity::class,
         FriendCacheEntity::class,
-        ChatRoomCacheEntity::class
+        ChatRoomCacheEntity::class,
+        ChatCacheEntity::class
     ],
-    version = 4,
+    version = 6,
     exportSchema = false
 )
 abstract class VideoTogetherDatabase : RoomDatabase() {
     abstract fun userDAO(): UserDAO
     abstract fun friendDAO(): FriendDAO
     abstract fun chatRoomDAO(): ChatRoomDAO
+    abstract fun chatDAO(): ChatDAO
 
     companion object {
         const val DATABASE_NAME: String = "video_together"

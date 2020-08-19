@@ -41,12 +41,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-        Log.i(TAG, "onMessageReceived: receive")
-        Log.i(TAG, "onMessageReceived: $remoteMessage")
-        Log.i(TAG, "onMessageReceived: ${remoteMessage.data}")
-        Log.i(TAG, "onMessageReceived: ${remoteMessage.data["roomId"]}")
-        Log.i(TAG, "onMessageReceived: ${remoteMessage.data["inviterName"]}")
-        Log.i(TAG, "onMessageReceived: ${remoteMessage.data["youtubeData"]}")
         val senderName = remoteMessage.data["inviterName"]
         showNotification(remoteMessage.data)
 

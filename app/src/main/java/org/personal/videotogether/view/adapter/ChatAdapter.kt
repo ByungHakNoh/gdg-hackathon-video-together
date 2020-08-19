@@ -14,7 +14,7 @@ import org.personal.videotogether.domianmodel.ChatData
 class ChatAdapter
 constructor(
     val context: Context,
-    val myUserId: Int,
+    private val myUserId: Int,
     private val messageList: ArrayList<ChatData>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

@@ -47,7 +47,6 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
     }
 
     private fun subscribeObservers() {
-        // 친구 검색하기
         youtubeViewModel.youtubeList.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
                 is DataState.Loading -> {

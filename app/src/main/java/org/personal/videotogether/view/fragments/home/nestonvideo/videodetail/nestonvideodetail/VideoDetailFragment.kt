@@ -3,7 +3,7 @@ package org.personal.videotogether.view.fragments.home.nestonvideo.videodetail.n
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.activity.OnBackPressedCallback
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.Observer
@@ -13,17 +13,21 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_video_detail.*
+import kotlinx.android.synthetic.main.fragment_video_detail.participantsCountTV
+import kotlinx.android.synthetic.main.fragment_youtube.*
+import kotlinx.android.synthetic.main.item_chat_room.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
+import org.personal.videotogether.domianmodel.ChatData
 import org.personal.videotogether.domianmodel.YoutubeData
+import org.personal.videotogether.repository.SocketRepository
 import org.personal.videotogether.repository.SocketRepository.Companion.EXIT_YOUTUBE_ROOM
+import org.personal.videotogether.repository.SocketRepository.Companion.SEND_YOUTUBE_MESSAGE
 import org.personal.videotogether.util.DataState
+import org.personal.videotogether.view.adapter.ChatAdapter
 import org.personal.videotogether.view.adapter.ItemClickListener
 import org.personal.videotogether.view.adapter.YoutubeAdapter
-import org.personal.videotogether.viewmodel.SocketStateEvent
-import org.personal.videotogether.viewmodel.SocketViewModel
-import org.personal.videotogether.viewmodel.YoutubeStateEvent
-import org.personal.videotogether.viewmodel.YoutubeViewModel
+import org.personal.videotogether.viewmodel.*
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -34,12 +38,16 @@ class VideoDetailFragment : Fragment(R.layout.fragment_video_detail), ItemClickL
     private lateinit var videoDetailNavController: NavController
     private lateinit var homeDetailNavController: NavController
 
+    private val userViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
     private val youtubeViewModel: YoutubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
     private val socketViewModel by lazy { ViewModelProvider(requireActivity())[SocketViewModel::class.java] }
 
     // 리사이클러 뷰
     private val youtubeList by lazy { ArrayList<YoutubeData>() }
     private val youtubeAdapter by lazy { YoutubeAdapter(this, youtubeList, this) }
+
+    private val chatList by lazy { ArrayList<ChatData>() }
+    private val chatAdapter: ChatAdapter by lazy { ChatAdapter(requireContext(), userViewModel.userData.value!!.id, chatList) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,23 +59,48 @@ class VideoDetailFragment : Fragment(R.layout.fragment_video_detail), ItemClickL
 
         subscribeObservers()
         setListener()
-        buildRecyclerView()
     }
 
     private fun subscribeObservers() {
+
+        // 로컬에서 유저데이터를 가져오고 난 후에 리사이클러 뷰 만들기 (채팅 어뎁터에 유저 id 필요하기 때문)
+        userViewModel.userData.observe(viewLifecycleOwner, Observer { buildRecyclerView()})
+
         youtubeViewModel.currentPlayedYoutube.observe(viewLifecycleOwner, Observer { youtubeData ->
             if (youtubeData != null) {
-                val youtubeListDataState = youtubeViewModel.youtubeList.value
-
-                if (youtubeListDataState is DataState.Success<List<YoutubeData>?>) {
-                    youtubeList.clear()
-                    youtubeListDataState.data!!.forEach { youtubeList.add(it) }
-                    youtubeAdapter.notifyDataSetChanged()
-                    Log.i(TAG, "subscribeObservers: 유투브 디테일 : $youtubeList")
-                }
-
                 expandedVideoTitleTV.text = youtubeData.title
                 expandedChannelTitleTV.text = youtubeData.channelTitle
+            }
+        })
+
+        youtubeViewModel.youtubeList.observe(viewLifecycleOwner, Observer { dataState ->
+            when (dataState) {
+                is DataState.Loading -> {
+                    Log.i(TAG, "youtubeList: Loading")
+                }
+                is DataState.Success<List<YoutubeData>?> -> {
+                    youtubeList.clear()
+                    dataState.data!!.forEach { youtubeList.add(it) }
+                    youtubeAdapter.notifyDataSetChanged()
+                }
+                is DataState.NoData -> {
+                    Log.i(TAG, "youtubeList: NoData")
+                }
+                is DataState.Error -> {
+                    Log.i(TAG, "youtubeList: Error")
+                }
+            }
+        })
+
+        socketViewModel.youtubeJoinRoomData.observe(viewLifecycleOwner, Observer { youtubeJoinRoomData ->
+            if (youtubeJoinRoomData != null) {
+                Log.i(TAG, "youtubeJoinRoomData: video detail -  $youtubeJoinRoomData")
+                when (youtubeJoinRoomData.flag) {
+                    "participantCount" -> {
+                        Log.i(TAG, "youtubeJoinRoomData: participantCount -  $youtubeJoinRoomData")
+                        participantsCountTV.text = youtubeJoinRoomData.participantCount.toString()
+                    }
+                }
             }
         })
 
@@ -75,25 +108,38 @@ class VideoDetailFragment : Fragment(R.layout.fragment_video_detail), ItemClickL
             if (isVideoTogetherOn!!) videoTogetherChatCL.visibility = View.VISIBLE
             else videoTogetherChatCL.visibility = View.GONE
         })
+
+        socketViewModel.youtubeChatMessage.observe(viewLifecycleOwner, Observer { chatData ->
+            if (chatData != null) {
+                chatList.add(chatData)
+                chatAdapter.notifyItemInserted(chatList.size - 1)
+                youtubeChatBoxRV.scrollToPosition(chatAdapter.itemCount - 1)
+            }
+        })
     }
 
     private fun setListener() {
         videoTogetherIB.setOnClickListener(this)
         closeBtn.setOnClickListener(this)
+        sendBtn.setOnClickListener(this)
     }
 
     private fun buildRecyclerView() {
-        val layoutManager = LinearLayoutManager(requireContext())
+        val playListLayoutManager = LinearLayoutManager(requireContext())
+        val chatLayoutManager = LinearLayoutManager(requireContext())
 
-        playListRV.layoutManager = layoutManager
+        playListRV.layoutManager = playListLayoutManager
         playListRV.adapter = youtubeAdapter
+
+        youtubeChatBoxRV.layoutManager = chatLayoutManager
+        youtubeChatBoxRV.adapter = chatAdapter
     }
 
 
     // ------------------ 클릭 리스너 메소드 모음 ------------------
     override fun onClick(view: View?) {
-        when(view?.id) {
-            R.id.videoTogetherIB ->{
+        when (view?.id) {
+            R.id.videoTogetherIB -> {
                 homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_selectChatRoomFragment)
             }
 
@@ -101,6 +147,16 @@ class VideoDetailFragment : Fragment(R.layout.fragment_video_detail), ItemClickL
             R.id.closeBtn -> {
                 socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(EXIT_YOUTUBE_ROOM))
                 youtubeViewModel.setStateEvent(YoutubeStateEvent.SetVideoTogether(false))
+            }
+
+            R.id.sendBtn -> {
+                val message = chattingInputED.text.toString()
+                if (message.trim().isNotEmpty()) {
+                    val userData= userViewModel.userData.value!!
+
+                    socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(SEND_YOUTUBE_MESSAGE, userData.id.toString(), message))
+                    chattingInputED.text = null
+                }
             }
         }
     }

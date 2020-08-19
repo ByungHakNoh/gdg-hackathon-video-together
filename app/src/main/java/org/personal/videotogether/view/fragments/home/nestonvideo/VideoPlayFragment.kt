@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.constraintlayout.motion.widget.MotionLayout
@@ -13,13 +14,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.navArgs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.ui.views.YouTubePlayerSeekBarListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_video_play.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
+import org.personal.videotogether.repository.SocketRepository.Companion.EXIT_YOUTUBE_ROOM
+import org.personal.videotogether.repository.SocketRepository.Companion.SEND_VISITOR_PLAYER_STATE
+import org.personal.videotogether.repository.SocketRepository.Companion.SEND_YOUTUBE_PLAYER_STATE
+import org.personal.videotogether.repository.SocketRepository.Companion.SYNC_YOUTUBE_PLAYER
+import org.personal.videotogether.viewmodel.SocketStateEvent
 import org.personal.videotogether.viewmodel.SocketViewModel
 import org.personal.videotogether.viewmodel.YoutubeStateEvent
 import org.personal.videotogether.viewmodel.YoutubeViewModel
@@ -27,20 +35,24 @@ import org.personal.videotogether.viewmodel.YoutubeViewModel
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickListener, YouTubePlayerListener, MotionLayout.TransitionListener {
+class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickListener, YouTubePlayerListener, MotionLayout.TransitionListener, YouTubePlayerSeekBarListener {
 
     private val TAG by lazy { javaClass.name }
 
     private lateinit var videoDetailNavController: NavController
     private lateinit var homeDetailNavController: NavController
 
+    private lateinit var backPressCallback: OnBackPressedCallback // 뒤로가기 callback
+
     // 뷰 모델
     private val youtubeViewModel: YoutubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
     private val socketViewModel by lazy { ViewModelProvider(requireActivity())[SocketViewModel::class.java] }
 
-    private lateinit var backPressCallback: OnBackPressedCallback
+    // 유투브 플레이어 관련 변수
     private lateinit var youtubePlayer: YouTubePlayer
     private var isYoutubePlaying = false
+    private var isVideoTogetherOn = false
+    private var playerTime = 0f
 
     @SuppressLint("ResourceType")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,13 +93,48 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
     private fun subscribeObservers() {
         youtubeViewModel.currentPlayedYoutube.observe(viewLifecycleOwner, Observer { youtubeData ->
             if (youtubeData != null) {
-                Log.i(TAG, "youtube title: ${youtubeData.title}")
                 videoTitleTV.text = youtubeData.title
                 channelTitleTV.text = youtubeData.channelTitle
+                Log.i(TAG, "youtube title: ${videoTitleTV.text}")
+                Log.i(TAG, "youtube title: ${channelTitleTV.text}")
 
                 youtubePlayer.cueVideo(youtubeData.videoId, 0f)
                 youtubePlayer.play()
-                isYoutubePlaying = true
+            }
+        })
+
+        youtubeViewModel.setVideoTogether.observe(viewLifecycleOwner, Observer { videoTogetherState ->
+            if (videoTogetherState != null) isVideoTogetherOn = videoTogetherState
+        })
+
+        socketViewModel.youtubePlayerState.observe(viewLifecycleOwner, Observer { playerStateData ->
+            if (playerStateData != null) {
+                when (playerStateData.state) {
+                    "play" -> youtubePlayer.play()
+                    "pause" -> youtubePlayer.pause()
+                    "seek" -> {
+                        youtubePlayer.seekTo(playerStateData.currentSecond)
+                        Log.i(TAG, "youtubePlayerState: seek ${playerStateData.currentSecond}")
+                    }
+                }
+            }
+        })
+
+        socketViewModel.youtubeJoinRoomData.observe(viewLifecycleOwner, Observer { youtubeJoinRoomData ->
+            if (youtubeJoinRoomData != null) {
+                Log.i(TAG, "youtubeJoinRoomData: $youtubeJoinRoomData")
+                when (youtubeJoinRoomData.flag) {
+                    "empty" -> {
+                        Toast.makeText(requireContext(), "방이 더이상 존재하지 않습니다", Toast.LENGTH_SHORT).show()
+                    }
+                    "visitorJoin" -> {
+                        socketViewModel.setStateEvent(
+                            SocketStateEvent.SendToTCPServer(
+                                SEND_VISITOR_PLAYER_STATE, "seek", "$playerTime@${youtubeJoinRoomData.userId}"
+                            )
+                        )
+                    }
+                }
             }
         })
     }
@@ -95,7 +142,7 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
     private fun setListener(view: View) {
         (view as MotionLayout).setTransitionListener(this) // 모션 레이아웃 리스너
         youtubePlayerYP.addYouTubePlayerListener(this) // 유투브 플레이어 리스너
-
+        youtubeSeekBarSB.youtubePlayerSeekBarListener = this
         // 버튼 리스너
         playerControlBtn.setOnClickListener(this)
         closePlayerBtn.setOnClickListener(this)
@@ -107,8 +154,15 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
             R.id.playerControlBtn -> if (isYoutubePlaying) youtubePlayer.pause() else youtubePlayer.play()
             R.id.closePlayerBtn -> {
                 // 닫기 버튼 누르면 유투브 일시정지
+                // TODO : 같이보기 상태인지 확인
                 youtubePlayer.pause()
                 youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(null))
+
+                // 같이보기 켜져있으면 같이 끄기
+                if (isVideoTogetherOn) {
+                    socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(EXIT_YOUTUBE_ROOM))
+                    youtubeViewModel.setStateEvent(YoutubeStateEvent.SetVideoTogether(false))
+                }
             }
         }
     }
@@ -117,6 +171,7 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
     // 유투브 영상 준비되었을 때
     override fun onReady(youTubePlayer: YouTubePlayer) {
         youtubePlayer = youTubePlayer
+        youtubePlayer.addListener(youtubeSeekBarSB)
         subscribeObservers()
     }
 
@@ -124,28 +179,47 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
     override fun onStateChange(youTubePlayer: YouTubePlayer, state: PlayerConstants.PlayerState) {
         when (state) {
             PlayerConstants.PlayerState.PLAYING -> {
-                if (playerControlBtn != null) {
-                    playerControlBtn.setImageResource(R.drawable.ic_baseline_pause_24)
-                    isYoutubePlaying = true
-                }
+                handlePlayerState(R.drawable.ic_baseline_pause_24, true, "play")
+                checkIfJoining()
             }
 
             PlayerConstants.PlayerState.PAUSED -> {
-                if (playerControlBtn != null) {
-                    playerControlBtn.setImageResource(R.drawable.ic_baseline_play_arrow_24)
-                    isYoutubePlaying = false
-                }
+                handlePlayerState(R.drawable.ic_baseline_play_arrow_24, false, "pause")
             }
-            PlayerConstants.PlayerState.UNSTARTED -> Log.i(TAG, "onStateChange: UNSTARTED")
-            PlayerConstants.PlayerState.VIDEO_CUED -> Log.i(TAG, "onStateChange: VIDEO_CUED")
-            PlayerConstants.PlayerState.BUFFERING -> Log.i(TAG, "onStateChange: BUFFERING")
-            PlayerConstants.PlayerState.UNKNOWN -> Log.i(TAG, "onStateChange: UNKNOWN")
-            PlayerConstants.PlayerState.ENDED -> Log.i(TAG, "onStateChange: ENDED")
+            else -> Log.i(TAG, "onStateChange: $state")
+        }
+    }
+
+    override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
+        if (isVideoTogetherOn) playerTime = second
+    }
+
+    // 플레이 상태 조절하는 메소드
+    private fun handlePlayerState(playBtnImage: Int, isPlaying: Boolean, stateMessage: String) {
+        if (playerControlBtn != null) {
+            playerControlBtn.setImageResource(playBtnImage)
+            isYoutubePlaying = isPlaying
+
+            checkIfJoining()
+            // 같이보기 켜져있으면 소켓으로 정보 보내기
+            if (isVideoTogetherOn) {
+                socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(SEND_YOUTUBE_PLAYER_STATE, stateMessage, "0"))
+            }
+        }
+    }
+
+    // 비디오 같이보기 참여한건지 확인
+    private fun checkIfJoining() {
+        val isJoiningVideoTogether = youtubeViewModel.isJoiningVideoTogether.value
+        if (isJoiningVideoTogether != null) {
+            if (isJoiningVideoTogether) {
+                socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(SYNC_YOUTUBE_PLAYER))
+                youtubeViewModel.setStateEvent(YoutubeStateEvent.SetJoiningVideoTogether(false))
+            }
         }
     }
 
     override fun onApiChange(youTubePlayer: YouTubePlayer) {}
-    override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {}
     override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {}
     override fun onPlaybackQualityChange(youTubePlayer: YouTubePlayer, playbackQuality: PlayerConstants.PlaybackQuality) {}
     override fun onPlaybackRateChange(youTubePlayer: YouTubePlayer, playbackRate: PlayerConstants.PlaybackRate) {}
@@ -166,4 +240,12 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
     override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {}
     override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {}
     override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {}
+    override fun seekTo(time: Float) {
+        youtubePlayer.seekTo(time)
+
+        // 같이보기 켜져있으면 소켓으로 정보 보내기
+        if (isVideoTogetherOn) {
+            socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(SEND_YOUTUBE_PLAYER_STATE, "seek", time.toString()))
+        }
+    }
 }

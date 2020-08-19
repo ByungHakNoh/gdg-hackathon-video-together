@@ -18,19 +18,17 @@ import org.personal.videotogether.domianmodel.ChatData
 import org.personal.videotogether.repository.SocketRepository.Companion.EXIT_CHAT_ROOM
 import org.personal.videotogether.repository.SocketRepository.Companion.JOIN_CHAT_ROOM
 import org.personal.videotogether.repository.SocketRepository.Companion.SEND_CHAT_MESSAGE
+import org.personal.videotogether.util.DataState
 import org.personal.videotogether.util.view.ViewHandler
 import org.personal.videotogether.view.adapter.ChatAdapter
-import org.personal.videotogether.viewmodel.ChatViewModel
-import org.personal.videotogether.viewmodel.SocketStateEvent
-import org.personal.videotogether.viewmodel.SocketViewModel
-import org.personal.videotogether.viewmodel.UserViewModel
+import org.personal.videotogether.viewmodel.*
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class ChattingFragment
-    constructor(
-        private val viewHandler: ViewHandler
-    ): Fragment(R.layout.fragment_chatting), View.OnClickListener {
+constructor(
+    private val viewHandler: ViewHandler
+) : Fragment(R.layout.fragment_chatting), View.OnClickListener {
 
     private val TAG by lazy { javaClass.name }
 
@@ -57,14 +55,37 @@ class ChattingFragment
         setListener()
         buildRecyclerview()
         socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(JOIN_CHAT_ROOM, chatRoomData.id.toString()))
+        chatViewModel.setStateEvent(ChatStateEvent.GetChatMessageFromServer(chatRoomData.id))
     }
 
     private fun subscribeObservers() {
         socketViewModel.chatMessage.observe(viewLifecycleOwner, Observer { chatData ->
-            //TODO : 채팅 서버에 저장하기 유투브 먼저 하고 하자
             if (chatData != null) {
+                chatViewModel.setStateEvent(ChatStateEvent.UploadChatMessage(chatData))
                 chatList.add(chatData)
                 chatAdapter.notifyItemInserted(chatList.size - 1)
+            }
+        })
+
+        chatViewModel.getChatMessageList.observe(viewLifecycleOwner, Observer { dataState->
+            when(dataState) {
+                is DataState.Loading-> {
+                    Log.i(TAG, "getChatMessageList: 로딩중")
+                }
+                is DataState.Success -> {
+                    val responseChatList = dataState.data
+
+                    chatList.clear()
+                    responseChatList.forEach { chatData ->  chatList.add(chatData)}
+                    chatAdapter.notifyDataSetChanged()
+                }
+                is DataState.NoData -> {
+                    Log.i(TAG, "getChatMessageList: 데이터 없음")
+                }
+                is DataState.Error -> {
+                    Log.i(TAG, "getChatMessageList: 서버 연결 문제")
+
+                }
             }
         })
     }
@@ -88,7 +109,7 @@ class ChattingFragment
     }
 
     override fun onClick(view: View?) {
-        when(view?.id) {
+        when (view?.id) {
             R.id.backBtn -> requireActivity().onBackPressed()
             R.id.sendBtn -> {
                 val message = chattingInputED.text.toString()

@@ -38,6 +38,10 @@ constructor(
     private val _signInState: MutableLiveData<DataState<UserData?>> = MutableLiveData()
     val signInState: LiveData<DataState<UserData?>> get() = _signInState
 
+    // TODO : Flow 안됨
+    private val _uploadFirebaseToken: MutableLiveData<DataState<Boolean?>> = MutableLiveData()
+    val uploadFirebaseToken: LiveData<DataState<Boolean?>> get() = _uploadFirebaseToken
+
     fun setStateEvent(userStateEvent: UserStateEvent) {
         viewModelScope.launch(IO) {
             when (userStateEvent) {
@@ -75,6 +79,12 @@ constructor(
                     userRepository.signIn(userStateEvent.email, userStateEvent.password).onEach { dataState ->
                         _signInState.value = dataState
                         _signInState.value = null
+                    }.launchIn(viewModelScope)
+                }
+
+                is UserStateEvent.UploadFirebaseToken -> {
+                    userRepository.uploadFirebaseToken(userStateEvent.userId, userStateEvent.firebaseToken).onEach { dataState ->
+                        _uploadFirebaseToken.value = dataState
                     }.launchIn(viewModelScope)
                 }
             }

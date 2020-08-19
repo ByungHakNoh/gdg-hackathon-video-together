@@ -128,5 +128,8 @@ constructor(
         const val JOIN_CHAT_ROOM = "joinChatRoom"
         const val EXIT_CHAT_ROOM = "exitChatRoom"
         const val SEND_CHAT_MESSAGE = "sendChatMessage"
+        const val JOIN_YOUTUBE_ROOM = "joinYoutubeRoom"
+        const val EXIT_YOUTUBE_ROOM = "exitYoutubeRoom"
+        const val SEND_YOUTUBE_MESSAGE = "sendYoutubeMessage"
     }
 }

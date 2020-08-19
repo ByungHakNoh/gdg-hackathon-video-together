@@ -1,9 +1,6 @@
 package org.personal.videotogether.server
 
-import org.personal.videotogether.server.entity.ChatRoomEntity
-import org.personal.videotogether.server.entity.FriendEntity
-import org.personal.videotogether.server.entity.UserEntity
-import org.personal.videotogether.server.entity.YoutubeEntity
+import org.personal.videotogether.server.entity.*
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -43,14 +40,23 @@ interface RetrofitRequest {
     suspend fun addFriend(@Body requestData: RequestData): Response<List<FriendEntity>>
 
     // ------------------------ 채팅 관련 ------------------------
-    @GET("chat-room-list")
+    @GET("chat")
     suspend fun getChatRoomList(
         @Query("request") request: String,
         @Query("userId") userId: Int
     ): Response<List<ChatRoomEntity>?>
 
-    @POST("add-chat-room")
+    @GET("chat")
+    suspend fun getChatMessageList(
+        @Query("request") request: String,
+        @Query("roomId") roomId: Int
+    ): Response<List<ChatEntity>?>
+
+    @POST("chat")
     suspend fun addChatRoom(@Body requestData: RequestData): Response<ChatRoomEntity>
+
+    @POST("chat")
+    suspend fun uploadChatMessage(@Body requestData: RequestData): Response<ChatEntity?>
 
     // ------------------------ 유투브 관련 ------------------------
     @GET("youtube")
@@ -64,4 +70,7 @@ interface RetrofitRequest {
         @Query("request") request: String,
         @Query("searchRequest") searchRequest: String
     ): Response<List<YoutubeEntity>?>
+
+    @POST("youtube")
+    suspend fun inviteFriends(@Body requestData: RequestData) : Response<*>
 }

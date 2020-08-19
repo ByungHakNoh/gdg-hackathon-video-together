@@ -27,6 +27,9 @@ constructor(
     private val _currentPlayedYoutube: MutableLiveData<YoutubeData?> = MutableLiveData()
     val currentPlayedYoutube: LiveData<YoutubeData?> get() = _currentPlayedYoutube
 
+    private val _setVideoTogether: MutableLiveData<Boolean?> = MutableLiveData()
+    val setVideoTogether: LiveData<Boolean?> get() = _setVideoTogether
+
     fun setStateEvent(youtubeStateEvent: YoutubeStateEvent) {
         viewModelScope.launch {
             when (youtubeStateEvent) {
@@ -40,6 +43,18 @@ constructor(
 
                 is YoutubeStateEvent.SetFrontPlayer -> {
                     _currentPlayedYoutube.value = youtubeStateEvent.youtubeData
+                }
+
+                // 상대방을 초대한 후 유투브 같이보기 실행
+                is YoutubeStateEvent.InviteVideoTogether -> {
+                    youtubeRepository.inviteVideoTogether(youtubeStateEvent.inviterData,  youtubeStateEvent.friendIds, youtubeStateEvent.youtubeData).onEach { dataState ->
+
+                        if (dataState is DataState.Success) setStateEvent(YoutubeStateEvent.SetVideoTogether(true))
+                    }.launchIn(viewModelScope)
+                }
+
+                is YoutubeStateEvent.SetVideoTogether -> {
+                    _setVideoTogether.value = youtubeStateEvent.isVideoTogetherOn
                 }
             }
         }

@@ -6,17 +6,16 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import org.personal.videotogether.repository.*
+import org.personal.videotogether.room.ChatDAO
 import org.personal.videotogether.room.FriendDAO
 import org.personal.videotogether.server.RetrofitRequest
 import org.personal.videotogether.room.entity.UserCacheMapper
 import org.personal.videotogether.room.UserDAO
 import org.personal.videotogether.room.entity.FriendCacheMapper
 import org.personal.videotogether.room.ChatRoomDAO
+import org.personal.videotogether.room.entity.ChatCacheMapper
 import org.personal.videotogether.room.entity.ChatRoomCacheMapper
-import org.personal.videotogether.server.entity.ChatRoomMapper
-import org.personal.videotogether.server.entity.FriendMapper
-import org.personal.videotogether.server.entity.UserMapper
-import org.personal.videotogether.server.entity.YoutubeMapper
+import org.personal.videotogether.server.entity.*
 import java.net.Socket
 
 @InstallIn(ActivityRetainedComponent::class)
@@ -59,12 +58,25 @@ object RepositoryModule {
     fun provideChatRepository(
         retrofitRequest: RetrofitRequest,
         chatRoomDAO: ChatRoomDAO,
+        chatDAO: ChatDAO,
         chatRoomMapper: ChatRoomMapper,
         chatRoomCacheMapper: ChatRoomCacheMapper,
+        chatMapper: ChatMapper,
+        chatCacheMapper: ChatCacheMapper,
         userMapper: UserMapper,
         friendMapper: FriendMapper
     ): ChatRepository {
-        return ChatRepository(retrofitRequest, chatRoomDAO, chatRoomMapper, chatRoomCacheMapper,userMapper, friendMapper)
+        return ChatRepository(
+            retrofitRequest,
+            chatRoomDAO,
+            chatDAO,
+            chatRoomMapper,
+            chatRoomCacheMapper,
+            chatMapper,
+            chatCacheMapper,
+            userMapper,
+            friendMapper
+        )
     }
 
     @ActivityRetainedScoped

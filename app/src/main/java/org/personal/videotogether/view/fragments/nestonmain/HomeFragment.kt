@@ -10,14 +10,19 @@ import androidx.activity.addCallback
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
+import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.navigation.navDeepLink
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
+import org.personal.videotogether.repository.SocketRepository.Companion.JOIN_YOUTUBE_ROOM
+import org.personal.videotogether.view.fragments.home.nestonhome.FriendsListFragmentDirections
 import org.personal.videotogether.viewmodel.*
 
 @ExperimentalCoroutinesApi
@@ -25,6 +30,8 @@ import org.personal.videotogether.viewmodel.*
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private val TAG = javaClass.name
+
+    private val argument: HomeFragmentArgs by navArgs()
 
     private lateinit var mainNavController: NavController
     private lateinit var homeNavController: NavController
@@ -72,6 +79,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
+    private fun killProcess() {
+        requireActivity().moveTaskToBack(true)
+        requireActivity().finishAndRemoveTask()
+        // TODO : 뒤로가기 버튼으로 액티비티 스택을 지우면 SocketViewModel onCleared 에서 tcp disconnect 가 호출 되지 않음 -> 해결방안 찾기
+        socketViewModel.setStateEvent(SocketStateEvent.DisconnectFromTCPServer)
+    }
+
     private fun subscribeObservers() {
         // 사용자 정보를 room 으로부터 가져옴
         // 유저 정보를 이용해 친구 데이터 업데이트, 채팅 소켓 등록을 함
@@ -79,7 +93,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData!!.id))
             socketViewModel.setStateEvent(SocketStateEvent.RegisterSocket(userData))
             socketViewModel.setStateEvent(SocketStateEvent.ReceiveFromTCPServer)
-            Log.i(TAG, "subscribeObservers: 한번?")
+            checkVideoTogether()
         })
 
         // 유투브 재생 시 하단 유튜브 플레이어 보여주기
@@ -89,13 +103,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         })
     }
 
-    private fun killProcess() {
-        requireActivity().moveTaskToBack(true)
-        requireActivity().finishAndRemoveTask()
-        // TODO : 뒤로가기 버튼으로 액티비티 스택을 지우면 SocketViewModel onCleared 에서 tcp disconnect 가 호출 되지 않음 -> 해결방안 찾기
-        socketViewModel.setStateEvent(SocketStateEvent.DisconnectFromTCPServer)
-    }
+    private fun checkVideoTogether() {
+        val youtubeData = argument.youtubeData
+        val roomId = argument.roomId
 
+        if (youtubeData != null) {
+            youtubeViewModel.setStateEvent(YoutubeStateEvent.SetVideoTogether(true))
+            youtubeViewModel.setStateEvent(YoutubeStateEvent.SetJoiningVideoTogether(true))
+            youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(youtubeData))
+            socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(JOIN_YOUTUBE_ROOM, roomId.toString()))
+
+            homeNavController.navigate(R.id.action_friendsListFragment_to_youtubeFragment2)
+        }
+    }
 
     // ------------------ 상단 앱 바 아이템 클릭 리스너 모음 ------------------
     @SuppressLint("RestrictedApi")

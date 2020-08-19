@@ -1,16 +1,14 @@
 package org.personal.videotogether.viewmodel
 
-import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import org.personal.videotogether.domianmodel.ChatData
 import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.repository.ChatRepository
 import org.personal.videotogether.util.DataState
@@ -30,9 +28,13 @@ constructor(
     private val _addChatRoom: MutableLiveData<DataState<ChatRoomData?>> = MutableLiveData()
     val addChatRoom: LiveData<DataState<ChatRoomData?>> get() = _addChatRoom
 
-    // ------------------ Add Chat Room live data ------------------
+    // ------------------ Chat Room live data ------------------
     private val _getChatRoomList: MutableLiveData<DataState<List<ChatRoomData>?>> = MutableLiveData()
     val getChatRoomList: LiveData<DataState<List<ChatRoomData>?>> get() = _getChatRoomList
+
+    // ------------------ Chat Message live data ------------------
+    private val _getChatMessageList: MutableLiveData<DataState<List<ChatData>>> = MutableLiveData()
+    val getChatMessageList: LiveData<DataState<List<ChatData>>> get() = _getChatMessageList
 
     fun setStateEvent(chatStateEvent: ChatStateEvent) {
         viewModelScope.launch(IO) {
@@ -57,6 +59,18 @@ constructor(
                     chatRepository.addChatRoom(chatStateEvent.userData, chatStateEvent.participantList).onEach { dataState ->
                         _addChatRoom.value = dataState
                         _addChatRoom.value = null
+                    }.launchIn(viewModelScope)
+                }
+
+                // ------------------ 채팅 메시지 관련 ------------------
+                is ChatStateEvent.UploadChatMessage -> {
+                    chatRepository.uploadChatMessage( chatStateEvent.chatData)
+                }
+
+                is ChatStateEvent.GetChatMessageFromServer -> {
+                    chatRepository.getChatMessageList(chatStateEvent.roomId).onEach {dataState ->
+                        _getChatMessageList.value = dataState
+                        _getChatMessageList.value = null
                     }.launchIn(viewModelScope)
                 }
             }

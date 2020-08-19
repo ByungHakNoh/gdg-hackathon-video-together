@@ -71,7 +71,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setSmallIcon(R.drawable.ic_baseline_video_library_24)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-//            .setGroup(GROUP_KEY)
             .build()
 
         val manager = NotificationManagerCompat.from(this)

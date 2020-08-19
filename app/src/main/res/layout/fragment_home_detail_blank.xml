@@ -4,5 +4,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="false"
-    tools:context=".view.fragments.home.nestonhomedetail.HomeDetailBlankFragment">
-</FrameLayout>
+    tools:context=".view.fragments.home.nestonhomedetail.HomeDetailBlankFragment"/>

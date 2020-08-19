@@ -31,7 +31,8 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
 
     private val TAG by lazy { javaClass.name }
 
-    private lateinit var homeDetailNavController:NavController
+    private lateinit var videoDetailNavController: NavController
+    private lateinit var homeDetailNavController: NavController
 
     // 뷰 모델
     private val youtubeViewModel: YoutubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
@@ -46,7 +47,10 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
         super.onViewCreated(view, savedInstanceState)
 
         val homeDetailFragmentContainer: FragmentContainerView = view.rootView.findViewById(R.id.homeDetailFragmentContainer)
+        val videoDetailFragmentContainer: FragmentContainerView = view.rootView.findViewById(R.id.videoDetailContainer)
+
         homeDetailNavController = Navigation.findNavController(homeDetailFragmentContainer)
+        videoDetailNavController = Navigation.findNavController(videoDetailFragmentContainer)
 
         setBackPressCallback(view as MotionLayout)
         setListener(view)
@@ -62,14 +66,12 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
     private fun setBackPressCallback(motionLayout: MotionLayout) {
         backPressCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
             // 유투브 같이 보기 시 SelectFriendList 로 이동하기 때문에 백스텍 확인
-            if (homeDetailNavController.backStack.count() > 2) {
-
-                homeDetailNavController.popBackStack()
-
-            }else {
-
-                motionLayout.transitionToStart()
-                isEnabled = false
+            when {
+                homeDetailNavController.backStack.count() > 2 -> homeDetailNavController.popBackStack()
+                else -> {
+                    motionLayout.transitionToStart()
+                    isEnabled = false
+                }
             }
         }
         // 유투브 플레이어가 visible 일 때만 동작하도록 초기 값은 false
@@ -79,6 +81,7 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
     private fun subscribeObservers() {
         youtubeViewModel.currentPlayedYoutube.observe(viewLifecycleOwner, Observer { youtubeData ->
             if (youtubeData != null) {
+                Log.i(TAG, "youtube title: ${youtubeData.title}")
                 videoTitleTV.text = youtubeData.title
                 channelTitleTV.text = youtubeData.channelTitle
 

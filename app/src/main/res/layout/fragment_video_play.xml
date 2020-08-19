@@ -36,7 +36,20 @@
         app:layout_constraintStart_toStartOf="@id/playerContainerCL"
         app:layout_constraintTop_toTopOf="@id/playerContainerCL"
         app:showFullScreenButton="false"
+        app:showSeekBar="false"
+        app:showVideoCurrentTime="false"
+        app:showVideoDuration="false"
         app:showYouTubeButton="false" />
+
+    <com.pierfrancescosoffritti.androidyoutubeplayer.core.ui.views.YouTubePlayerSeekBar
+        android:id="@+id/youtubeSeekBarSB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:color="@color/red"
+        app:fontSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/youtubePlayerYP"
+        app:layout_constraintLeft_toLeftOf="@id/youtubePlayerYP"
+        app:layout_constraintRight_toRightOf="@id/youtubePlayerYP" />
 
     <!--  비디오 하단 리사이클러 뷰  -->
     <FrameLayout
@@ -83,7 +96,6 @@
             android:lines="1"
             android:paddingStart="10sp"
             android:paddingEnd="10sp"
-            android:text="@string/name"
             android:textSize="14sp"
             app:layout_constraintBottom_toTopOf="@id/channelTitleTV"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -98,7 +110,6 @@
             android:lines="1"
             android:paddingStart="10sp"
             android:paddingEnd="10sp"
-            android:text="@string/name"
             android:textColor="@color/InActive"
             android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"

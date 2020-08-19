@@ -6,5 +6,5 @@ data class ChatData(
     val senderName : String,
     val profileImageUrl : String,
     val message : String,
-    val messageTime : String
+    val messageTime : String?
 )

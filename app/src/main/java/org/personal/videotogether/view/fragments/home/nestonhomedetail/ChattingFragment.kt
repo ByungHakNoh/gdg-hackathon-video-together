@@ -12,6 +12,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_chatting.*
+import kotlinx.android.synthetic.main.fragment_chatting.chattingInputED
+import kotlinx.android.synthetic.main.fragment_chatting.sendBtn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.ChatData
@@ -61,9 +63,9 @@ constructor(
     private fun subscribeObservers() {
         socketViewModel.chatMessage.observe(viewLifecycleOwner, Observer { chatData ->
             if (chatData != null) {
-                chatViewModel.setStateEvent(ChatStateEvent.UploadChatMessage(chatData))
                 chatList.add(chatData)
                 chatAdapter.notifyItemInserted(chatList.size - 1)
+                chattingBoxRV.scrollToPosition(chatAdapter.itemCount - 1)
             }
         })
 
@@ -115,7 +117,11 @@ constructor(
                 val message = chattingInputED.text.toString()
 
                 if (message.trim().isNotEmpty()) {
+                    val userData= userViewModel.userData.value!!
+                    val chatData = ChatData(chatRoomData.id, userData.id, userData.name!!, userData.profileImageUrl!!, message, null)
+
                     socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(SEND_CHAT_MESSAGE, chatRoomData.id.toString(), message))
+                    chatViewModel.setStateEvent(ChatStateEvent.UploadChatMessage(chatData))
                     chattingInputED.text = null
                 }
             }

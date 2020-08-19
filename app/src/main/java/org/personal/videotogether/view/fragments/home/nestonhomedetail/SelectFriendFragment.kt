@@ -1,6 +1,7 @@
 package org.personal.videotogether.view.fragments.home.nestonhomedetail
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
@@ -16,6 +17,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.domianmodel.FriendData
+import org.personal.videotogether.repository.SocketRepository.Companion.JOIN_YOUTUBE_ROOM
 import org.personal.videotogether.util.DataState
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.view.adapter.FriendListAdapter
@@ -40,10 +42,11 @@ constructor(
     private lateinit var homeDetailNavController: NavController
 
     // 뷰 모델
-    private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
-    private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
+    private val userViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
+    private val friendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
     private val chatViewModel by lazy { ViewModelProvider(requireActivity())[ChatViewModel::class.java] }
-    private val youtubeViewModel: YoutubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
+    private val youtubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
+    private val socketViewModel by lazy { ViewModelProvider(requireActivity())[SocketViewModel::class.java] }
 
     // 리사이클러 뷰
     private val selectedFriendList by lazy { ArrayList<FriendData>() }
@@ -115,7 +118,15 @@ constructor(
                 } else {
                     when (whichRequest) {
                         "addChatRoom" -> chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userViewModel.userData.value!!, selectedFriendList))
-                        "addVideoTogether" ->{}
+//                        "addVideoTogether" -> {
+//                            val youtubeRoomId = userViewModel.userData.value!!.id
+//                            val inviterUserData = userViewModel.userData.value
+//                            val friendsIds = ArrayList<Int>()
+//                            selectedFriendList.forEach { selectedFriend -> friendsIds.add(selectedFriend.id) }
+//
+//                            socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(JOIN_YOUTUBE_ROOM, youtubeRoomId.toString()))
+//                            youtubeViewModel.setStateEvent(YoutubeStateEvent.InviteVideoTogether(inviterUserData!!, friendsIds))
+//                        }
                     }
                 }
             }

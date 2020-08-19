@@ -27,8 +27,12 @@ constructor(
     private val _currentPlayedYoutube: MutableLiveData<YoutubeData?> = MutableLiveData()
     val currentPlayedYoutube: LiveData<YoutubeData?> get() = _currentPlayedYoutube
 
+    // ------------------ Video Together live data ------------------
     private val _setVideoTogether: MutableLiveData<Boolean?> = MutableLiveData()
     val setVideoTogether: LiveData<Boolean?> get() = _setVideoTogether
+
+    private val _isJoiningVideoTogether : MutableLiveData<Boolean?> = MutableLiveData()
+    val isJoiningVideoTogether: LiveData<Boolean?> get() = _isJoiningVideoTogether
 
     fun setStateEvent(youtubeStateEvent: YoutubeStateEvent) {
         viewModelScope.launch {
@@ -55,6 +59,10 @@ constructor(
 
                 is YoutubeStateEvent.SetVideoTogether -> {
                     _setVideoTogether.value = youtubeStateEvent.isVideoTogetherOn
+                }
+
+                is YoutubeStateEvent.SetJoiningVideoTogether -> {
+                    _isJoiningVideoTogether.value = youtubeStateEvent.isJoining
                 }
             }
         }

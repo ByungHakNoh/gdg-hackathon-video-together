@@ -7,5 +7,6 @@ import kotlinx.android.parcel.Parcelize
 data class ChatRoomData (
     val id : Int,
     val lastChatMessage: String?,
-    val participantList: List<UserData>
+    val participantList: List<UserData>,
+    var isSelected: Boolean?
 ) : Parcelable

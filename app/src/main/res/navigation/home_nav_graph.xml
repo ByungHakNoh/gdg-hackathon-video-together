@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<navigation xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/home_nav_graph"
     app:startDestination="@id/friendsListFragment">
@@ -8,21 +9,23 @@
         android:id="@+id/friendsListFragment"
         android:name="org.personal.videotogether.view.fragments.home.nestonhome.FriendsListFragment"
         android:label="친구 목록"
-        tools:layout="@layout/fragment_friend_list" >
+        tools:layout="@layout/fragment_friend_list">
+        <action
+            android:id="@+id/action_friendsListFragment_to_youtubeFragment2"
+            app:destination="@id/youtubeFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/chatListFragment"
         android:name="org.personal.videotogether.view.fragments.home.nestonhome.ChatListFragment"
         android:label="채팅 목록"
-        tools:layout="@layout/fragment_chat_list" >
-    </fragment>
+        tools:layout="@layout/fragment_chat_list"/>
 
     <fragment
         android:id="@+id/youtubeFragment"
         android:name="org.personal.videotogether.view.fragments.home.nestonhome.YoutubeFragment"
         android:label="유투브"
-        tools:layout="@layout/fragment_youtube" >
+        tools:layout="@layout/fragment_youtube">
         <action
             android:id="@+id/action_youtubeFragment_to_youtubeSearchFragment"
             app:destination="@id/youtubeSearchFragment" />

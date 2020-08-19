@@ -67,6 +67,10 @@
             app:argType="org.personal.videotogether.domianmodel.YoutubeData"
             app:nullable="true"
             android:defaultValue="@null" />
+        <argument
+            android:name="roomId"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 
 </navigation>

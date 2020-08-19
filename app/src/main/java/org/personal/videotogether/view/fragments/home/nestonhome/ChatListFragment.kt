@@ -43,7 +43,7 @@ constructor(
 
     private val chatRoomList by lazy { ArrayList<ChatRoomData>() }
     private val chatRoomAdapter by lazy {
-        ChatRoomAdapter(requireContext(), userViewModel.userData.value!!.id, chatRoomList, viewHandler,this)
+        ChatRoomAdapter(requireContext(), false, userViewModel.userData.value!!.id, chatRoomList, viewHandler, this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

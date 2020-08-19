@@ -47,6 +47,12 @@
     </fragment>
 
     <fragment
+        android:id="@+id/selectChatRoomFragment"
+        android:name="org.personal.videotogether.view.fragments.home.nestonhomedetail.SelectChatRoomFragment"
+        android:label="fragment_select_chat_room"
+        tools:layout="@layout/fragment_select_chat_room" />
+
+    <fragment
         android:id="@+id/homeDetailBlankFragment"
         android:name="org.personal.videotogether.view.fragments.home.nestonhomedetail.HomeDetailBlankFragment"
         android:label="fragment_home_detail_blank"
@@ -66,5 +72,9 @@
         <action
             android:id="@+id/action_homeDetailBlankFragment_to_profileFriendFragment"
             app:destination="@id/profileFriendFragment" />
+        <action
+            android:id="@+id/action_homeDetailBlankFragment_to_selectChatRoomFragment"
+            app:destination="@id/selectChatRoomFragment" />
     </fragment>
+
 </navigation>

@@ -21,7 +21,8 @@ constructor(
         return ChatRoomData(
             id = entity.id,
             lastChatMessage = entity.last_chat_message,
-            participantList = participantList
+            participantList = participantList,
+            isSelected = false
         )
     }
 

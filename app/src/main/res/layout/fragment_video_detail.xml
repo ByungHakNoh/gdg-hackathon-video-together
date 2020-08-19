@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.fragments.home.nestonvideo.videodetail.nestonvideodetail.VideoDetailFragment">
 
     <TextView
@@ -75,5 +75,91 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/line"
         tools:listitem="@layout/item_youtube" />
+
+    <!--  비디오 같이보기 채팅방  -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/videoTogetherChatCL"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/mainBackground"
+        android:clickable="false"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/participantsCountTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/bar"
+            android:padding="20sp"
+            android:text="채팅 인원"
+            app:layout_constraintBottom_toTopOf="@id/chattingBoxRV"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/closeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/transparency"
+            android:src="@drawable/ic_baseline_clear_24"
+            app:layout_constraintBottom_toBottomOf="@id/participantsCountTV"
+            app:layout_constraintRight_toRightOf="@id/participantsCountTV"
+            app:layout_constraintTop_toTopOf="@id/participantsCountTV" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chattingBoxRV"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/chattingInputED"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/participantsCountTV" />
+
+        <EditText
+            android:id="@+id/chattingInputED"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:background="@color/lightBackground"
+            android:focusedByDefault="true"
+            android:inputType="text"
+            android:padding="5dp"
+            android:paddingStart="60dp"
+            android:paddingEnd="80dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chattingBoxRV"
+            tools:targetApi="o" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/shape_rounded_5dp"
+            android:backgroundTint="@color/transparency"
+            android:padding="5dp"
+            android:src="@drawable/ic_baseline_add_30"
+            app:layout_constraintBottom_toBottomOf="@id/chattingInputED"
+            app:layout_constraintLeft_toLeftOf="@id/chattingInputED"
+            app:layout_constraintTop_toTopOf="@id/chattingInputED" />
+
+        <ImageButton
+            android:id="@+id/sendBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:backgroundTint="@color/buttonBackground"
+            android:src="@drawable/ic_baseline_send_30"
+            app:layout_constraintBottom_toBottomOf="@id/chattingInputED"
+            app:layout_constraintRight_toRightOf="@id/chattingInputED"
+            app:layout_constraintTop_toTopOf="@id/chattingInputED" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

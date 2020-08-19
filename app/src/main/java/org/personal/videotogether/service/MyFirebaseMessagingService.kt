@@ -1,16 +1,20 @@
 package org.personal.videotogether.service
 
+import android.os.Bundle
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.navigation.NavDeepLinkBuilder
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.google.gson.GsonBuilder
+import com.google.gson.Gson
+import org.personal.videotogether.MyApplication.Companion.CHAT_NOTIFICATION_CHANNEL_ID
 import org.personal.videotogether.R
-import org.personal.videotogether.server.RequestData
-import org.personal.videotogether.server.RetrofitRequest
+import org.personal.videotogether.domianmodel.YoutubeData
+import org.personal.videotogether.server.entity.YoutubeEntity
+import org.personal.videotogether.server.entity.YoutubeMapper
 import org.personal.videotogether.util.SharedPreferenceHelper
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.lang.Integer.parseInt
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -38,5 +42,45 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
         Log.i(TAG, "onMessageReceived: receive")
+        Log.i(TAG, "onMessageReceived: $remoteMessage")
+        Log.i(TAG, "onMessageReceived: ${remoteMessage.data}")
+        Log.i(TAG, "onMessageReceived: ${remoteMessage.data["roomId"]}")
+        Log.i(TAG, "onMessageReceived: ${remoteMessage.data["inviterName"]}")
+        Log.i(TAG, "onMessageReceived: ${remoteMessage.data["youtubeData"]}")
+        val senderName = remoteMessage.data["inviterName"]
+        showNotification(remoteMessage.data)
+
+    }
+
+    private fun showNotification(remoteMessageData: MutableMap<String, String>) {
+        val gson = Gson()
+        val youtubeMapper = YoutubeMapper()
+        val roomId = parseInt(remoteMessageData["roomId"]!!)
+        val inviterName = remoteMessageData["inviterName"]!!
+        val jsonYoutubeEntity =  remoteMessageData["youtubeData"]!!
+        val youtubeEntity = gson.fromJson(jsonYoutubeEntity, YoutubeEntity::class.java)
+        val youtubeData = youtubeMapper.mapFromEntity(youtubeEntity)
+        val message = "$inviterName 이 유투브 같이보기에 초대했습니다"
+        val argument = Bundle().apply {
+            putParcelable("youtubeData", youtubeData)
+        }
+        val pendingIntent = NavDeepLinkBuilder(this)
+            .setGraph(R.navigation.main_nav_graph)
+            .setDestination(R.id.homeFragment)
+            .setArguments(argument)
+            .createPendingIntent()
+
+        val notification = NotificationCompat.Builder(this, CHAT_NOTIFICATION_CHANNEL_ID)
+            .setAutoCancel(true)
+            .setContentTitle("유투브 같이보기")
+            .setContentText(message)
+            .setSmallIcon(R.drawable.ic_baseline_video_library_24)
+            .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+//            .setGroup(GROUP_KEY)
+            .build()
+
+        val manager = NotificationManagerCompat.from(this)
+        manager.notify(roomId, notification)
     }
 }

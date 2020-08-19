@@ -7,10 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import org.personal.videotogether.room.ChatRoomDAO
-import org.personal.videotogether.room.FriendDAO
-import org.personal.videotogether.room.UserDAO
-import org.personal.videotogether.room.VideoTogetherDatabase
+import org.personal.videotogether.room.*
 import org.personal.videotogether.util.SharedPreferenceHelper
 import javax.inject.Singleton
 
@@ -52,5 +49,11 @@ object LocalDbModule {
     @Provides
     fun provideChatRoomDAO(videoTogetherDatabase: VideoTogetherDatabase) : ChatRoomDAO {
         return videoTogetherDatabase.chatRoomDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideChatDAO(videoTogetherDatabase: VideoTogetherDatabase) : ChatDAO {
+        return videoTogetherDatabase.chatDAO()
     }
 }

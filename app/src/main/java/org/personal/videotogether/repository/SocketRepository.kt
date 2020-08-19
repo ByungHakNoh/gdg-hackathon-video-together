@@ -2,10 +2,13 @@ package org.personal.videotogether.repository
 
 import android.util.Log
 import org.personal.videotogether.domianmodel.ChatData
+import org.personal.videotogether.domianmodel.PlayerStateData
 import org.personal.videotogether.domianmodel.UserData
+import org.personal.videotogether.domianmodel.YoutubeJoinRoomData
 import org.personal.videotogether.server.RetrofitRequest
 import org.personal.videotogether.server.TCPClient
 import java.lang.Exception
+import java.lang.Float.parseFloat
 import java.lang.Integer.parseInt
 
 class SocketRepository
@@ -22,7 +25,9 @@ constructor(
 
     interface SocketListener {
         fun onChatMessage(chatData: ChatData)
-        fun onYoutubeMessage(youtubeData: String)
+        fun onYoutubeChatMessage(chatData: ChatData)
+        fun onYoutubePlayerState(playerStateData: PlayerStateData)
+        fun onYoutubeJoinRoom(youtubeJoinRoomData: YoutubeJoinRoomData)
     }
 
     // ------------------ TCP 통신 관련 메소드 모음 ------------------
@@ -44,6 +49,7 @@ constructor(
 
         try {
             tcpClient.writeMessage("quit")
+
             isTCPClientStopped = true
             isSocketRegistered = false
 
@@ -85,7 +91,9 @@ constructor(
                     // 서버에서 보낸 flag 확인
                     when (splitMessageData[0]) {
                         "chat" -> socketListener.onChatMessage(formChatData(splitMessageData))
-                        "youtube" -> socketListener.onYoutubeMessage(respond)
+                        "youtubeChat" -> socketListener.onYoutubeChatMessage(formChatData(splitMessageData))
+                        "youtubeState" -> socketListener.onYoutubePlayerState(formYoutubeResponse(splitMessageData))
+                        "youtubeJoinRoom" -> socketListener.onYoutubeJoinRoom(formYoutubeJoinResponse(splitMessageData))
                     }
                 }
             }
@@ -124,12 +132,31 @@ constructor(
         return ChatData(roomId, userId, senderName, profileImageUrl, message, messageTime)
     }
 
+    private fun formYoutubeResponse(splitMessageData: List<String>): PlayerStateData {
+        val playerState = splitMessageData[1]
+        val playerCurrentSecond = parseFloat(splitMessageData[2])
+
+        return PlayerStateData(playerState, playerCurrentSecond)
+    }
+
+    private fun formYoutubeJoinResponse(splitMessageData: List<String>): YoutubeJoinRoomData {
+        val flag = splitMessageData[1]
+        val visitorId = parseInt(splitMessageData[2])
+        val participantCount = parseInt(splitMessageData[3])
+
+        return YoutubeJoinRoomData(flag, visitorId, participantCount)
+    }
+
     companion object {
         const val JOIN_CHAT_ROOM = "joinChatRoom"
         const val EXIT_CHAT_ROOM = "exitChatRoom"
         const val SEND_CHAT_MESSAGE = "sendChatMessage"
+        const val CREATE_YOUTUBE_ROOM = "createYoutubeRoom"
         const val JOIN_YOUTUBE_ROOM = "joinYoutubeRoom"
+        const val SYNC_YOUTUBE_PLAYER = "syncYoutubePlayer"
         const val EXIT_YOUTUBE_ROOM = "exitYoutubeRoom"
-        const val SEND_YOUTUBE_MESSAGE = "sendYoutubeMessage"
+        const val SEND_VISITOR_PLAYER_STATE = "sendPlayerStateToVisitor"
+        const val SEND_YOUTUBE_PLAYER_STATE = "sendYoutubePlayerState"
+        const val SEND_YOUTUBE_MESSAGE = "sendYoutubeChat"
     }
 }

@@ -42,7 +42,6 @@ class TCPClient(private val serverName: String, private val serverPort: Int) {
     }
 
     fun socketClose() {
-        Log.i(TAG, socket?.isClosed.toString())
         serverInPut?.close()
         serverOutPut?.close()
         bufferedReader?.close()

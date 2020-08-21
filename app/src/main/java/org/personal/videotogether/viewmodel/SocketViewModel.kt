@@ -10,10 +10,12 @@ import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.ChatData
 import org.personal.videotogether.domianmodel.PlayerStateData
 import org.personal.videotogether.domianmodel.YoutubeJoinRoomData
 import org.personal.videotogether.repository.SocketRepository
+import org.personal.videotogether.util.SharedPreferenceHelper
 
 @ExperimentalCoroutinesApi
 class SocketViewModel

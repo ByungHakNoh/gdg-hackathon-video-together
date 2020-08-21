@@ -63,13 +63,23 @@ interface RetrofitRequest {
     suspend fun getDefaultYoutubeList(
         @Query("request") request: String,
         @Query("youtubeChannel") channel: String
-    ): Response<List<YoutubeEntity>?>
+    ): Response<YoutubePageEntity?>
+
+    @GET("youtube")
+    suspend fun getNextPageYoutubeList(
+        @Query("request") request: String,
+        @Query("nextPageUrl") nextPageUrl: String,
+        @Query("nextPageToken") nextPageToken: String,
+        @Query("channelTitle") channelTitle: String,
+        @Query("channelThumbnail") channelThumbnail: String
+
+    ): Response<YoutubePageEntity?>
 
     @GET("youtube")
     suspend fun getSearchedYoutubeList(
         @Query("request") request: String,
         @Query("searchRequest") searchRequest: String
-    ): Response<List<YoutubeEntity>?>
+    ): Response<YoutubePageEntity?>
 
     @POST("youtube")
     suspend fun inviteFriends(@Body requestData: RequestData) : Response<*>

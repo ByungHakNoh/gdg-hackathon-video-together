@@ -48,9 +48,10 @@ object RepositoryModule {
     @Provides
     fun provideYoutubeRepository(
         retrofitRequest: RetrofitRequest,
-        youtubeMapper: YoutubeMapper
+        youtubeMapper: YoutubeMapper,
+        youtubePageMapper: YoutubePageMapper
     ): YoutubeRepository {
-        return YoutubeRepository(retrofitRequest, youtubeMapper)
+        return YoutubeRepository(retrofitRequest, youtubeMapper, youtubePageMapper)
     }
 
     @ActivityRetainedScoped

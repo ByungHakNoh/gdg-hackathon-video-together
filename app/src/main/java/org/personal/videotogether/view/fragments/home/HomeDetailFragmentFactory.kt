@@ -8,10 +8,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.util.view.ImageHandler
 import org.personal.videotogether.util.view.ViewHandler
-import org.personal.videotogether.view.fragments.home.nestonhomedetail.SelectFriendFragment
-import org.personal.videotogether.view.fragments.home.nestonhomedetail.AddFriendFragment
-import org.personal.videotogether.view.fragments.home.nestonhomedetail.ChattingFragment
-import org.personal.videotogether.view.fragments.home.nestonhomedetail.SelectChatRoomFragment
+import org.personal.videotogether.view.fragments.home.nestonhomedetail.*
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -41,6 +38,10 @@ constructor(
 
             SelectChatRoomFragment::class.java.name -> {
                 SelectChatRoomFragment(viewHandler)
+            }
+
+            SearchFragment::class.java.name -> {
+                SearchFragment(viewHandler)
             }
 
             else -> super.instantiate(classLoader, className)

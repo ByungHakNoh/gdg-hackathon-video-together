@@ -106,7 +106,7 @@ constructor(
     // ------------------ 클릭 리스너 메소드 모음 ------------------
     override fun onClick(view: View?) {
         when (view?.id) {
-//            R.id.searchBtn -> homeDetailNavController.navigate(R.id.acsea) // TODO: 검색 만들기
+            R.id.searchBtn -> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_searchFragment2)
             R.id.addFriendBtn-> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_addFriendFragment)
             R.id.myProfileContainerCL -> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_profileMineFragment)
 

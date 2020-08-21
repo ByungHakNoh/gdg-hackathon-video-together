@@ -55,11 +55,9 @@ constructor(
         subscribeObservers()
         setListener()
         buildRecyclerView()
-        chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
     }
 
     private fun subscribeObservers() {
-
         chatViewModel.chatRoomList.observe(viewLifecycleOwner, Observer { localChatRoomList ->
             chatRoomList.clear()
             localChatRoomList!!.forEach { chatRoomData ->
@@ -105,7 +103,7 @@ constructor(
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.backBtn -> requireActivity().onBackPressed()
-//            R.id.searchBtn -> // TODO: 검색 만들기
+            R.id.searchBtn -> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_searchFragment2)
             R.id.addChatRoomBtn -> {
                 val request = "addChatRoom"
                 val action = HomeDetailBlankFragmentDirections.actionHomeDetailBlankFragmentToSelectFriendsFragment(request)

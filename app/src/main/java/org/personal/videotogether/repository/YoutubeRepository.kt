@@ -1,34 +1,37 @@
 package org.personal.videotogether.repository
 
+import android.media.ThumbnailUtils
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.personal.videotogether.domianmodel.UserData
 import org.personal.videotogether.domianmodel.YoutubeData
+import org.personal.videotogether.domianmodel.YoutubePageData
 import org.personal.videotogether.server.RequestData
 import org.personal.videotogether.server.RetrofitRequest
 import org.personal.videotogether.server.entity.YoutubeMapper
+import org.personal.videotogether.server.entity.YoutubePageMapper
 import org.personal.videotogether.util.DataState
 import java.lang.Exception
 
 class YoutubeRepository
 constructor(
     private val retrofitRequest: RetrofitRequest,
-    private val youtubeMapper: YoutubeMapper
+    private val youtubeMapper: YoutubeMapper,
+    private val youtubePageMapper: YoutubePageMapper
 ) {
     private val TAG by lazy { javaClass.name }
 
-    // 회원가입 시 이메일 중복 체크하는 요청
-    suspend fun getDefaultYoutubeList(youtubeChannel: String): Flow<DataState<List<YoutubeData>?>> = flow {
+    suspend fun getYoutubePage(youtubeChannel: String): Flow<DataState<YoutubePageData?>> = flow {
         emit(DataState.Loading)
-
+        Log.i(TAG, "getYoutubePage: $youtubeChannel")
         try {
             val response = retrofitRequest.getDefaultYoutubeList("getChannelVideos", youtubeChannel)
-
+            Log.i(TAG, "getYoutubePage: $response")
             if (response.code() == 200) {
-                val youtubeEntityList = response.body()!!
-                val youtubeList = youtubeMapper.mapFromEntityList(youtubeEntityList)
-                emit(DataState.Success(youtubeList))
+                val youtubePageEntity = response.body()!!
+                val youtubePageData = youtubePageMapper.mapFromEntity(youtubePageEntity)
+                emit(DataState.Success(youtubePageData))
             }
             if (response.code() == 204) emit(DataState.NoData)
 
@@ -36,7 +39,27 @@ constructor(
             e.printStackTrace()
             Log.e(TAG, "postCheckEmailValid: 서버 통신 에러발생($e)")
             // TODO: status code 안받아지는 원인 파악하기
-            emit(DataState.DuplicatedData)
+            emit(DataState.Error(e))
+        }
+    }
+
+    suspend fun getYoutubeNextPage(nextPageUrl: String, nextPageToken: String, channelTitle: String, channelThumbnail: String): Flow<DataState<YoutubePageData?>> = flow {
+        emit(DataState.Loading)
+
+        try {
+            val response = retrofitRequest.getNextPageYoutubeList("getNextPage", nextPageUrl, nextPageToken, channelTitle, channelThumbnail)
+
+            if (response.code() == 200) {
+                val youtubePageEntity = response.body()!!
+                val youtubePageData = youtubePageMapper.mapFromEntity(youtubePageEntity)
+                emit(DataState.Success(youtubePageData))
+            }
+            if (response.code() == 204) emit(DataState.NoData)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e(TAG, "postCheckEmailValid: 서버 통신 에러발생($e)")
+            // TODO: status code 안받아지는 원인 파악하기
             emit(DataState.Error(e))
         }
     }
@@ -53,7 +76,7 @@ constructor(
             }
             val requestData = RequestData("inviteFriends", postData)
             val response = retrofitRequest.inviteFriends(requestData)
-
+            Log.i(TAG, "inviteVideoTogether: $response")
             if (response.code() == 200) {
 
                 emit(DataState.Success(true))

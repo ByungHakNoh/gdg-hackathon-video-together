@@ -30,4 +30,10 @@ constructor() : EntityMapper<YoutubeEntity, YoutubeData> {
             mapFromEntity(youtubeEntity)
         }
     }
+
+    fun mapToEntityList(domainModelList:List<YoutubeData>): List<YoutubeEntity> {
+        return domainModelList.map { youtubeData ->
+            mapToEntity(youtubeData)
+        }
+    }
 }

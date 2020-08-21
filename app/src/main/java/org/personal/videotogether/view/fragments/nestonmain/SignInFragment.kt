@@ -55,7 +55,7 @@ constructor(
         if (isAutoSignIn) mainNavController.navigate(R.id.action_signInFragment_to_mainHomeFragment)
     }
 
-    private fun subscribeObservers() {
+    private fun subscribeObservers(){
         // live data : 로그인 확인
         userViewModel.signInState.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {

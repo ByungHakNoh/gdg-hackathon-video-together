@@ -171,7 +171,9 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
     // 유투브 영상 준비되었을 때
     override fun onReady(youTubePlayer: YouTubePlayer) {
         youtubePlayer = youTubePlayer
-        youtubePlayer.addListener(youtubeSeekBarSB)
+
+        if (youtubeSeekBarSB != null) youtubePlayer.addListener(youtubeSeekBarSB)
+
         subscribeObservers()
     }
 

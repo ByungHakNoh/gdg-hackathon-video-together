@@ -1,7 +1,6 @@
 package org.personal.videotogether.view.fragments.home.nestonhomedetail
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
@@ -17,7 +16,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.domianmodel.FriendData
-import org.personal.videotogether.repository.SocketRepository.Companion.JOIN_YOUTUBE_ROOM
 import org.personal.videotogether.util.DataState
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.view.adapter.FriendListAdapter
@@ -118,15 +116,6 @@ constructor(
                 } else {
                     when (whichRequest) {
                         "addChatRoom" -> chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userViewModel.userData.value!!, selectedFriendList))
-//                        "addVideoTogether" -> {
-//                            val youtubeRoomId = userViewModel.userData.value!!.id
-//                            val inviterUserData = userViewModel.userData.value
-//                            val friendsIds = ArrayList<Int>()
-//                            selectedFriendList.forEach { selectedFriend -> friendsIds.add(selectedFriend.id) }
-//
-//                            socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(JOIN_YOUTUBE_ROOM, youtubeRoomId.toString()))
-//                            youtubeViewModel.setStateEvent(YoutubeStateEvent.InviteVideoTogether(inviterUserData!!, friendsIds))
-//                        }
                     }
                 }
             }

@@ -16,7 +16,7 @@ import org.personal.videotogether.domianmodel.FriendData
 class FriendListAdapter
 constructor(
     val context: Context,
-    private val friendList: ArrayList<FriendData>,
+    private var friendList: ArrayList<FriendData>,
     private val isSelectable: Boolean,
     private val itemClickListener: ItemClickListener
 ) : RecyclerView.Adapter<FriendListAdapter.ViewHolder>() {
@@ -59,5 +59,12 @@ constructor(
                 holder.checkBox.isChecked = friendData.isSelected!!
             }
         }
+    }
+
+    fun filterList(filteredFriendList: ArrayList<FriendData>) {
+        friendList = filteredFriendList
+        Log.i("TAG", "filterList: $friendList")
+        Log.i("TAG", "filterList: $filteredFriendList")
+        notifyDataSetChanged()
     }
 }

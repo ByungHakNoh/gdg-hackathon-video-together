@@ -75,6 +75,18 @@
         <action
             android:id="@+id/action_homeDetailBlankFragment_to_selectChatRoomFragment"
             app:destination="@id/selectChatRoomFragment" />
+        <action
+            android:id="@+id/action_homeDetailBlankFragment_to_searchFragment2"
+            app:destination="@id/searchFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment2"
+        android:name="org.personal.videotogether.view.fragments.home.nestonhomedetail.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment2_to_profileFriendFragment"
+            app:destination="@id/profileFriendFragment" />
     </fragment>
 
 </navigation>

@@ -69,4 +69,10 @@
         <item name="android:textColor">@color/error</item>
         <item name="android:textSize">12sp</item>
     </style>
+
+    <style name="AlertDialogCustom" parent="AppDarkTheme">
+        <item name="android:colorAccent">@color/black</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
 </resources>

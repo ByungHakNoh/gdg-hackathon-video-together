@@ -3,7 +3,6 @@ package org.personal.videotogether.view.fragments.home.nestonvideo.videodetail.n
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.Observer
@@ -14,13 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_video_detail.*
 import kotlinx.android.synthetic.main.fragment_video_detail.participantsCountTV
-import kotlinx.android.synthetic.main.fragment_youtube.*
-import kotlinx.android.synthetic.main.item_chat_room.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.ChatData
 import org.personal.videotogether.domianmodel.YoutubeData
-import org.personal.videotogether.repository.SocketRepository
+import org.personal.videotogether.domianmodel.YoutubePageData
 import org.personal.videotogether.repository.SocketRepository.Companion.EXIT_YOUTUBE_ROOM
 import org.personal.videotogether.repository.SocketRepository.Companion.SEND_YOUTUBE_MESSAGE
 import org.personal.videotogether.util.DataState
@@ -64,7 +61,7 @@ class VideoDetailFragment : Fragment(R.layout.fragment_video_detail), ItemClickL
     private fun subscribeObservers() {
 
         // 로컬에서 유저데이터를 가져오고 난 후에 리사이클러 뷰 만들기 (채팅 어뎁터에 유저 id 필요하기 때문)
-        userViewModel.userData.observe(viewLifecycleOwner, Observer { buildRecyclerView()})
+        userViewModel.userData.observe(viewLifecycleOwner, Observer { buildRecyclerView() })
 
         youtubeViewModel.currentPlayedYoutube.observe(viewLifecycleOwner, Observer { youtubeData ->
             if (youtubeData != null) {
@@ -73,14 +70,14 @@ class VideoDetailFragment : Fragment(R.layout.fragment_video_detail), ItemClickL
             }
         })
 
-        youtubeViewModel.youtubeList.observe(viewLifecycleOwner, Observer { dataState ->
+        youtubeViewModel.youtubeDefaultPage.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
                 is DataState.Loading -> {
                     Log.i(TAG, "youtubeList: Loading")
                 }
-                is DataState.Success<List<YoutubeData>?> -> {
+                is DataState.Success<YoutubePageData?> -> {
                     youtubeList.clear()
-                    dataState.data!!.forEach { youtubeList.add(it) }
+                    dataState.data!!.youtubeDataList.forEach { youtubeList.add(it) }
                     youtubeAdapter.notifyDataSetChanged()
                 }
                 is DataState.NoData -> {
@@ -105,8 +102,13 @@ class VideoDetailFragment : Fragment(R.layout.fragment_video_detail), ItemClickL
         })
 
         youtubeViewModel.setVideoTogether.observe(viewLifecycleOwner, Observer { isVideoTogetherOn ->
-            if (isVideoTogetherOn!!) videoTogetherChatCL.visibility = View.VISIBLE
-            else videoTogetherChatCL.visibility = View.GONE
+            if (isVideoTogetherOn!!) {
+                videoTogetherChatCL.visibility = View.VISIBLE
+            } else {
+                videoTogetherChatCL.visibility = View.GONE
+                chatList.clear()
+                chatAdapter.notifyDataSetChanged()
+            }
         })
 
         socketViewModel.youtubeChatMessage.observe(viewLifecycleOwner, Observer { chatData ->
@@ -152,7 +154,7 @@ class VideoDetailFragment : Fragment(R.layout.fragment_video_detail), ItemClickL
             R.id.sendBtn -> {
                 val message = chattingInputED.text.toString()
                 if (message.trim().isNotEmpty()) {
-                    val userData= userViewModel.userData.value!!
+                    val userData = userViewModel.userData.value!!
 
                     socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(SEND_YOUTUBE_MESSAGE, userData.id.toString(), message))
                     chattingInputED.text = null

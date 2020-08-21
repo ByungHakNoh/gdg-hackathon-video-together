@@ -1,6 +1,7 @@
 package org.personal.videotogether.view.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.ChatRoomData
-import org.personal.videotogether.domianmodel.UserData
 import org.personal.videotogether.util.view.ViewHandler
 
 class ChatRoomAdapter
@@ -19,7 +19,7 @@ constructor(
     val context: Context,
     private val isSelectable: Boolean,
     private val myUserId: Int,
-    private val chatRoomList: ArrayList<ChatRoomData>,
+    private var chatRoomList: ArrayList<ChatRoomData>,
     private val viewHandler: ViewHandler,
     private val itemClickListener: ItemClickListener
 ) : RecyclerView.Adapter<ChatRoomAdapter.ViewHolder>() {
@@ -73,5 +73,12 @@ constructor(
                 holder.checkBoxCB.isChecked = chatRoomData.isSelected!!
             }
         }
+    }
+
+    fun filterList(filteredChatRoomList: ArrayList<ChatRoomData>) {
+        chatRoomList = filteredChatRoomList
+        Log.i("TAG", "filterList: $chatRoomList")
+        Log.i("TAG", "filterList: $filteredChatRoomList")
+        notifyDataSetChanged()
     }
 }

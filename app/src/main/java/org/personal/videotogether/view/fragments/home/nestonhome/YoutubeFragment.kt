@@ -1,6 +1,7 @@
 package org.personal.videotogether.view.fragments.home.nestonhome
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -8,13 +9,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_youtube.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.YoutubeData
+import org.personal.videotogether.domianmodel.YoutubePageData
 import org.personal.videotogether.util.DataState
+import org.personal.videotogether.util.InfiniteScrollListener
 import org.personal.videotogether.view.adapter.ItemClickListener
 import org.personal.videotogether.view.adapter.YoutubeAdapter
 import org.personal.videotogether.viewmodel.YoutubeStateEvent
@@ -32,6 +36,10 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
 
     private val youtubeList by lazy { ArrayList<YoutubeData>() }
     private val youtubeAdapter by lazy { YoutubeAdapter(this, youtubeList, this) }
+    private lateinit var scrollListener: InfiniteScrollListener
+
+    private var nextPageUrl: String? = null
+    private var nextPageToken: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,20 +49,23 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
         subscribeObservers()
         setListener()
         buildRecyclerView()
-        swipeRefreshSR.setOnRefreshListener(this)
 
-        youtubeViewModel.setStateEvent(YoutubeStateEvent.GetDefaultYoutubeVideos("googledevelopers"))
+        youtubeViewModel.setStateEvent(YoutubeStateEvent.GetYoutubeDefaultPage("googledevelopers"))
     }
 
     private fun subscribeObservers() {
-        youtubeViewModel.youtubeList.observe(viewLifecycleOwner, Observer { dataState ->
+        youtubeViewModel.youtubeDefaultPage.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
                 is DataState.Loading -> {
                     swipeRefreshSR.isRefreshing = true
                 }
-                is DataState.Success<List<YoutubeData>?> -> {
+                is DataState.Success<YoutubePageData?> -> {
                     swipeRefreshSR.isRefreshing = false
-                    dataState.data!!.forEach { youtubeData -> youtubeList.add(youtubeData) }
+
+                    nextPageUrl = dataState.data!!.nextPageUrl
+                    nextPageToken = dataState.data.nextPageToken
+
+                    dataState.data.youtubeDataList.forEach { youtubeData -> youtubeList.add(youtubeData) }
                     youtubeAdapter.notifyDataSetChanged()
                 }
                 is DataState.NoData -> {
@@ -68,6 +79,7 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
     }
 
     private fun setListener() {
+        swipeRefreshSR.setOnRefreshListener(this)
         backBtn.setOnClickListener(this)
         youtubeSearchBtn.setOnClickListener(this)
     }
@@ -78,6 +90,18 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
         youtubePreviewRV.setHasFixedSize(true)
         youtubePreviewRV.layoutManager = layoutManager
         youtubePreviewRV.adapter = youtubeAdapter
+
+        scrollListener = object : InfiniteScrollListener(layoutManager) {
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
+                Log.i(TAG, "onLoadMore: real?")
+                youtubeViewModel.setStateEvent(
+                    YoutubeStateEvent.GetNextYoutubeDefaultPage(
+                        nextPageUrl!!, nextPageToken!!, youtubeList[0].channelTitle, youtubeList[0].channelThumbnail
+                    )
+                )
+            }
+        }
+        youtubePreviewRV.addOnScrollListener(scrollListener)
     }
 
     // ------------------ 클릭 리스너 메소드 모음 ------------------
@@ -96,8 +120,8 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
 
     // ------------------ 리사이클러뷰 새로고침 리스너 ------------------
     override fun onRefresh() {
-        youtubeViewModel.setStateEvent(YoutubeStateEvent.GetDefaultYoutubeVideos("googledevelopers"))
+        youtubeList.clear()
+        scrollListener.resetState()
+        youtubeViewModel.setStateEvent(YoutubeStateEvent.GetYoutubeDefaultPage("googledevelopers"))
     }
-
-
 }

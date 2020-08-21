@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.personal.videotogether.domianmodel.YoutubeData
+import org.personal.videotogether.domianmodel.YoutubePageData
 import org.personal.videotogether.repository.YoutubeRepository
 import org.personal.videotogether.util.DataState
 
@@ -21,8 +22,11 @@ constructor(
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _youtubeList: MutableLiveData<DataState<List<YoutubeData>?>> = MutableLiveData()
-    val youtubeList: LiveData<DataState<List<YoutubeData>?>> get() = _youtubeList
+    private val _youtubeDefaultPage: MutableLiveData<DataState<YoutubePageData?>> = MutableLiveData()
+    val youtubeDefaultPage: LiveData<DataState<YoutubePageData?>> get() = _youtubeDefaultPage
+
+    private val _youtubeSearchedPage: MutableLiveData<DataState<YoutubePageData?>> = MutableLiveData()
+    val youtubeSearchedPage: LiveData<DataState<YoutubePageData?>> get() = _youtubeSearchedPage
 
     private val _currentPlayedYoutube: MutableLiveData<YoutubeData?> = MutableLiveData()
     val currentPlayedYoutube: LiveData<YoutubeData?> get() = _currentPlayedYoutube
@@ -31,19 +35,53 @@ constructor(
     private val _setVideoTogether: MutableLiveData<Boolean?> = MutableLiveData()
     val setVideoTogether: LiveData<Boolean?> get() = _setVideoTogether
 
-    private val _isJoiningVideoTogether : MutableLiveData<Boolean?> = MutableLiveData()
+    private val _isJoiningVideoTogether: MutableLiveData<Boolean?> = MutableLiveData()
     val isJoiningVideoTogether: LiveData<Boolean?> get() = _isJoiningVideoTogether
 
     fun setStateEvent(youtubeStateEvent: YoutubeStateEvent) {
         viewModelScope.launch {
             when (youtubeStateEvent) {
-                is YoutubeStateEvent.GetDefaultYoutubeVideos -> {
+                is YoutubeStateEvent.GetYoutubeDefaultPage -> {
                     withContext(IO) {
-                        youtubeRepository.getDefaultYoutubeList(youtubeStateEvent.youtubeChannel).onEach { dataState ->
-                            _youtubeList.value = dataState
+                        youtubeRepository.getYoutubePage(youtubeStateEvent.youtubeChannel).onEach { dataState ->
+                            _youtubeDefaultPage.value = dataState
+                            _youtubeDefaultPage.value = null
                         }.launchIn(viewModelScope)
                     }
                 }
+
+                is YoutubeStateEvent.GetNextYoutubeDefaultPage -> {
+                    youtubeRepository.getYoutubeNextPage(
+                        youtubeStateEvent.nextPageUrl,
+                        youtubeStateEvent.nextPageToken,
+                        youtubeStateEvent.channelTitle,
+                        youtubeStateEvent.channelThumbnail
+                    ).onEach { dataState ->
+                        _youtubeDefaultPage.value = dataState
+                    }.launchIn(viewModelScope)
+                }
+
+                is YoutubeStateEvent.GetYoutubeSearchedPage -> {
+                    withContext(IO) {
+                        youtubeRepository.getYoutubePage(youtubeStateEvent.youtubeChannel).onEach { dataState ->
+                            _youtubeSearchedPage.value = dataState
+                            _youtubeSearchedPage.value = null
+                        }.launchIn(viewModelScope)
+                    }
+                }
+
+                is YoutubeStateEvent.GetNextYoutubeSearchedPage -> {
+                    youtubeRepository.getYoutubeNextPage(
+                        youtubeStateEvent.nextPageUrl,
+                        youtubeStateEvent.nextPageToken,
+                        youtubeStateEvent.channelTitle,
+                        youtubeStateEvent.channelThumbnail
+                    ).onEach { dataState ->
+                        _youtubeSearchedPage.value = dataState
+                        _youtubeSearchedPage.value = null
+                    }.launchIn(viewModelScope)
+                }
+
 
                 is YoutubeStateEvent.SetFrontPlayer -> {
                     _currentPlayedYoutube.value = youtubeStateEvent.youtubeData
@@ -51,7 +89,7 @@ constructor(
 
                 // 상대방을 초대한 후 유투브 같이보기 실행
                 is YoutubeStateEvent.InviteVideoTogether -> {
-                    youtubeRepository.inviteVideoTogether(youtubeStateEvent.inviterData,  youtubeStateEvent.friendIds, youtubeStateEvent.youtubeData).onEach { dataState ->
+                    youtubeRepository.inviteVideoTogether(youtubeStateEvent.inviterData, youtubeStateEvent.friendIds, youtubeStateEvent.youtubeData).onEach { dataState ->
 
                         if (dataState is DataState.Success) setStateEvent(YoutubeStateEvent.SetVideoTogether(true))
                     }.launchIn(viewModelScope)

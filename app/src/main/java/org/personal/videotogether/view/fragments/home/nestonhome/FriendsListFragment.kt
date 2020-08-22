@@ -3,8 +3,6 @@ package org.personal.videotogether.view.fragments.home.nestonhome
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.Observer
@@ -23,7 +21,9 @@ import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.view.adapter.FriendListAdapter
 import org.personal.videotogether.view.adapter.ItemClickListener
 import org.personal.videotogether.view.fragments.home.nestonhomedetail.HomeDetailBlankFragmentDirections
-import org.personal.videotogether.viewmodel.*
+import org.personal.videotogether.viewmodel.FriendStateEvent
+import org.personal.videotogether.viewmodel.FriendViewModel
+import org.personal.videotogether.viewmodel.UserViewModel
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -35,13 +35,9 @@ constructor(
     private val TAG = javaClass.name
 
     // 네비게이션 + 뷰모델
-    private lateinit var homeNavController: NavController
     private lateinit var homeDetailNavController: NavController
-    private lateinit var backPressCallback: OnBackPressedCallback // 뒤로가기 버튼 콜백
-
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
-    private val socketViewModel by lazy { ViewModelProvider(requireActivity())[SocketViewModel::class.java] }
 
     // 리사이클러 뷰
     private val friendList by lazy { ArrayList<FriendData>() }
@@ -51,33 +47,11 @@ constructor(
         super.onViewCreated(view, savedInstanceState)
 
         val homeDetailFragmentContainer:FragmentContainerView = view.rootView.findViewById(R.id.homeDetailFragmentContainer)
-        homeNavController = Navigation.findNavController(view)
         homeDetailNavController = Navigation.findNavController(homeDetailFragmentContainer)
 
-        setBackPressCallback()
         subscribeObservers()
         setListener()
         buildRecyclerView()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        backPressCallback.remove()
-    }
-
-    private fun setBackPressCallback() {
-        // 비디오 모션 레이아웃 관련 뒤로가기 버튼은 VideoPlayFragment 에서 관리
-        // VideoPlayFragment 뒤로가기 콜백이 disable 되면 실행됨
-        backPressCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
-            killProcess()
-            remove()
-        }
-    }
-
-    private fun killProcess() {
-        requireActivity().moveTaskToBack(true)
-        requireActivity().finishAndRemoveTask()
-        socketViewModel.setStateEvent(SocketStateEvent.DisconnectFromTCPServer)
     }
 
     private fun subscribeObservers() {

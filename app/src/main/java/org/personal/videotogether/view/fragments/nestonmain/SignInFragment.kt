@@ -87,7 +87,6 @@ constructor(
             }
         })
 
-        // TODO : UserRepository Flow 에러 해결 후 사용 가능해짐
         userViewModel.uploadFirebaseToken.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
                 is DataState.Success<Boolean?> -> {
@@ -108,7 +107,7 @@ constructor(
         signUpTV.setOnClickListener(this)
     }
 
-
+    // ------------------ 클릭 이벤트 리스너 ------------------
     override fun onClick(view: View?) {
         when (view?.id) {
 

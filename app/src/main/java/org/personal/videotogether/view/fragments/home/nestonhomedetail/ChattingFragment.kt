@@ -3,6 +3,8 @@ package org.personal.videotogether.view.fragments.home.nestonhomedetail
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -34,7 +36,8 @@ constructor(
 
     private val TAG by lazy { javaClass.name }
 
-    private lateinit var mainNavController: NavController
+    private lateinit var homeDetailNavController: NavController
+    private lateinit var backPressCallback: OnBackPressedCallback // 뒤로가기 버튼 콜백
 
     // args : 채팅 방 데이터 받아옴
     private val argument: ChattingFragmentArgs by navArgs()
@@ -50,14 +53,29 @@ constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mainNavController = Navigation.findNavController(view)
+        homeDetailNavController = Navigation.findNavController(view)
         homeToolbarTB.title = viewHandler.formChatRoomName(chatRoomData.participantList, userViewModel.userData.value!!.id)
 
+        setBackPressCallback()
         subscribeObservers()
         setListener()
         buildRecyclerview()
         socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(JOIN_CHAT_ROOM, chatRoomData.id.toString()))
         chatViewModel.setStateEvent(ChatStateEvent.GetChatMessageFromServer(chatRoomData.id))
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(EXIT_CHAT_ROOM))
+        backPressCallback.remove()
+    }
+
+    private fun setBackPressCallback() {
+        // 비디오 모션 레이아웃 관련 뒤로가기 버튼은 VideoPlayFragment 에서 관리
+        // VideoPlayFragment 뒤로가기 콜백이 disable 되면 실행됨
+        backPressCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            homeDetailNavController.popBackStack()
+        }
     }
 
     private fun subscribeObservers() {
@@ -103,11 +121,6 @@ constructor(
         chattingBoxRV.setHasFixedSize(true)
         chattingBoxRV.layoutManager = layoutManager
         chattingBoxRV.adapter = chatAdapter
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(EXIT_CHAT_ROOM))
     }
 
     override fun onClick(view: View?) {

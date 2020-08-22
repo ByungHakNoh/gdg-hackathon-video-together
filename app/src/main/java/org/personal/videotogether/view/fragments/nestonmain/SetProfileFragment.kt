@@ -62,7 +62,6 @@ constructor(
         setListener()
     }
 
-    @SuppressLint("RestrictedApi")
     private fun subscribeObservers() {
         // live data : 이메일 프로필 업로드
         userViewModel.uploadUserProfileState.observe(viewLifecycleOwner, Observer { dataState ->
@@ -143,6 +142,7 @@ constructor(
         }
     }
 
+    // ------------------ 퍼미션 + ActivityForResult ------------------
     // 갤러리 권한 다이얼로그
     private val requestGalleryPermission by lazy {
         registerForActivityResult(
@@ -193,8 +193,6 @@ constructor(
         }
     }
 
-    //TODO : 받아온 비트맵 추후에 서버로 보내야함
-    // 갤러리로부터 선택한 이미지 bitmap 으로 전환해서 받아오기
     private val getGalleryImage by lazy {
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             CoroutineScope(Main).launch {

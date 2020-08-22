@@ -5,9 +5,13 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +38,9 @@ class YoutubeSearchFragment : Fragment(R.layout.fragment_youtube_search), View.O
 
     private val TAG by lazy { javaClass.name }
 
+    private lateinit var homeNavController: NavController
+    private lateinit var backPressCallback: OnBackPressedCallback // 뒤로가기 버튼 콜백
+
     private val youtubeViewModel: YoutubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
 
     private val youtubeList by lazy { ArrayList<YoutubeData>() }
@@ -46,9 +53,25 @@ class YoutubeSearchFragment : Fragment(R.layout.fragment_youtube_search), View.O
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        homeNavController = Navigation.findNavController(view)
+
+        setBackPressCallback()
         subscribeObservers()
         setListener()
         buildRecyclerView()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        backPressCallback.remove()
+    }
+
+    private fun setBackPressCallback() {
+        // 비디오 모션 레이아웃 관련 뒤로가기 버튼은 VideoPlayFragment 에서 관리
+        // VideoPlayFragment 뒤로가기 콜백이 disable 되면 실행됨
+        backPressCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            homeNavController.popBackStack()
+        }
     }
 
     private fun subscribeObservers() {

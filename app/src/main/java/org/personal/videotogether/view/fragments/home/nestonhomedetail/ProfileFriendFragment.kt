@@ -2,6 +2,8 @@ package org.personal.videotogether.view.fragments.home.nestonhomedetail
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -18,7 +20,8 @@ class ProfileFriendFragment : Fragment(R.layout.fragment_profile_friend), View.O
 
     private val TAG = javaClass.name
 
-    private lateinit var mainNavController: NavController
+    private lateinit var homeDetailNavController: NavController
+    private lateinit var backPressCallback: OnBackPressedCallback // 뒤로가기 버튼 콜백
 
     private val argument: ProfileFriendFragmentArgs by navArgs()
     private val friendData  by lazy { argument.friendData }
@@ -26,9 +29,24 @@ class ProfileFriendFragment : Fragment(R.layout.fragment_profile_friend), View.O
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mainNavController = Navigation.findNavController(view)
+        homeDetailNavController = Navigation.findNavController(view)
+
+        setBackPressCallback()
         setInitView()
         setListener()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        backPressCallback.remove()
+    }
+
+    private fun setBackPressCallback() {
+        // 비디오 모션 레이아웃 관련 뒤로가기 버튼은 VideoPlayFragment 에서 관리
+        // VideoPlayFragment 뒤로가기 콜백이 disable 되면 실행됨
+        backPressCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            homeDetailNavController.popBackStack()
+        }
     }
 
     private fun setInitView() {

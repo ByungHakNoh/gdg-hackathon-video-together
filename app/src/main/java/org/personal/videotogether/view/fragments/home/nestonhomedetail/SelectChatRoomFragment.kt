@@ -3,9 +3,13 @@ package org.personal.videotogether.view.fragments.home.nestonhomedetail
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_select_chat_room.*
@@ -27,6 +31,9 @@ constructor(
 
     private val TAG by lazy { javaClass.name }
 
+    private lateinit var homeDetailNavController: NavController
+    private lateinit var backPressCallback: OnBackPressedCallback // 뒤로가기 버튼 콜백
+
     private val userViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
     private val chatViewModel by lazy { ViewModelProvider(requireActivity())[ChatViewModel::class.java] }
     private val youtubeViewModel: YoutubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
@@ -40,10 +47,27 @@ constructor(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        homeDetailNavController = Navigation.findNavController(view)
+
+        setBackPressCallback()
         subscribeObservers()
         setListener()
         buildRecyclerView()
         chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        backPressCallback.remove()
+    }
+
+    private fun setBackPressCallback() {
+        // 비디오 모션 레이아웃 관련 뒤로가기 버튼은 VideoPlayFragment 에서 관리
+        // VideoPlayFragment 뒤로가기 콜백이 disable 되면 실행됨
+        backPressCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            homeDetailNavController.popBackStack()
+        }
     }
 
     private fun subscribeObservers() {

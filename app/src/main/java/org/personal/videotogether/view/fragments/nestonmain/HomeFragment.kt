@@ -39,11 +39,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
 
     private val TAG = javaClass.name
 
-    private val argument: HomeFragmentArgs by navArgs()
+    private val argument: HomeFragmentArgs by navArgs() // 유투브 같이보기 관련 arguments
 
-    private lateinit var mainNavController: NavController
     private lateinit var homeNavController: NavController
-    private lateinit var homeDetailNavController: NavController
 
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
@@ -53,13 +51,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
 
     private lateinit var broadcastReceiver: BroadcastReceiver
     private val intentFilter by lazy { IntentFilter().apply { addAction(RECEIVE_VIDEO_TOGETHER_INVITATION) } }
-    private val invitationDialog by lazy { InvitationDialog() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setNavigation(view)
-        setBackPressCallback()
+        setNavigation()
         subscribeObservers()
         defineReceiver()
         userViewModel.setStateEvent(UserStateEvent.GetUserDataFromLocal)
@@ -75,46 +71,22 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(broadcastReceiver, intentFilter)
     }
 
-    private fun setNavigation(view: View) {
+    private fun setNavigation() {
         val homeFragmentContainer = childFragmentManager.findFragmentById(R.id.homeFragmentContainer)
-        val homeDetailFragment = childFragmentManager.findFragmentById(R.id.homeDetailFragmentContainer)
-
-        mainNavController = Navigation.findNavController(view)
         homeNavController = homeFragmentContainer!!.findNavController()
-        homeDetailNavController = homeDetailFragment!!.findNavController()
 
         bottomNavBN.setupWithNavController(homeNavController) // 바텀 네비게이션 설정
-    }
-
-    @SuppressLint("RestrictedApi")
-    private fun setBackPressCallback() {
-        // 비디오 모션 레이아웃 관련 뒤로가기 버튼은 VideoPlayFragment 에서 관리
-        // VideoPlayFragment 뒤로가기 콜백이 disable 되면 실행됨
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            when {
-                homeDetailNavController.backStack.count() > 2 -> homeDetailNavController.popBackStack()
-                homeNavController.backStack.count() > 2 -> homeNavController.popBackStack()
-                else -> {
-                    remove()
-                    killProcess()
-                }
-            }
-        }
-    }
-
-    private fun killProcess() {
-        requireActivity().moveTaskToBack(true)
-        requireActivity().finishAndRemoveTask()
-        // TODO : 뒤로가기 버튼으로 액티비티 스택을 지우면 SocketViewModel onCleared 에서 tcp disconnect 가 호출 되지 않음 -> 해결방안 찾기
-        socketViewModel.setStateEvent(SocketStateEvent.DisconnectFromTCPServer)
     }
 
     private fun subscribeObservers() {
         // 사용자 정보를 room 으로부터 가져옴
         // 유저 정보를 이용해 친구 데이터 업데이트, 채팅 소켓 등록을 함
         userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
+            // TODO : 친구 데이터 로컬에서 가져오기로 바꾸기
             friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData!!.id))
+            // TODO : 채팅방 데이터 로컬에서 가져오기로 바꾸기
             chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userData.id))
+            // 유저 Id를 로컬에서 가져오면 -> 서버의 소켓 클라이언트 정보 업데이트 + 서버에서 데이터 수신
             socketViewModel.setStateEvent(SocketStateEvent.RegisterSocket(userData))
             socketViewModel.setStateEvent(SocketStateEvent.ReceiveFromTCPServer)
             checkVideoTogether()
@@ -127,6 +99,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
         })
     }
 
+    // 노티피케이션으로 같이보기 초대받아서 들어올 때 : 소켓 연결이 완료되면 비디오 같이보기 설정 확인
     private fun checkVideoTogether() {
         val youtubeData = argument.youtubeData
         val roomId = argument.roomId
@@ -141,43 +114,37 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
         }
     }
 
+    // 파이어베이스에서 보내주는 데이터 받는 로컬 브로드캐스트 리시버 등록
     private fun defineReceiver() {
-
         broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                Log.i(TAG, "onReceive: 되나 ? $intent")
-                Log.i(TAG, "onReceive: 되나 ? ${intent?.getStringExtra("inviterName")}")
-                Log.i(TAG, "onReceive: 되나 ? ${intent?.getIntExtra("roomId", 0)}")
                 when (intent?.action) {
                     RECEIVE_VIDEO_TOGETHER_INVITATION -> {
                         val roomId = intent.getIntExtra("roomId", 0)
                         val inviterName = intent.getStringExtra("inviterName")
                         val youtubeData = intent.getParcelableExtra<YoutubeData>("youtubeData")
 
+                        val invitationDialog = InvitationDialog()
                         val bundle = Bundle().apply {
                             putInt("roomId", roomId)
                             putString("inviterName", inviterName)
                             putParcelable("youtubeData", youtubeData)
                         }
                         invitationDialog.arguments = bundle
-
-                        if (!invitationDialog.isAdded) {
-
-                            invitationDialog.show(childFragmentManager, "invitationDialog")
-                        }
+                        invitationDialog.show(childFragmentManager, "invitationDialog")
                     }
                 }
             }
         }
     }
 
+    // ------------------ 초대 다이얼로그 리스너 ------------------
     override fun onConfirm(roomId: Int, inviterName: String, youtubeData: YoutubeData) {
         youtubeViewModel.setStateEvent(YoutubeStateEvent.SetVideoTogether(true))
         youtubeViewModel.setStateEvent(YoutubeStateEvent.SetJoiningVideoTogether(true))
         youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(youtubeData))
         socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(JOIN_YOUTUBE_ROOM, roomId.toString()))
 
-        Log.i(TAG, "onConfirm: ${homeNavController.currentDestination?.id}")
         when (homeNavController.currentDestination?.id) {
             R.id.friendsListFragment -> homeNavController.navigate(R.id.action_friendsListFragment_to_youtubeFragment2)
             R.id.chatListFragment -> homeNavController.navigate(R.id.action_chatListFragment_to_youtubeFragment)

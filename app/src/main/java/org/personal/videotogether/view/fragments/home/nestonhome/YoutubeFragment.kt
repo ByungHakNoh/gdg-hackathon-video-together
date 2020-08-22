@@ -3,8 +3,6 @@ package org.personal.videotogether.view.fragments.home.nestonhome
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -33,7 +31,6 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
     private val TAG by lazy { javaClass.name }
 
     private lateinit var homeNavController: NavController
-    private lateinit var backPressCallback: OnBackPressedCallback // 뒤로가기 버튼 콜백
 
     private val youtubeViewModel: YoutubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
 
@@ -49,25 +46,11 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
 
         homeNavController = Navigation.findNavController(view)
 
-        setBackPressCallback()
         subscribeObservers()
         setListener()
         buildRecyclerView()
 
         youtubeViewModel.setStateEvent(YoutubeStateEvent.GetYoutubeDefaultPage("googledevelopers"))
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        backPressCallback.remove()
-    }
-
-    private fun setBackPressCallback() {
-        // 비디오 모션 레이아웃 관련 뒤로가기 버튼은 VideoPlayFragment 에서 관리
-        // VideoPlayFragment 뒤로가기 콜백이 disable 되면 실행됨
-        backPressCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
-            homeNavController.popBackStack()
-        }
     }
 
     private fun subscribeObservers() {

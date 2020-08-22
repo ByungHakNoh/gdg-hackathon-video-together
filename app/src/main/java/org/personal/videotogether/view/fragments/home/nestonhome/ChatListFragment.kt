@@ -3,8 +3,6 @@ package org.personal.videotogether.view.fragments.home.nestonhome
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.Observer
@@ -37,9 +35,8 @@ constructor(
 
     private val TAG by lazy { javaClass.name }
 
-    private lateinit var homeNavController: NavController
     private lateinit var homeDetailNavController: NavController
-    private lateinit var backPressCallback: OnBackPressedCallback // 뒤로가기 버튼 콜백
+
 
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
     private val chatViewModel by lazy { ViewModelProvider(requireActivity())[ChatViewModel::class.java] }
@@ -53,26 +50,11 @@ constructor(
         super.onViewCreated(view, savedInstanceState)
 
         val mainFragmentContainer: FragmentContainerView = view.rootView.findViewById(R.id.homeDetailFragmentContainer)
-        homeNavController = Navigation.findNavController(view)
         homeDetailNavController = Navigation.findNavController(mainFragmentContainer)
 
-        setBackPressCallback()
         subscribeObservers()
         setListener()
         buildRecyclerView()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        backPressCallback.remove()
-    }
-
-    private fun setBackPressCallback() {
-        // 비디오 모션 레이아웃 관련 뒤로가기 버튼은 VideoPlayFragment 에서 관리
-        // VideoPlayFragment 뒤로가기 콜백이 disable 되면 실행됨
-        backPressCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
-            homeNavController.popBackStack()
-        }
     }
 
     private fun subscribeObservers() {

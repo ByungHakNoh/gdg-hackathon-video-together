@@ -4,8 +4,6 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -40,7 +38,6 @@ constructor(
 
     // 네비게이션 컨트롤러
     private lateinit var homeDetailNavController: NavController
-    private lateinit var backPressCallback: OnBackPressedCallback // 뒤로가기 버튼 콜백
 
     // 뷰 모델
     private val userViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
@@ -60,24 +57,9 @@ constructor(
         super.onViewCreated(view, savedInstanceState)
 
         homeDetailNavController = Navigation.findNavController(view)
-
-        setBackPressCallback()
         subscribeObservers()
         setListener()
         buildRecyclerView()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        backPressCallback.remove()
-    }
-
-    private fun setBackPressCallback() {
-        // 비디오 모션 레이아웃 관련 뒤로가기 버튼은 VideoPlayFragment 에서 관리
-        // VideoPlayFragment 뒤로가기 콜백이 disable 되면 실행됨
-        backPressCallback = requireActivity().onBackPressedDispatcher.addCallback(this) {
-            homeDetailNavController.popBackStack()
-        }
     }
 
     private fun subscribeObservers() {

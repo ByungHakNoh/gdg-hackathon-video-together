@@ -109,7 +109,6 @@ constructor(
             R.id.searchBtn -> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_searchFragment2)
             R.id.addFriendBtn-> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_addFriendFragment)
             R.id.myProfileContainerCL -> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_profileMineFragment)
-
         }
     }
 

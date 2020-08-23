@@ -10,4 +10,5 @@ sealed class ChatStateEvent {
     data class AddChatRoom(val userData: UserData, val participantList: List<FriendData>) : ChatStateEvent()
     data class UploadChatMessage(val chatData: ChatData) : ChatStateEvent()
     data class GetChatMessageFromServer(val roomId: Int) : ChatStateEvent()
+    data class GetChatMessageFromLocal(val roomId: Int) : ChatStateEvent()
 }

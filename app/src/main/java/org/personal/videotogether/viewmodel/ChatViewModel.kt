@@ -24,6 +24,9 @@ constructor(
     private val _chatRoomList: MutableLiveData<List<ChatRoomData>?> = MutableLiveData()
     val chatRoomList: LiveData<List<ChatRoomData>?> get() = _chatRoomList
 
+    private val _chatMessage : MutableLiveData<List<ChatData>?> = MutableLiveData()
+    val chatMessage: LiveData<List<ChatData>?> get() = _chatMessage
+
     // ------------------ Add Chat Room live data ------------------
     private val _addChatRoom: MutableLiveData<DataState<ChatRoomData?>> = MutableLiveData()
     val addChatRoom: LiveData<DataState<ChatRoomData?>> get() = _addChatRoom
@@ -33,8 +36,8 @@ constructor(
     val getChatRoomList: LiveData<DataState<List<ChatRoomData>?>> get() = _getChatRoomList
 
     // ------------------ Chat Message live data ------------------
-    private val _getChatMessageList: MutableLiveData<DataState<List<ChatData>>> = MutableLiveData()
-    val getChatMessageList: LiveData<DataState<List<ChatData>>> get() = _getChatMessageList
+    private val _getChatFromServer: MutableLiveData<DataState<List<ChatData>>> = MutableLiveData()
+    val getChatFromServer: LiveData<DataState<List<ChatData>>> get() = _getChatFromServer
 
     fun setStateEvent(chatStateEvent: ChatStateEvent) {
         viewModelScope.launch(IO) {
@@ -67,10 +70,17 @@ constructor(
                     chatRepository.uploadChatMessage( chatStateEvent.chatData)
                 }
 
+                is ChatStateEvent.GetChatMessageFromLocal -> {
+                    chatRepository.getChatMessageFromLocal(chatStateEvent.roomId).onEach { dataState ->
+                        _chatMessage.value = dataState
+                        _chatMessage.value = null
+                    }.launchIn(viewModelScope)
+                }
+
                 is ChatStateEvent.GetChatMessageFromServer -> {
-                    chatRepository.getChatMessageList(chatStateEvent.roomId).onEach {dataState ->
-                        _getChatMessageList.value = dataState
-                        _getChatMessageList.value = null
+                    chatRepository.getChatMessageFromServer(chatStateEvent.roomId).onEach { dataState ->
+                        _getChatFromServer.value = dataState
+                        _getChatFromServer.value = null
                     }.launchIn(viewModelScope)
                 }
             }

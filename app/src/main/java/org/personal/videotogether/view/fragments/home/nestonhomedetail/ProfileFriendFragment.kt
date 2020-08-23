@@ -18,7 +18,7 @@ class ProfileFriendFragment : Fragment(R.layout.fragment_profile_friend), View.O
 
     private val TAG = javaClass.name
 
-    private lateinit var mainNavController: NavController
+    private lateinit var homeDetailNavController: NavController
 
     private val argument: ProfileFriendFragmentArgs by navArgs()
     private val friendData  by lazy { argument.friendData }
@@ -26,7 +26,7 @@ class ProfileFriendFragment : Fragment(R.layout.fragment_profile_friend), View.O
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mainNavController = Navigation.findNavController(view)
+        homeDetailNavController = Navigation.findNavController(view)
         setInitView()
         setListener()
     }

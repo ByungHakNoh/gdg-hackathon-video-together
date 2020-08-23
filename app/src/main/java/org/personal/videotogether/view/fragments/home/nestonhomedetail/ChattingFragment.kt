@@ -34,7 +34,7 @@ constructor(
 
     private val TAG by lazy { javaClass.name }
 
-    private lateinit var mainNavController: NavController
+    private lateinit var homeDetailNavController: NavController
 
     // args : 채팅 방 데이터 받아옴
     private val argument: ChattingFragmentArgs by navArgs()
@@ -50,7 +50,7 @@ constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mainNavController = Navigation.findNavController(view)
+        homeDetailNavController = Navigation.findNavController(view)
         homeToolbarTB.title = viewHandler.formChatRoomName(chatRoomData.participantList, userViewModel.userData.value!!.id)
 
         subscribeObservers()
@@ -69,7 +69,17 @@ constructor(
             }
         })
 
-        chatViewModel.getChatMessageList.observe(viewLifecycleOwner, Observer { dataState->
+        // TODO : 채팅 로컬에서 가져올 수 있도록 구현하기
+        chatViewModel.chatMessage.observe(viewLifecycleOwner, Observer { chatHistory ->
+            if (chatHistory != null) {
+                chatList.clear()
+                chatHistory.forEach { chatData ->  chatList.add(chatData)}
+                chatAdapter.notifyDataSetChanged()
+                chattingBoxRV.scrollToPosition(chatAdapter.itemCount - 1)
+            }
+        })
+
+        chatViewModel.getChatFromServer.observe(viewLifecycleOwner, Observer { dataState->
             when(dataState) {
                 is DataState.Loading-> {
                     Log.i(TAG, "getChatMessageList: 로딩중")
@@ -80,13 +90,13 @@ constructor(
                     chatList.clear()
                     responseChatList.forEach { chatData ->  chatList.add(chatData)}
                     chatAdapter.notifyDataSetChanged()
+                    chattingBoxRV.scrollToPosition(chatAdapter.itemCount - 1)
                 }
                 is DataState.NoData -> {
                     Log.i(TAG, "getChatMessageList: 데이터 없음")
                 }
                 is DataState.Error -> {
                     Log.i(TAG, "getChatMessageList: 서버 연결 문제")
-
                 }
             }
         })

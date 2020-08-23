@@ -37,7 +37,7 @@ constructor(
 
     private val TAG = javaClass.name
 
-    private lateinit var mainNavController: NavController
+    private lateinit var homeDetailNavController: NavController
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
 
@@ -47,7 +47,7 @@ constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mainNavController = Navigation.findNavController(view)
+        homeDetailNavController = Navigation.findNavController(view)
         subscribeObservers()
         setListener()
     }

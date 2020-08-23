@@ -44,6 +44,10 @@ constructor(
                 SearchFragment(viewHandler)
             }
 
+            ProfileMineFragment::class.java.name -> {
+                ProfileMineFragment(dataStateHandler,imageHandler, viewHandler)
+            }
+
             else -> super.instantiate(classLoader, className)
         }
     }

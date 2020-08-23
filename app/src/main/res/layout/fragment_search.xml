@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/mainBackground"
+    android:clickable="true"
+    android:focusable="true"
     tools:context=".view.fragments.home.nestonhomedetail.SearchFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -107,8 +109,8 @@
                 style="@style/SmallTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20sp"
                 android:layout_marginStart="5dp"
+                android:layout_marginTop="20sp"
                 android:text="@string/chat_room"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/friendsListRV" />

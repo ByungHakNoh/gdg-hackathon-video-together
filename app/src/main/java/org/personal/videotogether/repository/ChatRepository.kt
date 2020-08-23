@@ -128,7 +128,7 @@ constructor(
         }
     }
 
-    suspend fun getChatMessageList(roomId: Int): Flow<DataState<List<ChatData>>> = flow {
+    suspend fun getChatMessageFromServer(roomId: Int): Flow<DataState<List<ChatData>>> = flow {
         emit(DataState.Loading)
         try {
 
@@ -145,6 +145,19 @@ constructor(
             e.printStackTrace()
             Log.i(TAG, "getChatMessageList: 에러 발생 - $e")
             emit(DataState.Error(e))
+        }
+    }
+
+    suspend fun getChatMessageFromLocal(roomId: Int): Flow<List<ChatData>?> = flow {
+        try {
+            val chatCacheEntity = chatDAO.getChatList(roomId)
+            val chatDataList = chatCacheMapper.mapFromEntityList(chatCacheEntity)
+            Log.i(TAG, "getChatMessageFromLocal: $chatCacheEntity")
+            emit(chatDataList)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.i(TAG, "getChatMessageList: 에러 발생 - $e")
+            emit(null)
         }
     }
 }

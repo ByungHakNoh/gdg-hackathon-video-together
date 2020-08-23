@@ -9,8 +9,10 @@
     <color name="green">#3DEC55</color>
     <color name="grey">#dcdcdc</color>
     <color name="transparency">#00ff0000</color>
+    <color name="blackTransparency">#80000000</color>
     <color name="lightGrey">#EEEEEE</color>
     <color name="chatBackground">#CCFF33</color>
+    <color name="darkGrey">#707070</color>
 
     <!--  앱에서 자주 사용하는 색  -->
     <color name="logoBackground">#ba000d</color>

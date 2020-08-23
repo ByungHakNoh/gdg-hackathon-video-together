@@ -165,4 +165,33 @@ constructor(
             emit(DataState.Error(e))
         }
     }
+
+    // 유저 프로필을 서버로 업로드하는 메소드
+    suspend fun updateUserProfile(userId:Int, base64Image: String?, name: String): Flow<DataState<UserData>> = flow {
+        emit(DataState.Loading)
+
+        try {
+            val postData = HashMap<String, Any?>().apply {
+                put("userId", userId)
+                put("base64Image", base64Image)
+                put("name", name)
+            }
+            val requestData = RequestData("updateUserProfile", postData)
+            val response = retrofitRequest.updateUserProfile(requestData)
+
+            if (response.code() == 200) {
+                val userData = userMapper.mapFromEntity(response.body()!!)
+                val userCacheEntity = userCacheMapper.mapToEntity(userData)
+                userDAO.insertUserData(userCacheEntity)
+
+                emit(DataState.Success(userData))
+            }
+            if (response.code() == 204) emit(DataState.NoData)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e(TAG, "uploadUser: 서버 통신 에러발생($e)")
+            emit(DataState.Error(e))
+        }
+    }
 }

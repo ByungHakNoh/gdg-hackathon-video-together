@@ -46,7 +46,7 @@ constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val homeDetailFragmentContainer:FragmentContainerView = view.rootView.findViewById(R.id.homeDetailFragmentContainer)
+        val homeDetailFragmentContainer: FragmentContainerView = view.rootView.findViewById(R.id.homeDetailFragmentContainer)
         homeDetailNavController = Navigation.findNavController(homeDetailFragmentContainer)
 
         subscribeObservers()
@@ -62,12 +62,29 @@ constructor(
         })
 
         // 로컬에서 친구 목록 불러오기
-        friendViewModel.friendList.observe(viewLifecycleOwner, Observer { dataState ->
-            friendList.clear()
-            dataState!!.forEach { friendData ->
-                friendList.add(friendData)
+        friendViewModel.friendList.observe(viewLifecycleOwner, Observer { localFriendList ->
+            if (localFriendList == null) {
+                friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userViewModel.userData.value!!.id))
+            } else {
+                if (localFriendList.isEmpty()) {
+                    friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userViewModel.userData.value!!.id))
+                } else {
+                    friendList.clear()
+                    localFriendList.forEach { friendData ->
+                        friendList.add(friendData)
+                    }
+                    friendListAdapter.notifyDataSetChanged()
+                }
             }
-            friendListAdapter.notifyDataSetChanged()
+        })
+
+        // 로컬에 데이터가 없을 때 서버에서 친구 데이터 요청 (새로 로그인 시)
+        friendViewModel.updatedFriendList.observe(viewLifecycleOwner, Observer { dataState ->
+            when (dataState) {
+                is DataState.Loading -> Log.i(TAG, "updatedFriendList: Loading")
+                is DataState.NoData -> Log.i(TAG, "updatedFriendList: No Data")
+                is DataState.Error -> Log.i(TAG, "updatedFriendList: Error - ${dataState.exception}")
+            }
         })
 
         // 서버에서 데이터 가져온 데이터 -> 성공 시 friendList 업데이트

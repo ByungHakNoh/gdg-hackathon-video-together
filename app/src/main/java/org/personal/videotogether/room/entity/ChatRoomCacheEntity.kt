@@ -13,6 +13,12 @@ data class ChatRoomCacheEntity (
     @ColumnInfo(name = "last_chat_message")
     val last_chat_message : String?,
 
+    @ColumnInfo(name = "last_message_time")
+    val last_message_time : String?,
+
+    @ColumnInfo(name = "un_read_chat_count")
+    val un_read_chat_count : Int,
+
     @ColumnInfo(name = "participant_list")
     val participant_list : String?
 )

@@ -1,7 +1,6 @@
 package org.personal.videotogether.view.fragments.nestonmain
 
 import android.Manifest.permission.*
-import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
@@ -25,6 +24,8 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_set_profile.*
+import kotlinx.android.synthetic.main.fragment_set_profile.nameTextCountTV
+import kotlinx.android.synthetic.main.fragment_set_profile.profileIV
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.launchIn
@@ -137,8 +138,8 @@ constructor(
     // ------------------ 카메라 또는 갤러리 선택 다이얼로그 결과 메소드 모음 ------------------
     override fun onChoice(whichDialog: Int, choice: String, itemPosition: Int?, id: Int?) {
         when (choice) {
-            "카메라" -> requestCameraPermission.launch()
             "갤러리" -> requestGalleryPermission.launch()
+            "카메라" -> requestCameraPermission.launch()
         }
     }
 
@@ -156,77 +157,58 @@ constructor(
         }
     }
 
-    // 카메라 권한 다이얼로그
+    // 카메라, 외부 저장소 쓰기 권한 다이얼로그
     private val requestCameraPermission by lazy {
         registerForActivityResult(
-            ActivityResultContracts.RequestPermission(), CAMERA
+            ActivityResultContracts.RequestMultiplePermissions(), arrayOf(WRITE_EXTERNAL_STORAGE, CAMERA)
         ) { isGranted ->
-            if (isGranted) {
-                requestWriteStorage.launch()
-            } else {
-                Toast.makeText(context, "카메라 접근 권한을 취소하셨습니다", Toast.LENGTH_SHORT).show()
+            if (isGranted[WRITE_EXTERNAL_STORAGE]!!) {
+                if (isGranted[CAMERA]!!) {
+                    val values = ContentValues().apply {
+                        put(MediaStore.Images.Media.TITLE, "pillPicture")
+                        put(MediaStore.Images.Media.DESCRIPTION, "From Camera")
+                    }
+                    cameraImage = context?.contentResolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)!!
 
-            }
-        }
-    }
-
-    // 외부 저장소에 쓰기 권한이 수락되면 카메라 켜기
-    private val requestWriteStorage by lazy {
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission(), WRITE_EXTERNAL_STORAGE
-        ) { isGranted ->
-            if (isGranted) {
-                val values = ContentValues().apply {
-                    put(MediaStore.Images.Media.TITLE, "pillPicture")
-                    put(MediaStore.Images.Media.DESCRIPTION, "From Camera")
+                    val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+                        putExtra(MediaStore.EXTRA_OUTPUT, cameraImage)
+                    }
+                    getCameraImage.launch(cameraIntent)
+                } else {
+                    Toast.makeText(requireContext(), "카메라 권한을 취소하셨습니다", Toast.LENGTH_SHORT).show()
                 }
-                cameraImage = context?.contentResolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)!!
-
-                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-                    putExtra(MediaStore.EXTRA_OUTPUT, cameraImage)
-                }
-                getCameraImage.launch(cameraIntent)
             } else {
-                Toast.makeText(context, "저장소 쓰기 권한을 취소하셨습니다", Toast.LENGTH_SHORT).show()
-
+                Toast.makeText(requireContext(), "저장소 쓰기 권한을 취소하셨습니다", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private val getGalleryImage by lazy {
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            CoroutineScope(Main).launch {
-                imageHandler.imageUriToBitmap(requireContext(), uri).onEach { dataState ->
-                    when (dataState) {
-                        is DataState.Success<Bitmap?> -> {
-                            profileIV.setImageBitmap(dataState.data)
-                            profileImageBitmap = dataState.data!!
-                        }
-                        is DataState.Error -> {
-                            Log.i(TAG, "test : Error")
-                        }
-                    }
-                }.launchIn(CoroutineScope(Main))
-            }
+        registerForActivityResult(ActivityResultContracts.GetContent()) { imageUri ->
+            convertUriToBitmap(imageUri)
         }
     }
 
     // 카메라로 찍은 이미지 비트맵으로 전환해서 받아오기
     private val getCameraImage by lazy {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            CoroutineScope(Main).launch {
-                imageHandler.imageUriToBitmap(requireContext(), cameraImage).onEach { dataState ->
-                    when (dataState) {
-                        is DataState.Success<Bitmap?> -> {
-                            profileIV.setImageBitmap(dataState.data)
-                            profileImageBitmap = dataState.data!!
-                        }
-                        is DataState.Error -> {
-                            Log.i(TAG, "test : Error")
-                        }
+            convertUriToBitmap (cameraImage)
+        }
+    }
+
+    private fun convertUriToBitmap (imageUri: Uri) {
+        CoroutineScope(Dispatchers.Main).launch {
+            imageHandler.imageUriToBitmap(requireContext(), imageUri).onEach { dataState ->
+                when (dataState) {
+                    is DataState.Success<Bitmap?> -> {
+                        profileIV.setImageBitmap(dataState.data)
+                        profileImageBitmap = dataState.data!!
                     }
-                }.launchIn(CoroutineScope(Main))
-            }
+                    is DataState.Error -> {
+                        Log.i(TAG, "test : Error")
+                    }
+                }
+            }.launchIn(CoroutineScope(Dispatchers.Main))
         }
     }
 }

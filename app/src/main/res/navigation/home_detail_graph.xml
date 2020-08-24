@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<navigation xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/home_detail_graph"
     app:startDestination="@id/homeDetailBlankFragment">
@@ -24,6 +25,11 @@
         <argument
             android:name="friendData"
             app:argType="org.personal.videotogether.domianmodel.FriendData" />
+        <action
+            android:id="@+id/action_profileFriendFragment_to_chattingFragment"
+            app:destination="@id/chattingFragment"
+            app:popUpTo="@id/profileFriendFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -40,7 +46,7 @@
         android:id="@+id/selectFriendsFragment"
         android:name="org.personal.videotogether.view.fragments.home.nestonhomedetail.SelectFriendFragment"
         android:label="fragment_add_chat_room"
-        tools:layout="@layout/fragment_select_friends" >
+        tools:layout="@layout/fragment_select_friends">
         <argument
             android:name="whichRequest"
             app:argType="string" />
@@ -56,7 +62,7 @@
         android:id="@+id/homeDetailBlankFragment"
         android:name="org.personal.videotogether.view.fragments.home.nestonhomedetail.HomeDetailBlankFragment"
         android:label="fragment_home_detail_blank"
-        tools:layout="@layout/fragment_home_detail_blank" >
+        tools:layout="@layout/fragment_home_detail_blank">
         <action
             android:id="@+id/action_homeDetailBlankFragment_to_selectFriendsFragment"
             app:destination="@id/selectFriendsFragment" />
@@ -83,7 +89,7 @@
         android:id="@+id/searchFragment2"
         android:name="org.personal.videotogether.view.fragments.home.nestonhomedetail.SearchFragment"
         android:label="fragment_search"
-        tools:layout="@layout/fragment_search" >
+        tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/action_searchFragment2_to_profileFriendFragment"
             app:destination="@id/profileFriendFragment" />

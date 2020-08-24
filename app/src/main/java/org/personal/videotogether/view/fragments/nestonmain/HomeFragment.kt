@@ -7,19 +7,20 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.navigation.NavController
-import androidx.navigation.NavDeepLinkBuilder
-import androidx.navigation.Navigation
+import androidx.navigation.*
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.navDeepLink
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,7 +36,7 @@ import org.personal.videotogether.viewmodel.*
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogListener {
+class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogListener, NavController.OnDestinationChangedListener {
 
     private val TAG = javaClass.name
 
@@ -54,12 +55,18 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
     private lateinit var broadcastReceiver: BroadcastReceiver
     private val intentFilter by lazy { IntentFilter().apply { addAction(RECEIVE_VIDEO_TOGETHER_INVITATION) } }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true) // 상단 앱 바 사용
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setNavigation(view)
         setBackPressCallback()
         subscribeObservers()
+        setListener()
         defineReceiver()
         userViewModel.setStateEvent(UserStateEvent.GetUserDataFromLocal)
     }
@@ -75,6 +82,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
     }
 
     private fun setNavigation(view: View) {
+        // 네비게이션 설정
         val homeFragmentContainer = childFragmentManager.findFragmentById(R.id.homeFragmentContainer)
         val homeDetailFragment = childFragmentManager.findFragmentById(R.id.homeDetailFragmentContainer)
 
@@ -83,12 +91,16 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
         homeDetailNavController = homeDetailFragment!!.findNavController()
 
         bottomNavBN.setupWithNavController(homeNavController) // 바텀 네비게이션 설정
+        // 상단 앱바 설정
+        (requireActivity() as AppCompatActivity).setSupportActionBar(homeToolbarTB)
+        val appBarConfiguration = AppBarConfiguration(setOf(R.id.friendsListFragment, R.id.chatListFragment, R.id.youtubeFragment, R.id.youtubeSearchFragment))
+        NavigationUI.setupWithNavController(homeToolbarTB, homeNavController, appBarConfiguration)
     }
 
+    // 비디오 모션 레이아웃 관련 뒤로가기 버튼은 VideoPlayFragment 에서 관리
+    // VideoPlayFragment 뒤로가기 콜백이 disable 되면 실행됨
     @SuppressLint("RestrictedApi")
     private fun setBackPressCallback() {
-        // 비디오 모션 레이아웃 관련 뒤로가기 버튼은 VideoPlayFragment 에서 관리
-        // VideoPlayFragment 뒤로가기 콜백이 disable 되면 실행됨
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             when {
                 homeDetailNavController.backStack.count() > 2 -> homeDetailNavController.popBackStack()
@@ -101,6 +113,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
         }
     }
 
+    // 앱 종료하는 메소드 : 액티비티 백스텍 제거해서 종료
     private fun killProcess() {
         requireActivity().moveTaskToBack(true)
         requireActivity().finishAndRemoveTask()
@@ -112,10 +125,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
         // 사용자 정보를 room 으로부터 가져옴
         // 유저 정보를 이용해 친구 데이터 업데이트, 채팅 소켓 등록을 함
         userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
-            friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData!!.id))
-            chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userData.id))
+            friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromLocal)
+            chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromLocal)
             // 유저 Id를 로컬에서 가져오면 -> 서버의 소켓 클라이언트 정보 업데이트 + 서버에서
-            socketViewModel.setStateEvent(SocketStateEvent.RegisterSocket(userData))
+            socketViewModel.setStateEvent(SocketStateEvent.RegisterSocket(userData!!))
             socketViewModel.setStateEvent(SocketStateEvent.ReceiveFromTCPServer)
             checkVideoTogether()
         })
@@ -127,6 +140,8 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
         })
     }
 
+    // 비디오 같이보기 arguments 가 있는지 확인
+    // arguments 가 존재하면 해당 유투브 재생 및 유투브 같이보기 방 참여
     private fun checkVideoTogether() {
         val youtubeData = argument.youtubeData
         val roomId = argument.roomId
@@ -139,6 +154,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
 
             homeNavController.navigate(R.id.action_friendsListFragment_to_youtubeFragment2)
         }
+    }
+
+    private fun setListener() {
+        homeNavController.addOnDestinationChangedListener(this)
     }
 
     private fun defineReceiver() {
@@ -158,13 +177,19 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
                             putParcelable("youtubeData", youtubeData)
                         }
                         invitationDialog.arguments = bundle
-                        invitationDialog.show(childFragmentManager, "invitationDialog")
+                        if (isAdded) {
+                            Log.i(TAG, "onReceive: isAdded")
+                            invitationDialog.show(childFragmentManager, "invitationDialog")
+                        } else {
+                            Log.i(TAG, "onReceive: isNotAdded")
+                        }
                     }
                 }
             }
         }
     }
 
+    // ------------------ 초대 다이얼로그 리스너 ------------------
     override fun onConfirm(roomId: Int, inviterName: String, youtubeData: YoutubeData) {
         youtubeViewModel.setStateEvent(YoutubeStateEvent.SetVideoTogether(true))
         youtubeViewModel.setStateEvent(YoutubeStateEvent.SetJoiningVideoTogether(true))
@@ -178,5 +203,97 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
             R.id.youtubeSearchFragment -> requireActivity().onBackPressed()
             else -> Log.i(TAG, "onConfirm: ${homeNavController.currentDestination}")
         }
+    }
+
+    // ------------------ 상단 앱바 메뉴 아이템 다이얼로그 리스너 ------------------
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.app_bar_menu, menu)
+
+        when (homeNavController.currentDestination?.label) {
+            "친구 목록" -> {
+                menu.removeItem(R.id.selectFriendsFragment)
+                menu.removeItem(R.id.youtubeSearchFragment)
+            }
+            "채팅 목록" -> {
+                menu.removeItem(R.id.youtubeSearchFragment)
+                menu.removeItem(R.id.addFriendFragment)
+            }
+            "유투브" -> {
+                menu.removeItem(R.id.searchFragment2)
+                menu.removeItem(R.id.selectFriendsFragment)
+                menu.removeItem(R.id.addFriendFragment)
+            }
+        }
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.i(TAG, "onOptionsItemSelected: ${homeNavController.getBackStackEntry(R.id.friendsListFragment)}")
+        when (item.itemId) {
+            R.id.youtubeSearchFragment -> {
+                homeNavController.navigate(R.id.action_youtubeFragment_to_youtubeSearchFragment)
+            }
+            else -> {
+                NavigationUI.onNavDestinationSelected(item, homeDetailNavController)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?) {
+        val removeItemList = ArrayList<Int>()
+        val menu = homeToolbarTB.menu
+        handleAppBarOption(true, View.VISIBLE)
+        menu.clear()
+
+        when (destination.id) {
+
+            R.id.friendsListFragment -> {
+                Log.i(TAG, "onDestinationChanged: friend")
+                removeItemList.apply {
+                    add(R.id.youtubeSearchFragment)
+                    add(R.id.selectFriendsFragment)
+                }
+                refreshMenuItem(menu, removeItemList)
+            }
+
+            R.id.chatListFragment -> {
+                Log.i(TAG, "onDestinationChanged: chat")
+                removeItemList.apply {
+                    add(R.id.youtubeSearchFragment)
+                    add(R.id.addFriendFragment)
+                }
+                refreshMenuItem(menu, removeItemList)
+            }
+
+            R.id.youtubeFragment -> {
+                removeItemList.apply {
+                    add(R.id.searchFragment2)
+                    add(R.id.addFriendFragment)
+                    add(R.id.selectFriendsFragment)
+                }
+                refreshMenuItem(menu, removeItemList)
+            }
+
+            R.id.youtubeSearchFragment -> {
+                handleAppBarOption(false, View.GONE)
+            }
+        }
+    }
+
+    // 상단 앱바 - 유투브 검색 때는 커스텀
+    private fun handleAppBarOption(menuOption: Boolean, appbarVisibility: Int) {
+        setHasOptionsMenu(menuOption) // 상단 앱 바 사용
+        homeAppBarAB.visibility = appbarVisibility
+    }
+
+    private fun refreshMenuItem(menu: Menu, removeItemList: ArrayList<Int>) {
+        val menuInflater = requireActivity().menuInflater
+        menuInflater.inflate(R.menu.app_bar_menu, menu)
+
+        removeItemList.forEach { item ->
+            menu.removeItem(item)
+        }
+        Log.i(TAG, "onDestinationChanged: refresh $menu")
     }
 }

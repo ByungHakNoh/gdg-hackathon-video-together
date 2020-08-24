@@ -6,6 +6,33 @@
     android:layout_height="match_parent"
     tools:context=".view.fragments.nestonmain.HomeFragment">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/homeAppBarAB"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/bar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/homeToolbarTB"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <!--  Home Detail  -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/homeDetailFragmentContainer"
@@ -42,7 +69,7 @@
         app:layout_constraintBottom_toTopOf="@id/line"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeAppBarAB"
         app:navGraph="@navigation/home_nav_graph" />
 
     <View
@@ -50,10 +77,10 @@
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:background="@color/InActive"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavML"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/homeFragmentContainer"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavML"/>
+        app:layout_constraintTop_toBottomOf="@id/homeFragmentContainer" />
 
     <androidx.constraintlayout.motion.widget.MotionLayout
         android:id="@+id/bottomNavML"

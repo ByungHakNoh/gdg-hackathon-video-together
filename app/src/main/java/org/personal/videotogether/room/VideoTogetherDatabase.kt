@@ -2,6 +2,7 @@ package org.personal.videotogether.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import org.personal.videotogether.room.entity.ChatCacheEntity
 import org.personal.videotogether.room.entity.ChatRoomCacheEntity
 import org.personal.videotogether.room.entity.FriendCacheEntity

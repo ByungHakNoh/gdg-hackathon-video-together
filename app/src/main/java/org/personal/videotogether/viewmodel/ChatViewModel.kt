@@ -44,8 +44,8 @@ constructor(
             when (chatStateEvent) {
 
                 is ChatStateEvent.GetChatRoomsFromLocal -> {
-                    chatRepository.getChatRoomFromLocal().onEach { dataState ->
-                        _chatRoomList.value = dataState
+                    chatRepository.getChatRoomFromLocal().onEach { chatRoomList ->
+                        _chatRoomList.value = chatRoomList
                     }.launchIn(viewModelScope)
                 }
 

@@ -6,54 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".view.fragments.home.nestonhome.YoutubeFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/homeAppBarAB"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/bar"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageButton
-                android:id="@+id/backBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10sp"
-                android:background="@color/transparency"
-                android:src="@drawable/ic_baseline_arrow_back_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/homeToolbarTB"
-                android:layout_width="wrap_content"
-                android:layout_height="45dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/backBtn"
-                app:layout_constraintTop_toTopOf="parent"
-                app:title="유투브" />
-
-            <ImageButton
-                android:id="@+id/youtubeSearchBtn"
-                style="@style/ToolbarBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="15sp"
-                android:src="@drawable/youtube_search"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </com.google.android.material.appbar.AppBarLayout>
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshSR"
         android:layout_width="0dp"
@@ -62,7 +14,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/homeAppBarAB">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/youtubePreviewRV"

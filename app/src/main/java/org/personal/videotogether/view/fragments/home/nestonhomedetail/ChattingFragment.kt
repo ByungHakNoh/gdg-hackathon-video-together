@@ -21,14 +21,17 @@ import org.personal.videotogether.repository.SocketRepository.Companion.EXIT_CHA
 import org.personal.videotogether.repository.SocketRepository.Companion.JOIN_CHAT_ROOM
 import org.personal.videotogether.repository.SocketRepository.Companion.SEND_CHAT_MESSAGE
 import org.personal.videotogether.util.DataState
+import org.personal.videotogether.util.SharedPreferenceHelper
 import org.personal.videotogether.util.view.ViewHandler
 import org.personal.videotogether.view.adapter.ChatAdapter
 import org.personal.videotogether.viewmodel.*
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
+// TODO : 채팅 들어가면 해당 채팅 unRead 변경하기
 class ChattingFragment
 constructor(
+    private val sharedPreferenceHelper: SharedPreferenceHelper,
     private val viewHandler: ViewHandler
 ) : Fragment(R.layout.fragment_chatting), View.OnClickListener {
 
@@ -60,6 +63,16 @@ constructor(
         chatViewModel.setStateEvent(ChatStateEvent.GetChatMessageFromServer(chatRoomData.id))
     }
 
+    override fun onResume() {
+        super.onResume()
+        sharedPreferenceHelper.setInt(requireContext(), getText(R.string.current_chat_room_id).toString(), chatRoomData.id)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sharedPreferenceHelper.setInt(requireContext(), getText(R.string.current_chat_room_id).toString(), 0)
+    }
+
     private fun subscribeObservers() {
         socketViewModel.chatMessage.observe(viewLifecycleOwner, Observer { chatData ->
             if (chatData != null) {
@@ -69,15 +82,15 @@ constructor(
             }
         })
 
-        // TODO : 채팅 로컬에서 가져올 수 있도록 구현하기
-        chatViewModel.chatMessage.observe(viewLifecycleOwner, Observer { chatHistory ->
-            if (chatHistory != null) {
-                chatList.clear()
-                chatHistory.forEach { chatData ->  chatList.add(chatData)}
-                chatAdapter.notifyDataSetChanged()
-                chattingBoxRV.scrollToPosition(chatAdapter.itemCount - 1)
-            }
-        })
+//        // TODO : 채팅 로컬에서 가져올 수 있도록 구현하기
+//        chatViewModel.chatMessage.observe(viewLifecycleOwner, Observer { chatHistory ->
+//            if (chatHistory != null) {
+//                chatList.clear()
+//                chatHistory.forEach { chatData ->  chatList.add(chatData)}
+//                chatAdapter.notifyDataSetChanged()
+//                chattingBoxRV.scrollToPosition(chatAdapter.itemCount - 1)
+//            }
+//        })
 
         chatViewModel.getChatFromServer.observe(viewLifecycleOwner, Observer { dataState->
             when(dataState) {

@@ -1,5 +1,6 @@
 package org.personal.videotogether.repository
 
+import android.annotation.SuppressLint
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -19,7 +20,10 @@ import org.personal.videotogether.server.entity.FriendMapper
 import org.personal.videotogether.server.entity.UserMapper
 import org.personal.videotogether.util.DataState
 import java.lang.Exception
+import java.text.SimpleDateFormat
 
+@SuppressLint("SimpleDateFormat")
+@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class ChatRepository
 constructor(
     private val retrofitRequest: RetrofitRequest,
@@ -36,9 +40,22 @@ constructor(
 
     suspend fun getChatRoomFromLocal(): Flow<List<ChatRoomData>?> = flow {
         try {
+//            chatRoomDAO.deleteAllChatRoomData()
             val chatRoomCacheEntityList = chatRoomDAO.getChatRooms()
+            Log.i(TAG, "getChatRoomFromLocal: $chatRoomCacheEntityList")
+
             val chatRoomList = chatRoomCacheMapper.mapFromEntityList(chatRoomCacheEntityList)
-            emit(chatRoomList)
+            val simpleDateFormat = SimpleDateFormat("hh:mm a")
+            val orderedChatRoomList = chatRoomList.sortedByDescending { chatRoom ->
+                if (chatRoom.lastChatTime != null) {
+                    simpleDateFormat.parse(chatRoom.lastChatTime!!).time
+                } else {
+                    0
+                }
+            }
+            Log.i(TAG, "getChatRoomFromLocal: ${orderedChatRoomList[0].unReadChatCount}")
+            Log.i(TAG, "getChatRoomFromLocal: ${orderedChatRoomList[0]}")
+            emit(orderedChatRoomList)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -59,13 +76,20 @@ constructor(
                 val chatRoomList = chatRoomMapper.mapFromEntityList(chatRoomEntityList)
                 val chatRoomCacheEntityList = chatRoomCacheMapper.mapToEntityList(chatRoomList)
 
-                chatRoomDAO.deleteAllChatRoomData()
-
                 chatRoomCacheEntityList.forEach { chatRoomEntity ->
                     chatRoomDAO.insertChatRoom(chatRoomEntity)
                 }
                 val localChatRoomList = chatRoomCacheMapper.mapFromEntityList(chatRoomDAO.getChatRooms())
-                emit(DataState.Success(localChatRoomList))
+                val simpleDateFormat = SimpleDateFormat("hh:mm a")
+                val orderedChatRoomList = chatRoomList.sortedByDescending { chatRoom ->
+                    if (chatRoom.lastChatTime != null) {
+                        simpleDateFormat.parse(chatRoom.lastChatTime!!).time
+                    } else {
+                        0
+                    }
+                }
+
+                emit(DataState.Success(orderedChatRoomList))
             }
             if (response.code() == 204) emit(DataState.NoData)
 
@@ -77,7 +101,6 @@ constructor(
     }
 
     // 채팅방 업로드
-    // TODO : 친구 데이터 id만 보내도 될 것 같음
     suspend fun addChatRoom(userData: UserData, participantList: List<FriendData>): Flow<DataState<ChatRoomData?>> = flow {
         emit(DataState.Loading)
 
@@ -94,6 +117,9 @@ constructor(
             if (response.code() == 200) {
                 val chatRoomEntity = response.body()!!
                 val chatRoomData = chatRoomMapper.mapFromEntity(chatRoomEntity)
+                val chatRoomCacheEntity = chatRoomCacheMapper.mapToEntity(chatRoomData)
+                chatRoomDAO.insertChatRoom(chatRoomCacheEntity)
+
                 emit(DataState.Success(chatRoomData))
             }
             if (response.code() == 204) emit(DataState.NoData)
@@ -105,6 +131,7 @@ constructor(
         }
     }
 
+    // 서버에 채팅 데이터 업로드 하기
     suspend fun uploadChatMessage(chatData: ChatData) {
         try {
             val chatEntity = chatMapper.mapToEntity(chatData)
@@ -128,10 +155,10 @@ constructor(
         }
     }
 
+    // 서버에서 채팅 데이터 가져오기
     suspend fun getChatMessageFromServer(roomId: Int): Flow<DataState<List<ChatData>>> = flow {
         emit(DataState.Loading)
         try {
-
             val response = retrofitRequest.getChatMessageList("getChatMessage", roomId)
             Log.i(TAG, "getChatMessageList: $response")
             if (response.code() == 200) {
@@ -148,16 +175,30 @@ constructor(
         }
     }
 
+    // 로컬에서 채팅 데이터 가져오기
     suspend fun getChatMessageFromLocal(roomId: Int): Flow<List<ChatData>?> = flow {
         try {
             val chatCacheEntity = chatDAO.getChatList(roomId)
             val chatDataList = chatCacheMapper.mapFromEntityList(chatCacheEntity)
-            Log.i(TAG, "getChatMessageFromLocal: $chatCacheEntity")
+
             emit(chatDataList)
         } catch (e: Exception) {
             e.printStackTrace()
             Log.i(TAG, "getChatMessageList: 에러 발생 - $e")
             emit(null)
+        }
+    }
+
+    suspend fun updateChatRoomLastMessage(chatRoomData: ChatRoomData, currentChatRoomId: Int) {
+        try {
+            chatRoomDAO.updateLastChat(chatRoomData.id, chatRoomData.lastChatMessage!!, chatRoomData.lastChatTime!!)
+            if (chatRoomData.id != currentChatRoomId) {
+                chatRoomDAO.updateUnRead(chatRoomData.id)
+                Log.i(TAG, "updateChatRoomLastMessage: working?")
+            }
+            Log.i(TAG, "updateChatRoomLastMessage: ${chatRoomDAO.getChatRooms()}")
+        } catch (e: Exception) {
+            Log.i(TAG, "updateChatRoomLastMessage: 에러 발생 - $e")
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.personal.videotogether.util.SharedPreferenceHelper
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.util.view.ImageHandler
 import org.personal.videotogether.util.view.ViewHandler
@@ -17,7 +18,8 @@ class HomeDetailFragmentFactory
 constructor(
     private val dataStateHandler: DataStateHandler,
     private val imageHandler: ImageHandler,
-    private val viewHandler: ViewHandler
+    private val viewHandler: ViewHandler,
+    private val sharedPreferenceHelper: SharedPreferenceHelper
 ) : FragmentFactory() {
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -33,7 +35,7 @@ constructor(
             }
 
             ChattingFragment::class.java.name -> {
-                ChattingFragment(viewHandler)
+                ChattingFragment(sharedPreferenceHelper, viewHandler)
             }
 
             SelectChatRoomFragment::class.java.name -> {
@@ -45,7 +47,7 @@ constructor(
             }
 
             ProfileMineFragment::class.java.name -> {
-                ProfileMineFragment(dataStateHandler,imageHandler, viewHandler)
+                ProfileMineFragment(dataStateHandler, imageHandler, viewHandler)
             }
 
             else -> super.instantiate(classLoader, className)

@@ -1,5 +1,9 @@
 package org.personal.videotogether.domianmodel
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class ChatData(
     val roomId : Int,
     val senderId : Int,
@@ -7,4 +11,4 @@ data class ChatData(
     val profileImageUrl : String,
     val message : String,
     val messageTime : String?
-)
+) : Parcelable

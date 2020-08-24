@@ -8,17 +8,20 @@
     <fragment
         android:id="@+id/friendsListFragment"
         android:name="org.personal.videotogether.view.fragments.home.nestonhome.FriendsListFragment"
-        android:label="친구 목록"
+        android:label="@string/friend"
         tools:layout="@layout/fragment_friend_list">
         <action
             android:id="@+id/action_friendsListFragment_to_youtubeFragment2"
             app:destination="@id/youtubeFragment" />
+        <action
+            android:id="@+id/action_friendsListFragment_to_chatListFragment"
+            app:destination="@id/chatListFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/chatListFragment"
         android:name="org.personal.videotogether.view.fragments.home.nestonhome.ChatListFragment"
-        android:label="채팅 목록"
+        android:label="@string/chat"
         tools:layout="@layout/fragment_chat_list">
         <action
             android:id="@+id/action_chatListFragment_to_youtubeFragment"
@@ -28,7 +31,7 @@
     <fragment
         android:id="@+id/youtubeFragment"
         android:name="org.personal.videotogether.view.fragments.home.nestonhome.YoutubeFragment"
-        android:label="유투브"
+        android:label="@string/youtube"
         tools:layout="@layout/fragment_youtube">
         <action
             android:id="@+id/action_youtubeFragment_to_youtubeSearchFragment"

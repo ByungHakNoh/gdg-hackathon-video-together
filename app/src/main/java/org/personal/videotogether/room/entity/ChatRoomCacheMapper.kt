@@ -21,6 +21,8 @@ constructor(
         return ChatRoomData(
             id = entity.id,
             lastChatMessage = entity.last_chat_message,
+            lastChatTime = entity.last_message_time,
+            unReadChatCount = entity.un_read_chat_count,
             participantList = participantList,
             isSelected = false
         )
@@ -33,6 +35,8 @@ constructor(
         return ChatRoomCacheEntity(
             id = domainModel.id,
             last_chat_message = domainModel.lastChatMessage,
+            last_message_time = domainModel.lastChatTime,
+            un_read_chat_count = domainModel.unReadChatCount,
             participant_list = participantListJson
         )
     }

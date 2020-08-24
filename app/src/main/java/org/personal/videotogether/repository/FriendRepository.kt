@@ -50,7 +50,7 @@ constructor(
                     friendDAO.insertFriendsData(friendCacheEntity)
                 }
                 val localFriendList = friendCacheMapper.mapFromEntityList(friendDAO.getFriendList())
-                Log.i(TAG, "getFriendListFromServer: worked")
+
                 emit(DataState.Success(localFriendList))
             }
             if (response.code() == 204) {

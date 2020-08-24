@@ -6,9 +6,10 @@
     <string name="firebase_messaging_token">firebaseMessageToken</string>
     <string name="auto_sign_in_key">isAutoSignIn</string>
     <string name="is_app_on">isAppOn</string>
+    <string name="current_chat_room_id">currentChatRoomId</string>
 
     <!--  네비게이션 카테고리  -->
-    <string name="friend_list">친구목록</string>
+    <string name="friend">친구</string>
     <string name="chat">채팅</string>
     <string name="youtube">유투브</string>
     <string name="notice">알림</string>
@@ -42,7 +43,7 @@
     <string name="sign_up_confirm">가입 완료</string>
 
     <!--  친구 관련  -->
-    <string name="friend">친구</string>
+    <string name="friend_list">친구목록</string>
     <string name="search_by_email">이메일 주소로 검색</string>
     <string name="search_by_name">이름으로 검색</string>
     <string name="input_user_email">사용자 이메일을 입력해주세요</string>

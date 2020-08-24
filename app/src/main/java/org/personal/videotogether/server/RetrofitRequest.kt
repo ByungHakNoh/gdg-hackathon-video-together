@@ -25,7 +25,6 @@ interface RetrofitRequest {
     @PUT("profile")
     suspend fun updateUserProfile(@Body requestData: RequestData): Response<UserEntity>
 
-
     // ------------------------ 친구 관련 ------------------------
     @GET("friend-list")
     suspend fun getFriendsList(

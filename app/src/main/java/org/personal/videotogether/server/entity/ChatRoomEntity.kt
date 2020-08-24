@@ -12,6 +12,10 @@ data class ChatRoomEntity (
     @Expose
     val lastChatMessage: String?,
 
+    @SerializedName("last_message_time")
+    @Expose
+    val lastChatTime: String?,
+
     @SerializedName("participant_list")
     @Expose
     val participantList: List<UserEntity>

@@ -23,15 +23,20 @@ class MyApplication : Application() {
             val importanceHigh = NotificationManager.IMPORTANCE_HIGH
 
             // 약물 복용 시 알림
-            val medicineChannel = NotificationChannel(CHAT_NOTIFICATION_CHANNEL_ID, "ChatNotification", importanceHigh)
-            medicineChannel.description = "This channel is for chat message notification"
+            val youtubeChannel = NotificationChannel(YOUTUBE_NOTIFICATION_CHANNEL_ID, "YoutubeNotification", importanceHigh)
+            youtubeChannel.description = "This channel is for Youtube notification"
 
-            getSystemService(NotificationManager::class.java)?.createNotificationChannel(medicineChannel)
+            val chattingChannel = NotificationChannel(YOUTUBE_NOTIFICATION_CHANNEL_ID, "ChattingNotification", importanceHigh)
+            chattingChannel.description = "This channel is for Chatting notification"
+
+            getSystemService(NotificationManager::class.java)?.createNotificationChannel(youtubeChannel)
+            getSystemService(NotificationManager::class.java)?.createNotificationChannel(chattingChannel)
         }
     }
 
     companion object{
         // 채널 ID
         const val CHAT_NOTIFICATION_CHANNEL_ID = "Chatting"
+        const val YOUTUBE_NOTIFICATION_CHANNEL_ID = "youtube"
     }
 }

@@ -13,7 +13,9 @@ constructor(
         return ChatRoomData(
             id = entity.id,
             lastChatMessage = entity.lastChatMessage,
+            lastChatTime = entity.lastChatTime,
             participantList = userMapper.mapFromEntityList(entity.participantList),
+            unReadChatCount = 0,
             isSelected = false
         )
     }
@@ -22,6 +24,7 @@ constructor(
         return ChatRoomEntity(
             id = domainModel.id,
             lastChatMessage = domainModel.lastChatMessage,
+            lastChatTime = domainModel.lastChatTime,
             participantList = userMapper.mapToEntityList(domainModel.participantList)
         )
     }

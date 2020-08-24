@@ -12,14 +12,10 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_chat_list.*
-import kotlinx.android.synthetic.main.fragment_chat_list.backBtn
 import kotlinx.android.synthetic.main.fragment_chat_list.chatRoomListRV
-import kotlinx.android.synthetic.main.fragment_friend_list.*
 import kotlinx.android.synthetic.main.fragment_friend_list.friendsListRV
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.domianmodel.FriendData

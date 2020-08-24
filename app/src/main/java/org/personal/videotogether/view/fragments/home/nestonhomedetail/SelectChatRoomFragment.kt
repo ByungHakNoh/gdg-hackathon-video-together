@@ -1,6 +1,7 @@
 package org.personal.videotogether.view.fragments.home.nestonhomedetail
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -13,6 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.repository.SocketRepository.Companion.CREATE_YOUTUBE_ROOM
+import org.personal.videotogether.util.DataState
 import org.personal.videotogether.util.view.ViewHandler
 import org.personal.videotogether.view.adapter.ChatRoomAdapter
 import org.personal.videotogether.view.adapter.ItemClickListener
@@ -43,17 +45,40 @@ constructor(
         subscribeObservers()
         setListener()
         buildRecyclerView()
-        chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
     }
 
     private fun subscribeObservers() {
-
+        // 로컬에 데이터가 없으면(새로 로그인을 하게되면) -> 서버에서 데이터 가져오기
         chatViewModel.chatRoomList.observe(viewLifecycleOwner, Observer { localChatRoomList ->
-            chatRoomList.clear()
-            localChatRoomList!!.forEach { chatRoomData ->
-                chatRoomList.add(chatRoomData)
+
+            if (localChatRoomList == null) {
+                chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
+            } else {
+                if (localChatRoomList.isEmpty()) {
+                    chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
+                } else {
+                    chatRoomList.clear()
+                    localChatRoomList.forEach { chatRoomData ->
+                        chatRoomList.add(chatRoomData)
+                    }
+                    chatRoomAdapter.notifyDataSetChanged()
+                }
             }
-            chatRoomAdapter.notifyDataSetChanged()
+        })
+
+        // 서버에서 채팅방 가져오는 라이브 데이터 -> 성공 시 채팅방 리스트 라이브 데이터 업데이트
+        chatViewModel.getChatRoomList.observe(viewLifecycleOwner, Observer { dataState ->
+            when (dataState) {
+                is DataState.Loading -> {
+                    Log.i(TAG, "getChatRoomList: 로딩")
+                }
+                is DataState.NoData -> {
+                    Log.i(TAG, "getChatRoomList: 데이터 없음")
+                }
+                is DataState.Error -> {
+                    Log.i(TAG, "getChatRoomList: 에러 발생")
+                }
+            }
         })
     }
 

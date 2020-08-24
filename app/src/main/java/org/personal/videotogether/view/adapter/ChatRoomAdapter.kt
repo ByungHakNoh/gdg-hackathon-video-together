@@ -32,9 +32,11 @@ constructor(
 
         val chatRoomProfileIV: ImageView = itemView.findViewById(R.id.chatRoomProfileIV)
         val nameTV: TextView = itemView.findViewById(R.id.nameTV)
-        val participantCountTV :TextView = itemView.findViewById(R.id.participantsCountTV)
+        val participantCountTV: TextView = itemView.findViewById(R.id.participantsCountTV)
         val latestChatMessageTV: TextView = itemView.findViewById(R.id.latestChatMessageTV)
-        val checkBoxCB : CheckBox = itemView.findViewById(R.id.checkboxCB)
+        val latestMessageTimeTV: TextView = itemView.findViewById(R.id.latestMessageTimeTV)
+        val unReadMessageCountTV: TextView = itemView.findViewById(R.id.unReadMessageCountTV)
+        val checkBoxCB: CheckBox = itemView.findViewById(R.id.checkboxCB)
 
         override fun onClick(view: View?) {
 
@@ -62,14 +64,22 @@ constructor(
         Glide.with(context).load(chatRoomData.participantList[1].profileImageUrl).into(holder.chatRoomProfileIV)
         holder.nameTV.text = viewHandler.formChatRoomName(chatRoomData.participantList, myUserId)
         holder.latestChatMessageTV.text = chatRoomData.lastChatMessage
-        holder.participantCountTV.text =  if (participantCount > 1) {
+        holder.latestMessageTimeTV.text = chatRoomData.lastChatTime
+        holder.participantCountTV.text = if (participantCount > 1) {
             participantCount.toString()
-        }  else {
+        } else {
             ""
         }
 
+        if (chatRoomData.unReadChatCount == 0) {
+            holder.unReadMessageCountTV.visibility = View.GONE
+        } else {
+            holder.unReadMessageCountTV.visibility = View.VISIBLE
+            holder.unReadMessageCountTV.text = chatRoomData.unReadChatCount.toString()
+        }
+
         if (isSelectable) {
-            if (chatRoomData.isSelected != null)  {
+            if (chatRoomData.isSelected != null) {
                 holder.checkBoxCB.isChecked = chatRoomData.isSelected!!
             }
         }

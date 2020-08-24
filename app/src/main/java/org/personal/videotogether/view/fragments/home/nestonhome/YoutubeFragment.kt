@@ -26,7 +26,7 @@ import org.personal.videotogether.viewmodel.YoutubeViewModel
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
+class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private val TAG by lazy { javaClass.name }
 
@@ -34,6 +34,7 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
 
     private val youtubeViewModel: YoutubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
 
+    // 유투브 리사이클러 뷰 관련
     private val youtubeList by lazy { ArrayList<YoutubeData>() }
     private val youtubeAdapter by lazy { YoutubeAdapter(this, youtubeList, this) }
     private lateinit var scrollListener: InfiniteScrollListener
@@ -80,8 +81,6 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
 
     private fun setListener() {
         swipeRefreshSR.setOnRefreshListener(this)
-        backBtn.setOnClickListener(this)
-        youtubeSearchBtn.setOnClickListener(this)
     }
 
     private fun buildRecyclerView() {
@@ -102,14 +101,6 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
             }
         }
         youtubePreviewRV.addOnScrollListener(scrollListener)
-    }
-
-    // ------------------ 클릭 리스너 메소드 모음 ------------------
-    override fun onClick(view: View?) {
-        when (view?.id) {
-            R.id.backBtn -> requireActivity().onBackPressed()
-            R.id.youtubeSearchBtn -> homeNavController.navigate(R.id.action_youtubeFragment_to_youtubeSearchFragment)
-        }
     }
 
     // ------------------ 리사이클러뷰 아이템 클릭 리스너 메소드 모음 ------------------

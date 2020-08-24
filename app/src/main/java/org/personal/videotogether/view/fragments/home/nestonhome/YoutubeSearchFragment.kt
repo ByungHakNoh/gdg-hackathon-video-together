@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_youtube.backBtn
 import kotlinx.android.synthetic.main.fragment_youtube.swipeRefreshSR
 import kotlinx.android.synthetic.main.fragment_youtube.youtubePreviewRV
 import kotlinx.android.synthetic.main.fragment_youtube_search.*
@@ -77,7 +76,6 @@ class YoutubeSearchFragment : Fragment(R.layout.fragment_youtube_search), View.O
         })
     }
 
-
     private fun setListener() {
         backBtn.setOnClickListener(this)
         searchET.setOnKeyListener(this)
@@ -110,6 +108,7 @@ class YoutubeSearchFragment : Fragment(R.layout.fragment_youtube_search), View.O
         }
     }
 
+    // ------------------ 검색 키 리스너 메소드 모음 ------------------
     override fun onKey(view: View?, keyCode: Int, keyEvent: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_ENTER) {
             if (keyEvent?.action == KeyEvent.ACTION_UP) {
@@ -128,6 +127,7 @@ class YoutubeSearchFragment : Fragment(R.layout.fragment_youtube_search), View.O
         return false
     }
 
+    // ------------------ 아이템 클릭 리스너 메소드 모음 ------------------
     override fun onItemClick(view: View?, itemPosition: Int) {
         val youtubeData = youtubeList[itemPosition]
         youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(youtubeData))

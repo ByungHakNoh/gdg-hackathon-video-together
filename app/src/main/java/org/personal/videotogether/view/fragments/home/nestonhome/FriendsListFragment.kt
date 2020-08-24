@@ -55,13 +55,13 @@ constructor(
     }
 
     private fun subscribeObservers() {
-        // 사용자 정보를 room 으로부터 가져옴
+        // 이미 가져온 유저 데이터 사용
         userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
             Glide.with(requireContext()).load(userData!!.profileImageUrl).into(profileIV)
             nameTV.text = userData.name
         })
 
-        // 친구 목록 불러오기
+        // 로컬에서 친구 목록 불러오기
         friendViewModel.friendList.observe(viewLifecycleOwner, Observer { dataState ->
             friendList.clear()
             dataState!!.forEach { friendData ->
@@ -70,6 +70,7 @@ constructor(
             friendListAdapter.notifyDataSetChanged()
         })
 
+        // 서버에서 데이터 가져온 데이터 -> 성공 시 friendList 업데이트
         friendViewModel.updatedFriendList.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
                 is DataState.Loading -> {
@@ -91,8 +92,6 @@ constructor(
 
     private fun setListener() {
         myProfileContainerCL.setOnClickListener(this)
-        searchBtn.setOnClickListener(this)
-        addFriendBtn.setOnClickListener(this)
     }
 
     private fun buildRecyclerView() {
@@ -106,8 +105,6 @@ constructor(
     // ------------------ 클릭 리스너 메소드 모음 ------------------
     override fun onClick(view: View?) {
         when (view?.id) {
-            R.id.searchBtn -> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_searchFragment2)
-            R.id.addFriendBtn-> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_addFriendFragment)
             R.id.myProfileContainerCL -> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_profileMineFragment)
         }
     }

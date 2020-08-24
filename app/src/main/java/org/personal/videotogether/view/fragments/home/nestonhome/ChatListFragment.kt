@@ -31,7 +31,7 @@ class ChatListFragment
 constructor(
     private val dataStateHandler: DataStateHandler,
     private val viewHandler: ViewHandler
-) : Fragment(R.layout.fragment_chat_list), ItemClickListener, View.OnClickListener {
+) : Fragment(R.layout.fragment_chat_list), ItemClickListener {
 
     private val TAG by lazy { javaClass.name }
 
@@ -53,7 +53,6 @@ constructor(
         homeDetailNavController = Navigation.findNavController(mainFragmentContainer)
 
         subscribeObservers()
-        setListener()
         buildRecyclerView()
     }
 
@@ -66,14 +65,11 @@ constructor(
             chatRoomAdapter.notifyDataSetChanged()
         })
 
-        // 친구 검색하기
+        // 서버에서 채팅방 가져오는 라이브 데이터 -> 성공 시 채팅방 리스트 라이브 데이터 업데이트
         chatViewModel.getChatRoomList.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
                 is DataState.Loading -> {
                     Log.i(TAG, "getChatRoomList: 로딩")
-                }
-                is DataState.Success<List<ChatRoomData>?> -> {
-                    Log.i(TAG, "getChatRoomList: 성공")
                 }
                 is DataState.NoData -> {
                     Log.i(TAG, "getChatRoomList: 데이터 없음")
@@ -85,31 +81,12 @@ constructor(
         })
     }
 
-    private fun setListener() {
-        backBtn.setOnClickListener(this)
-        searchBtn.setOnClickListener(this)
-        addChatRoomBtn.setOnClickListener(this)
-    }
-
     private fun buildRecyclerView() {
         val layoutManager = LinearLayoutManager(requireContext())
 
         chatRoomListRV.setHasFixedSize(true)
         chatRoomListRV.layoutManager = layoutManager
         chatRoomListRV.adapter = chatRoomAdapter
-    }
-
-    // ------------------ 클릭 리스너 ------------------
-    override fun onClick(view: View?) {
-        when (view?.id) {
-            R.id.backBtn -> requireActivity().onBackPressed()
-            R.id.searchBtn -> homeDetailNavController.navigate(R.id.action_homeDetailBlankFragment_to_searchFragment2)
-            R.id.addChatRoomBtn -> {
-                val request = "addChatRoom"
-                val action = HomeDetailBlankFragmentDirections.actionHomeDetailBlankFragmentToSelectFriendsFragment(request)
-                homeDetailNavController.navigate(action)
-            }
-        }
     }
 
     // ------------------ 리사이클러뷰 아이템 클릭 리스너 ------------------

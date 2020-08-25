@@ -4,10 +4,13 @@
 
     <!--  인터넷관련  -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
     <!--  갤러리, 카메라 관련  -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 
     <application
         android:name=".MyApplication"
@@ -17,6 +20,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppDarkTheme">
+        <meta-data
+            android:name="io.sentry.dsn"
+            android:value="https://94899e959a144d99abef9f1e3acca503@o438649.ingest.sentry.io/5403740" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

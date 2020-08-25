@@ -193,12 +193,21 @@ constructor(
         try {
             chatRoomDAO.updateLastChat(chatRoomData.id, chatRoomData.lastChatMessage!!, chatRoomData.lastChatTime!!)
             if (chatRoomData.id != currentChatRoomId) {
-                chatRoomDAO.updateUnRead(chatRoomData.id)
+                chatRoomDAO.addUnReadCount(chatRoomData.id)
                 Log.i(TAG, "updateChatRoomLastMessage: working?")
             }
             Log.i(TAG, "updateChatRoomLastMessage: ${chatRoomDAO.getChatRooms()}")
         } catch (e: Exception) {
             Log.i(TAG, "updateChatRoomLastMessage: 에러 발생 - $e")
+        }
+    }
+
+    suspend fun refreshUnReadCount(roomId:Int) {
+        try {
+            chatRoomDAO.refreshUnReadCount(roomId)
+            Log.i(TAG, "refreshUnReadCount: refreshed")
+        }catch (e : Exception) {
+            Log.i(TAG, "refreshUnReadCount: 에러 발생 - $e")
         }
     }
 }

@@ -70,6 +70,7 @@ constructor(
                     chatRepository.uploadChatMessage( chatStateEvent.chatData)
                 }
 
+                // 사용 X
                 is ChatStateEvent.GetChatMessageFromLocal -> {
                     chatRepository.getChatMessageFromLocal(chatStateEvent.roomId).onEach { dataState ->
                         _chatMessage.value = dataState
@@ -82,6 +83,10 @@ constructor(
                         _getChatFromServer.value = dataState
                         _getChatFromServer.value = null
                     }.launchIn(viewModelScope)
+                }
+
+                is ChatStateEvent.RefreshUnReadCount -> {
+                    chatRepository.refreshUnReadCount(chatStateEvent.roomId)
                 }
             }
         }

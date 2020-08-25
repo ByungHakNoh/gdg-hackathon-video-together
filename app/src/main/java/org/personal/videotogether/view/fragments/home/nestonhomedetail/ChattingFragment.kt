@@ -61,6 +61,8 @@ constructor(
         buildRecyclerview()
         socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(JOIN_CHAT_ROOM, chatRoomData.id.toString()))
         chatViewModel.setStateEvent(ChatStateEvent.GetChatMessageFromServer(chatRoomData.id))
+        chatViewModel.setStateEvent(ChatStateEvent.RefreshUnReadCount(chatRoomData.id))
+        chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromLocal)
     }
 
     override fun onResume() {

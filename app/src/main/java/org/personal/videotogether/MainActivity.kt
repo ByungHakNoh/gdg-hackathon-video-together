@@ -37,4 +37,8 @@ class MainActivity : AppCompatActivity() {
         sharedPreferenceHelper.setBoolean(this, getText(R.string.is_app_on).toString(), false)
         Log.i("TAG", "onCreate: ${sharedPreferenceHelper.getBoolean(this, getText(R.string.is_app_on).toString() )}")
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
 }

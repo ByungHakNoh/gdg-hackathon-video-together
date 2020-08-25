@@ -5,16 +5,12 @@ import org.personal.videotogether.domianmodel.ChatData
 import org.personal.videotogether.domianmodel.PlayerStateData
 import org.personal.videotogether.domianmodel.UserData
 import org.personal.videotogether.domianmodel.YoutubeJoinRoomData
-import org.personal.videotogether.server.RetrofitRequest
 import org.personal.videotogether.server.TCPClient
 import java.lang.Exception
 import java.lang.Float.parseFloat
 import java.lang.Integer.parseInt
 
-class SocketRepository
-constructor(
-    private val retrofitRequest: RetrofitRequest
-) {
+class SocketRepository {
     private val TAG by lazy { javaClass.name }
 
     private lateinit var tcpClient: TCPClient
@@ -46,14 +42,14 @@ constructor(
     }
 
     fun disConnectFromTCPServer() {
-
+        Log.i(TAG, "sendToTCPServer: disconnect")
         try {
             tcpClient.writeMessage("quit")
 
             isTCPClientStopped = true
             isSocketRegistered = false
 
-        }catch (e : Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
             Log.e(TAG, "disConnectFromTCPServer: $e")
         }
@@ -67,7 +63,7 @@ constructor(
             val socketInfo = "registerUserInfo@${userData.id}@${userData.name}@${userData.profileImageUrl}"
             tcpClient.writeMessage(socketInfo)
 
-        }catch (e : Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
             Log.e(TAG, "registerSocket: $e")
         }
@@ -97,7 +93,7 @@ constructor(
                     }
                 }
             }
-            tcpClient.socketClose()
+//            tcpClient.socketClose()
             isReceivingMessage = false
             Log.i(TAG, "receiveFromTCPServer: receiving data stop")
 
@@ -108,14 +104,14 @@ constructor(
     }
 
     fun sendToTCPServer(flag: String, roomId: String?, message: String?) {
-
+        Log.i(TAG, "sendToTCPServer: $message")
         try {
             val formedMessage = "$flag@$roomId@$message"
 
             tcpClient.writeMessage(formedMessage)
             Log.i(TAG, "전송 완료")
 
-        }catch (e : Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
             Log.e(TAG, "sendToTCPServer: $e")
         }
@@ -127,7 +123,7 @@ constructor(
         val senderName = splitMessageData[3]
         val profileImageUrl = splitMessageData[4]
         val message = splitMessageData[5]
-        val messageTime  = splitMessageData[6]
+        val messageTime = splitMessageData[6]
 
         return ChatData(roomId, userId, senderName, profileImageUrl, message, messageTime)
     }

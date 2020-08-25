@@ -84,9 +84,7 @@ object RepositoryModule {
 
     @Singleton
     @Provides
-    fun provideSocketRepository(
-        retrofitRequest: RetrofitRequest
-    ): SocketRepository {
-        return SocketRepository(retrofitRequest)
+    fun provideSocketRepository(): SocketRepository {
+        return SocketRepository()
     }
 }

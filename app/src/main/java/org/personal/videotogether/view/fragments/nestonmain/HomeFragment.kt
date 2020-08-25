@@ -24,6 +24,10 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
+import io.sentry.Sentry
+import io.sentry.android.AndroidSentryClientFactory
+import io.sentry.event.BreadcrumbBuilder
+import io.sentry.event.UserBuilder
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
@@ -31,8 +35,8 @@ import org.personal.videotogether.domianmodel.YoutubeData
 import org.personal.videotogether.repository.SocketRepository.Companion.JOIN_YOUTUBE_ROOM
 import org.personal.videotogether.service.MyFirebaseMessagingService.Companion.RECEIVE_VIDEO_TOGETHER_INVITATION
 import org.personal.videotogether.view.dialog.InvitationDialog
-import org.personal.videotogether.view.fragments.home.nestonhome.FriendsListFragmentDirections
 import org.personal.videotogether.viewmodel.*
+import java.lang.Exception
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -68,7 +72,24 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
         subscribeObservers()
         setListener()
         defineReceiver()
+        testSentry()
         userViewModel.setStateEvent(UserStateEvent.GetUserDataFromLocal)
+    }
+
+    // TODO : 지우기
+    private fun testSentry() {
+        val sentryDSN = "https://94899e959a144d99abef9f1e3acca503@o438649.ingest.sentry.io/5403740"
+        Sentry.init(sentryDSN, AndroidSentryClientFactory(requireContext()))
+        Sentry.getContext().user = UserBuilder().setUsername("visitors").build()
+
+        Sentry.getContext().recordBreadcrumb(BreadcrumbBuilder().setMessage("test").build())
+        try {
+            val integer = 3
+            val string = Integer.valueOf("df")
+            val test = integer + string
+        }catch (e: Exception) {
+            Sentry.capture(e)
+        }
     }
 
     override fun onResume() {
@@ -115,10 +136,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
 
     // 앱 종료하는 메소드 : 액티비티 백스텍 제거해서 종료
     private fun killProcess() {
-        requireActivity().moveTaskToBack(true)
-        requireActivity().finishAndRemoveTask()
+
         // TODO : 뒤로가기 버튼으로 액티비티 스택을 지우면 SocketViewModel onCleared 에서 tcp disconnect 가 호출 되지 않음 -> 해결방안 찾기
         socketViewModel.setStateEvent(SocketStateEvent.DisconnectFromTCPServer)
+        requireActivity().moveTaskToBack(true)
+        requireActivity().finishAndRemoveTask()
     }
 
     private fun subscribeObservers() {

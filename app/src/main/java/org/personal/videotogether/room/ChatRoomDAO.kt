@@ -18,7 +18,10 @@ interface ChatRoomDAO {
     suspend fun updateLastChat(roomId: Int, lastChatMessage: String, lastChatTime: String): Int
 
     @Query("UPDATE chat_room SET un_read_chat_count = un_read_chat_count+1 WHERE id = :roomId")
-    suspend fun updateUnRead(roomId: Int): Int
+    suspend fun addUnReadCount(roomId: Int): Int
+
+    @Query("UPDATE chat_room SET un_read_chat_count = 0 WHERE id = :roomId")
+    suspend fun refreshUnReadCount(roomId: Int): Int
 
     @Update
     suspend fun updateChatRoomData(vararg chatRoomCacheEntity: ChatRoomCacheEntity)

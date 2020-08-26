@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.personal.videotogether.domianmodel.InviteYoutubeData
 import org.personal.videotogether.domianmodel.YoutubeData
 import org.personal.videotogether.domianmodel.YoutubePageData
 import org.personal.videotogether.repository.YoutubeRepository
@@ -27,6 +28,9 @@ constructor(
 
     private val _youtubeSearchedPage: MutableLiveData<DataState<YoutubePageData?>> = MutableLiveData()
     val youtubeSearchedPage: LiveData<DataState<YoutubePageData?>> get() = _youtubeSearchedPage
+
+    private val _youtubeNotificationData: MutableLiveData<InviteYoutubeData?> = MutableLiveData()
+    val youtubeNotificationData: LiveData<InviteYoutubeData?> get() = _youtubeNotificationData
 
     // 유투브 재생 데이터
     private val _currentPlayedYoutube: MutableLiveData<YoutubeData?> = MutableLiveData()
@@ -112,6 +116,12 @@ constructor(
                     _setVideoTogether.value = null
                     _isJoiningVideoTogether.value = null
                     _currentPlayedYoutube.value = null
+                }
+
+                // ------------------ 채팅 노티피케이션 관련 ------------------
+                is YoutubeStateEvent.OnNotification -> {
+                    _youtubeNotificationData.value = youtubeStateEvent.inviteYoutubeData
+                    _youtubeNotificationData.value = null
                 }
             }
         }

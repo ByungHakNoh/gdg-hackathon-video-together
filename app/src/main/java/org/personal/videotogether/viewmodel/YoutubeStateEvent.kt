@@ -1,5 +1,6 @@
 package org.personal.videotogether.viewmodel
 
+import org.personal.videotogether.domianmodel.InviteYoutubeData
 import org.personal.videotogether.domianmodel.UserData
 import org.personal.videotogether.domianmodel.YoutubeData
 
@@ -13,4 +14,5 @@ sealed class YoutubeStateEvent {
     data class SetJoiningVideoTogether(val isJoining: Boolean) : YoutubeStateEvent()
     data class InviteVideoTogether(val inviterData: UserData, val friendIds: List<Int>, val youtubeData: YoutubeData) : YoutubeStateEvent()
     object SignOut: YoutubeStateEvent()
+    data class OnNotification(val inviteYoutubeData: InviteYoutubeData) : YoutubeStateEvent()
 }

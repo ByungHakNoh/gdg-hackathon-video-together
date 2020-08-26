@@ -29,6 +29,9 @@ constructor(
 //    private val _chatMessage : MutableLiveData<List<ChatData>?> = MutableLiveData()
 //    val chatMessage: LiveData<List<ChatData>?> get() = _chatMessage
 
+    private val _chatNotificationData: MutableLiveData<ChatRoomData?> = MutableLiveData()
+    val chatNotificationData: LiveData<ChatRoomData?> get() = _chatNotificationData
+
     // ------------------ Add Chat Room live data ------------------
     private val _addChatRoom: MutableLiveData<DataState<ChatRoomData?>> = MutableLiveData()
     val addChatRoom: LiveData<DataState<ChatRoomData?>> get() = _addChatRoom
@@ -92,6 +95,14 @@ constructor(
 
                 is ChatStateEvent.SignOut -> {
                     withContext(Main) { _chatRoomList.value = null }
+                }
+
+                // ------------------ 채팅 노티피케이션 관련 ------------------
+                is ChatStateEvent.OnNotification -> {
+                    withContext(Main) {
+                        _chatNotificationData.value = chatStateEvent.chatRoomData
+                        _chatNotificationData.value = null
+                    }
                 }
             }
         }

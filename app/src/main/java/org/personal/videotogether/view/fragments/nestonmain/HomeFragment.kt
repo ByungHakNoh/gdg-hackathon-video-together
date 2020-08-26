@@ -24,22 +24,19 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
-import io.sentry.Sentry
-import io.sentry.android.AndroidSentryClientFactory
-import io.sentry.event.BreadcrumbBuilder
-import io.sentry.event.UserBuilder
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
+import org.personal.videotogether.domianmodel.ChatRoomData
+import org.personal.videotogether.domianmodel.InviteYoutubeData
 import org.personal.videotogether.domianmodel.YoutubeData
-import org.personal.videotogether.repository.SocketRepository
 import org.personal.videotogether.repository.SocketRepository.Companion.JOIN_YOUTUBE_ROOM
 import org.personal.videotogether.service.MyFirebaseMessagingService.Companion.RECEIVE_VIDEO_TOGETHER_INVITATION
 import org.personal.videotogether.util.SharedPreferenceHelper
 import org.personal.videotogether.view.dialog.AlertDialog
 import org.personal.videotogether.view.dialog.InvitationDialog
+import org.personal.videotogether.view.fragments.home.nestonhomedetail.HomeDetailBlankFragmentDirections
 import org.personal.videotogether.viewmodel.*
-import java.lang.Exception
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -135,7 +132,7 @@ constructor(
                 // 유저 Id를 로컬에서 가져오면 -> 서버의 소켓 클라이언트 정보 업데이트 + 서버에서
                 socketViewModel.setStateEvent(SocketStateEvent.RegisterSocket(userData))
                 socketViewModel.setStateEvent(SocketStateEvent.ReceiveFromTCPServer)
-                checkVideoTogether()
+                checkNotificationIntent()
             }
         })
 
@@ -143,6 +140,19 @@ constructor(
         youtubeViewModel.currentPlayedYoutube.observe(viewLifecycleOwner, Observer { youtubeData ->
             if (youtubeData == null) videoFragmentContainer.visibility = View.GONE
             else videoFragmentContainer.visibility = View.VISIBLE
+        })
+
+        chatViewModel.chatNotificationData.observe(viewLifecycleOwner, Observer { chatRoomData ->
+            if (chatRoomData != null) {
+                val action = HomeDetailBlankFragmentDirections.actionHomeDetailBlankFragmentToChattingFragment(chatRoomData)
+                homeDetailNavController.navigate(action)
+            }
+        })
+
+        youtubeViewModel.youtubeNotificationData.observe(viewLifecycleOwner, Observer { inviteYoutubeData ->
+            if (inviteYoutubeData != null) {
+                notificationToVideoTogether(inviteYoutubeData)
+            }
         })
     }
 
@@ -193,6 +203,36 @@ constructor(
                 }
             }
         }
+    }
+
+    private fun checkNotificationIntent() {
+        if (requireActivity().intent.hasExtra("request")) {
+            when(requireActivity().intent.getStringExtra("request")) {
+                "chat"-> {
+                    val chatRoomData = requireActivity().intent.getParcelableExtra<ChatRoomData>("chatRoomData")!!
+                    notificationToChat(chatRoomData)
+                }
+                "youtube"-> {
+                    val inviteYoutubeData = requireActivity().intent.getParcelableExtra<InviteYoutubeData>("inviteYoutubeData")!!
+                    notificationToVideoTogether(inviteYoutubeData)
+                }
+            }
+        }
+    }
+
+    // 노티피케이션에서 채팅으로 들어갈 때
+    private fun notificationToChat (chatRoomData: ChatRoomData) {
+        val action = HomeDetailBlankFragmentDirections.actionHomeDetailBlankFragmentToChattingFragment(chatRoomData)
+        homeDetailNavController.navigate(action)
+    }
+
+    // 노티피케이션에서 유투브 같이보기 들어갈 때
+    private fun notificationToVideoTogether(inviteYoutubeData: InviteYoutubeData) {
+        youtubeViewModel.setStateEvent(YoutubeStateEvent.SetVideoTogether(true))
+        youtubeViewModel.setStateEvent(YoutubeStateEvent.SetJoiningVideoTogether(true))
+        youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(inviteYoutubeData.youtubeData))
+        socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(JOIN_YOUTUBE_ROOM, inviteYoutubeData.roomId.toString()))
+        homeNavController.navigate(R.id.action_friendsListFragment_to_youtubeFragment2)
     }
 
     // ------------------ 다이얼로그 리스너 ------------------

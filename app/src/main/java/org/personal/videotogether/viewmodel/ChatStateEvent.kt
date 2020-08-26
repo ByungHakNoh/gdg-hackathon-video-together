@@ -1,6 +1,7 @@
 package org.personal.videotogether.viewmodel
 
 import org.personal.videotogether.domianmodel.ChatData
+import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.domianmodel.FriendData
 import org.personal.videotogether.domianmodel.UserData
 
@@ -13,4 +14,5 @@ sealed class ChatStateEvent {
     data class GetChatMessageFromLocal(val roomId: Int) : ChatStateEvent()
     data class RefreshUnReadCount(val userId: Int, val roomId: Int) : ChatStateEvent()
     object SignOut : ChatStateEvent()
+    data class OnNotification(val chatRoomData: ChatRoomData) : ChatStateEvent()
 }

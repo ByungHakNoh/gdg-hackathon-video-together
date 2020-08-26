@@ -3,8 +3,12 @@ package org.personal.videotogether
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import dagger.hilt.android.AndroidEntryPoint
 import io.sentry.Sentry
@@ -13,6 +17,8 @@ import io.sentry.event.BreadcrumbBuilder
 import io.sentry.event.UserBuilder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.domianmodel.ChatRoomData
+import org.personal.videotogether.domianmodel.InviteYoutubeData
+import org.personal.videotogether.domianmodel.YoutubeData
 import org.personal.videotogether.util.SharedPreferenceHelper
 import org.personal.videotogether.view.fragments.home.nestonhomedetail.HomeDetailBlankFragmentDirections
 import org.personal.videotogether.viewmodel.*
@@ -21,6 +27,8 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    private val TAG by lazy { javaClass.name }
 
     @Inject
     lateinit var sharedPreferenceHelper: SharedPreferenceHelper
@@ -34,8 +42,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        socketViewModel.setStateEvent(SocketStateEvent.ConnectToTCPServer)
         setSentry()
+        socketViewModel.setStateEvent(SocketStateEvent.ConnectToTCPServer)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -43,9 +51,12 @@ class MainActivity : AppCompatActivity() {
         when (intent!!.getStringExtra("request")) {
             "chat" -> {
                 val chatRoomData = intent.getParcelableExtra<ChatRoomData>("chatRoomData")!!
-                val homeDetailFragment = Navigation.findNavController(this, R.id.homeDetailFragmentContainer)
-                val action = HomeDetailBlankFragmentDirections.actionHomeDetailBlankFragmentToChattingFragment(chatRoomData)
-                homeDetailFragment.navigate(action)
+                chatViewModel.setStateEvent(ChatStateEvent.OnNotification(chatRoomData))
+            }
+
+            "youtubeData" -> {
+                val inviteYoutubeData = intent.getParcelableExtra<InviteYoutubeData>("inviteYoutubeData")!!
+                youtubeViewModel.setStateEvent(YoutubeStateEvent.OnNotification(inviteYoutubeData))
             }
         }
     }
@@ -66,7 +77,6 @@ class MainActivity : AppCompatActivity() {
         val sentryDSN = "https://94899e959a144d99abef9f1e3acca503@o438649.ingest.sentry.io/5403740"
         Sentry.init(sentryDSN, AndroidSentryClientFactory(this))
         Sentry.getContext().user = UserBuilder().setUsername("visitors").build()
-
         Sentry.getContext().recordBreadcrumb(BreadcrumbBuilder().setMessage("test").build())
     }
 }

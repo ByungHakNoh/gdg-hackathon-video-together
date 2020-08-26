@@ -27,6 +27,7 @@ import org.personal.videotogether.MyApplication.Companion.YOUTUBE_NOTIFICATION_C
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.ChatData
 import org.personal.videotogether.domianmodel.ChatRoomData
+import org.personal.videotogether.domianmodel.InviteYoutubeData
 import org.personal.videotogether.domianmodel.YoutubeData
 import org.personal.videotogether.repository.ChatRepository
 import org.personal.videotogether.server.entity.*
@@ -104,6 +105,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                             Log.i(TAG, "onMessageReceived: show notifi working")
                             showChatNotification(chatRoomData, chatData, resource)
                         }
+
                         override fun onLoadCleared(placeholder: Drawable?) {}
                     })
                 }
@@ -128,16 +130,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun showVideoTogetherNotification(roomId: Int, inviterName: String, youtubeData: YoutubeData) {
 
         val message = "$inviterName 이 유투브 같이보기에 초대했습니다"
-        val argument = Bundle().apply {
-            putParcelable("youtubeData", youtubeData)
+        val inviteYoutubeData = InviteYoutubeData(roomId, youtubeData)
+        val intent = Intent(this, MainActivity::class.java).apply {
+            putExtra("request", "youtube")
+            putExtra("inviteYoutubeData", inviteYoutubeData)
         }
-
-        val pendingIntent: PendingIntent = NavDeepLinkBuilder(this)
-            .setGraph(R.navigation.main_nav_graph)
-            .setDestination(R.id.homeFragment)
-            .setArguments(argument)
-            .createPendingIntent()
-
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val notification = NotificationCompat.Builder(this, YOUTUBE_NOTIFICATION_CHANNEL_ID)
             .setAutoCancel(true)
             .setContentTitle("유투브 같이보기")

@@ -1,6 +1,7 @@
 package org.personal.videotogether.view.fragments.home.nestonhomedetail
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
@@ -108,10 +109,27 @@ constructor(
         when (view?.id) {
             R.id.backBtn -> requireActivity().onBackPressed()
             R.id.confirmBtn -> {
-                if (selectedFriendList.size == 0) {
-                    Toast.makeText(requireContext(), "1명 이상 선택해주세요", Toast.LENGTH_SHORT).show()
-                } else {
-                    chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userViewModel.userData.value!!, selectedFriendList))
+                when (selectedFriendList.size) {
+                    0 -> Toast.makeText(requireContext(), "1명 이상 선택해주세요", Toast.LENGTH_SHORT).show()
+                    1 -> {
+                        val selectedFriendData = selectedFriendList[0]
+                        val chatRoomList = chatViewModel.chatRoomList.value
+                        chatRoomList?.forEach { chatRoom ->
+                            if (chatRoom.participantList.size == 2) {
+                                chatRoom.participantList.forEach { userData ->
+                                    // 이미 존재하는 방이라면 채팅방으로 이동
+                                    if (userData.id == selectedFriendData.id) {
+                                        val action = SelectFriendFragmentDirections.actionSelectFriendsFragmentToChattingFragment(chatRoom)
+                                        homeDetailNavController.navigate(action)
+                                        return
+                                    }
+                                }
+                            }
+                        }
+                        // 중복된 1대1 채팅이 존재하지 않다면 채팅방 생성
+                        chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userViewModel.userData.value!!, selectedFriendList))
+                    }
+                    else -> chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userViewModel.userData.value!!, selectedFriendList))
                 }
             }
         }

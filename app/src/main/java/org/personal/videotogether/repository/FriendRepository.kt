@@ -22,6 +22,7 @@ constructor(
     private val TAG by lazy { javaClass.name }
 
     // ------------------ 친구 데이터 가져오는 메소드 ------------------
+    // 로컬에서 친구 데이터 가져오기
     suspend fun getFriendListFromLocal(): Flow<List<FriendData>?> = flow {
         try {
             val friendCacheEntityList = friendDAO.getFriendList()
@@ -36,6 +37,7 @@ constructor(
         }
     }
 
+    // 서버에서 친구 데이터 가져오기
     suspend fun getFriendListFromServer(userId: Int): Flow<DataState<List<FriendData>?>> = flow {
         emit(DataState.Loading)
 

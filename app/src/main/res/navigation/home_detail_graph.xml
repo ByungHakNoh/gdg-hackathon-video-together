@@ -47,6 +47,11 @@
         android:name="org.personal.videotogether.view.fragments.home.nestonhomedetail.SelectFriendFragment"
         android:label="fragment_add_chat_room"
         tools:layout="@layout/fragment_select_friends">
+        <action
+            android:id="@+id/action_selectFriendsFragment_to_chattingFragment"
+            app:destination="@id/chattingFragment"
+            app:popUpTo="@id/selectFriendsFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

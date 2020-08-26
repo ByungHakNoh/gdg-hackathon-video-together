@@ -21,6 +21,7 @@ constructor(
 ) {
     private val TAG by lazy { javaClass.name }
 
+    // ------------------ 친구 데이터 가져오는 메소드 ------------------
     suspend fun getFriendListFromLocal(): Flow<List<FriendData>?> = flow {
         try {
             val friendCacheEntityList = friendDAO.getFriendList()
@@ -35,13 +36,13 @@ constructor(
         }
     }
 
-    suspend fun getFriendListFromServer(userId : Int) : Flow<DataState<List<FriendData>?>> = flow {
+    suspend fun getFriendListFromServer(userId: Int): Flow<DataState<List<FriendData>?>> = flow {
         emit(DataState.Loading)
 
         try {
             val response = retrofitRequest.getFriendsList("getFriendList", userId)
 
-            if (response.code()== 200) {
+            if (response.code() == 200) {
                 val serverFriendList = friendMapper.mapFromEntityList(response.body()!!)
                 val friendCacheEntityList = friendCacheMapper.mapToEntityList(serverFriendList)
 
@@ -61,6 +62,8 @@ constructor(
         }
     }
 
+
+    // ------------------ 친구 추가할 때 검색, 추가 관련 메소드 ------------------
     // 회원가입 시 이메일 중복 체크하는 요청
     suspend fun searchFriend(userId: Int, friendEmail: String): Flow<DataState<FriendData?>> = flow {
         emit(DataState.Loading)

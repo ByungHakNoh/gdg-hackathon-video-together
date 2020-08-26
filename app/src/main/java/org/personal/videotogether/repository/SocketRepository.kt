@@ -24,7 +24,8 @@ class SocketRepository {
         fun onYoutubeJoinRoom(youtubeJoinRoomData: YoutubeJoinRoomData)
     }
 
-    // ------------------ TCP 통신 관련 메소드 모음 ------------------
+    // ------------------ TCP 통신 연결관련 메소드 ------------------
+    // 서버와 연결
     fun connectToTCPServer() {
         Log.i(TAG, "connection: 연결 시작")
         try {
@@ -33,8 +34,7 @@ class SocketRepository {
             if (tcpClient.connect()) {
                 isTCPClientStopped = false
                 Log.e(TAG, "connectToTCPServer: 연결 완료")
-            }
-            else Log.e(TAG, "connectToTCPServer: tcp 서버 연결 안됨")
+            } else Log.e(TAG, "connectToTCPServer: tcp 서버 연결 안됨")
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -42,6 +42,7 @@ class SocketRepository {
         }
     }
 
+    // 서버와 연결 끊기
     fun disConnectFromTCPServer() {
         Log.i(TAG, "sendToTCPServer: disconnect")
         try {
@@ -54,6 +55,8 @@ class SocketRepository {
         }
     }
 
+    // ------------------ TCP 클라이언트 소켓 유저 데이터 업로드하는 메소드 ------------------
+    // 소켓 데이터 업로드 요청
     fun registerSocket(userData: UserData) {
         Log.i(TAG, "registerSocket: register")
         try {
@@ -66,36 +69,28 @@ class SocketRepository {
         }
     }
 
+    // ------------------ TCP 데이터 통신 관련 메소드 ------------------
+    // 서버로부터 데이터 받아오기
     fun receiveFromTCPServer(socketListener: SocketListener) {
         try {
             Log.i(TAG, "receiveFromTCPServer: receiving data start")
             while (!isTCPClientStopped) {
-
                 val respond = tcpClient.readMessage()
-
                 // 서버에서 읽어드린 메시지가 있으면 Flag 확인
                 if (!respond.isNullOrEmpty()) {
-
                     val splitMessageData = respond.split("@")
                     Log.i(TAG, "receiveFromTCPServer: $splitMessageData")
                     // 서버에서 보낸 flag 확인
                     when (splitMessageData[0]) {
                         "chat" -> socketListener.onChatMessage(formChatData(splitMessageData))
                         "youtubeChat" -> socketListener.onYoutubeChatMessage(formChatData(splitMessageData))
-                        "youtubeState" -> {
-                            Log.i(TAG, "receiveFromTCPServer: $splitMessageData")
-                            socketListener.onYoutubePlayerState(formYoutubeResponse(splitMessageData))
-                        }
-                        "youtubeJoinRoom" -> {
-                            Log.i(TAG, "receiveFromTCPServer: $splitMessageData")
-                            socketListener.onYoutubeJoinRoom(formYoutubeJoinResponse(splitMessageData))
-                        }
+                        "youtubeState" -> socketListener.onYoutubePlayerState(formYoutubeResponse(splitMessageData))
+                        "youtubeJoinRoom" -> socketListener.onYoutubeJoinRoom(formYoutubeJoinResponse(splitMessageData))
                     }
                 }
             }
             tcpClient.socketClose()
             Log.i(TAG, "receiveFromTCPServer: receiving data stop")
-
         } catch (e: Exception) {
             e.printStackTrace()
             Log.e(TAG, "receiveFromTCPServer: tcp 서버 통신 에러발생($e)")
@@ -116,6 +111,8 @@ class SocketRepository {
         }
     }
 
+    // ------------------ TCP 데이터 별 리스너에 필요한 데이터 만드는 메소드 ------------------
+    // 채팅 데이터
     private fun formChatData(splitMessageData: List<String>): ChatData {
         val roomId = parseInt(splitMessageData[1])
         val userId = parseInt(splitMessageData[2])
@@ -127,6 +124,7 @@ class SocketRepository {
         return ChatData(roomId, userId, senderName, profileImageUrl, message, messageTime)
     }
 
+    // 유투브 상태
     private fun formYoutubeResponse(splitMessageData: List<String>): PlayerStateData {
         val playerState = splitMessageData[1]
         val playerCurrentSecond = parseFloat(splitMessageData[2])
@@ -134,6 +132,7 @@ class SocketRepository {
         return PlayerStateData(playerState, playerCurrentSecond)
     }
 
+    // 유투브 참여 관련
     private fun formYoutubeJoinResponse(splitMessageData: List<String>): YoutubeJoinRoomData {
         val flag = splitMessageData[1]
         val visitorId = parseInt(splitMessageData[2])

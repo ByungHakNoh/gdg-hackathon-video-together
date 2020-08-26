@@ -23,7 +23,7 @@ import java.lang.Exception
 import java.text.SimpleDateFormat
 
 @SuppressLint("SimpleDateFormat")
-@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "NAME_SHADOWING")
 class ChatRepository
 constructor(
     private val retrofitRequest: RetrofitRequest,
@@ -38,24 +38,11 @@ constructor(
 ) {
     private val TAG by lazy { javaClass.name }
 
+    // ------------------ 채팅방 메소드 모음 ------------------
+    // 채팅방 로컬에서 가져오기
     suspend fun getChatRoomFromLocal(): Flow<List<ChatRoomData>?> = flow {
         try {
-//            chatRoomDAO.deleteAllChatRoomData()
-            val chatRoomCacheEntityList = chatRoomDAO.getChatRooms()
-            Log.i(TAG, "getChatRoomFromLocal: $chatRoomCacheEntityList")
-
-            val chatRoomList = chatRoomCacheMapper.mapFromEntityList(chatRoomCacheEntityList)
-            val simpleDateFormat = SimpleDateFormat("hh:mm a")
-            val orderedChatRoomList = chatRoomList.sortedByDescending { chatRoom ->
-                if (chatRoom.lastChatTime != null) {
-                    simpleDateFormat.parse(chatRoom.lastChatTime!!).time
-                } else {
-                    0
-                }
-            }
-            Log.i(TAG, "getChatRoomFromLocal: ${orderedChatRoomList[0].unReadChatCount}")
-            Log.i(TAG, "getChatRoomFromLocal: ${orderedChatRoomList[0]}")
-            emit(orderedChatRoomList)
+            emit(orderChatRooms())
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -79,17 +66,8 @@ constructor(
                 chatRoomCacheEntityList.forEach { chatRoomEntity ->
                     chatRoomDAO.insertChatRoom(chatRoomEntity)
                 }
-                val localChatRoomList = chatRoomCacheMapper.mapFromEntityList(chatRoomDAO.getChatRooms())
-                val simpleDateFormat = SimpleDateFormat("hh:mm a")
-                val orderedChatRoomList = chatRoomList.sortedByDescending { chatRoom ->
-                    if (chatRoom.lastChatTime != null) {
-                        simpleDateFormat.parse(chatRoom.lastChatTime!!).time
-                    } else {
-                        0
-                    }
-                }
 
-                emit(DataState.Success(orderedChatRoomList))
+                emit(DataState.Success(orderChatRooms()))
             }
             if (response.code() == 204) emit(DataState.NoData)
 
@@ -97,6 +75,19 @@ constructor(
             e.printStackTrace()
             Log.e(TAG, "postCheckEmailValid: 서버 통신 에러발생($e)")
             emit(DataState.Error(e))
+        }
+    }
+
+    // 채팅 방 룸에서 가져와서 마지막 메시지 시간에 따라 정렬하는 메소드 -> 채팅방을 서버, 로컬에서 가져올 때 사용
+    private suspend fun orderChatRooms() : List<ChatRoomData>? {
+        val localChatRoomList = chatRoomCacheMapper.mapFromEntityList(chatRoomDAO.getChatRooms())
+        val simpleDateFormat = SimpleDateFormat("hh:mm a")
+        return localChatRoomList.sortedByDescending { chatRoom ->
+            if (chatRoom.lastChatTime != null) {
+                simpleDateFormat.parse(chatRoom.lastChatTime!!).time
+            } else {
+                0
+            }
         }
     }
 
@@ -131,7 +122,7 @@ constructor(
         }
     }
 
-    // 서버에 채팅 데이터 업로드 하기
+    // ------------------ 채팅 데이터 관련 메소드 모음 ------------------
     suspend fun uploadChatMessage(chatData: ChatData) {
         try {
             val chatEntity = chatMapper.mapToEntity(chatData)
@@ -189,6 +180,8 @@ constructor(
         }
     }
 
+    // ------------------ 채팅방 마지막 메시지, 시간, 안읽은 갯수 관리하는 메소드 ------------------
+    // 파이어베이스에서 받아온 채팅 데이터 업로드 업로드
     suspend fun updateChatRoomLastMessage(chatRoomData: ChatRoomData, currentChatRoomId: Int) {
         try {
             chatRoomDAO.updateLastChat(chatRoomData.id, chatRoomData.lastChatMessage!!, chatRoomData.lastChatTime!!)
@@ -202,6 +195,7 @@ constructor(
         }
     }
 
+    // 채팅방 읽지 않은 메시지 초기화하는 메소드
     suspend fun refreshUnReadCount(roomId:Int) {
         try {
             chatRoomDAO.refreshUnReadCount(roomId)

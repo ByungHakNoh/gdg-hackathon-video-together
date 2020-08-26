@@ -22,6 +22,9 @@ constructor(
 ) {
     private val TAG by lazy { javaClass.name }
 
+    // ------------------ 유투브 영상 데이터 가져오는 메소드 ------------------
+    // (페이지 : 유투브 API 단위)
+    // 유투브 첫 페이지 가져오기
     suspend fun getYoutubePage(youtubeChannel: String): Flow<DataState<YoutubePageData?>> = flow {
         emit(DataState.Loading)
         Log.i(TAG, "getYoutubePage: $youtubeChannel")
@@ -43,6 +46,7 @@ constructor(
         }
     }
 
+    // 다음 유투브 페이지 가져오기
     suspend fun getYoutubeNextPage(nextPageUrl: String, nextPageToken: String, channelTitle: String, channelThumbnail: String): Flow<DataState<YoutubePageData?>> = flow {
         emit(DataState.Loading)
 
@@ -64,6 +68,8 @@ constructor(
         }
     }
 
+    // ------------------ 유투브 같이보기 관련 메소드 ------------------
+    // 유투브 같이보기 초대
     suspend fun inviteVideoTogether(inviterUserData: UserData, friendIds: List<Int>, youtubeData: YoutubeData): Flow<DataState<Boolean?>> = flow {
         Log.i(TAG, "inviteVideoTogether: 전송?")
         try {

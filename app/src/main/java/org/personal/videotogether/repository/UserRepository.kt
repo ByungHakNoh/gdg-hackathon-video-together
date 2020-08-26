@@ -29,6 +29,7 @@ constructor(
 
     private val TAG by lazy { javaClass.name }
 
+    // ------------------유저 데이터 가져오는 메소드 ------------------
     suspend fun getUserDataFromLocal(): Flow<UserData?> = flow {
         try {
             val userCacheEntity = userDAO.getUserData()
@@ -44,6 +45,7 @@ constructor(
         }
     }
 
+    // ------------------ 회원가입 관련 메소드 ------------------
     // 회원가입 시 이메일 중복 체크하는 요청
     suspend fun postCheckEmailValid(email: String): Flow<DataState<Boolean?>> = flow {
         emit(DataState.Loading)
@@ -113,7 +115,6 @@ constructor(
             if (response.code() == 200) {
                 val userData = userMapper.mapFromEntity(response.body()!!)
                 val userCacheEntity = userCacheMapper.mapToEntity(userData)
-//                userDAO.deleteAllUserData()
                 userDAO.insertUserData(userCacheEntity)
 
                 emit(DataState.Success(true))
@@ -127,6 +128,7 @@ constructor(
         }
     }
 
+    // ------------------ 로그인 / 로그아웃 관련 메소드 ------------------
     // 로그인
     suspend fun signIn(email: String, password: String): Flow<DataState<UserData>> = flow {
         emit(DataState.Loading)
@@ -155,6 +157,7 @@ constructor(
         }
     }
 
+    // 로그아웃
     suspend fun signOut() {
         try {
             userDAO.deleteAllUserData()
@@ -165,7 +168,7 @@ constructor(
         }
     }
 
-    // TODO : Flow 에러 생긴 것 같음, 무슨 문제인지 알 수 없음, 그냥 Flow 사용 시 메소드 실행조차 안함
+    // 기기 파이어베이스 토큰 값 서버에 업로드(업데이트)
     suspend fun uploadFirebaseToken(userId: Int, firebaseToken: String): Flow<DataState<Boolean>> = flow {
         emit(DataState.Loading)
         try {
@@ -186,6 +189,7 @@ constructor(
         }
     }
 
+    // ------------------ 유저 프로필 변경 관련 메소드 ------------------
     // 유저 프로필을 서버로 업로드하는 메소드
     suspend fun updateUserProfile(userId: Int, base64Image: String?, name: String): Flow<DataState<UserData>> = flow {
         emit(DataState.Loading)

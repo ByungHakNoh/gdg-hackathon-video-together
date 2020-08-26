@@ -63,7 +63,15 @@ constructor(
         val chatRoomData = chatRoomList[position]
         val participantCount = chatRoomData.participantList.count() - 1
 
-        Glide.with(context).load(chatRoomData.participantList[1].profileImageUrl).into(holder.chatRoomProfileIV)
+        // 내가 아닌 다른 사람을 채팅방 프로필 이미지로 설정
+        // TODO : 시간이 남으면 여러 이미지 보여줄 수 있도록 구현하기
+        for (participant in chatRoomData.participantList) {
+            if (participant.id != myUserId) {
+                Glide.with(context).load(participant.profileImageUrl).into(holder.chatRoomProfileIV)
+                break
+            }
+        }
+
         holder.nameTV.text = viewHandler.formChatRoomName(chatRoomData.participantList, myUserId)
         holder.latestChatMessageTV.text = chatRoomData.lastChatMessage
         holder.participantCountTV.text = if (participantCount > 1) {

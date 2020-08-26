@@ -32,10 +32,6 @@ constructor(
 
     private val TAG by lazy { javaClass.name }
 
-    // args : 채팅방 생성, 유투브 같이보기 구분
-    private val argument: SelectFriendFragmentArgs by navArgs()
-    private val whichRequest by lazy { argument.whichRequest }
-
     // 네비게이션 컨트롤러
     private lateinit var homeDetailNavController: NavController
 
@@ -89,6 +85,7 @@ constructor(
         confirmBtn.setOnClickListener(this)
     }
 
+    // 친구 데이터는 뷰모델에서 관리하는 friend 데이터를 사용한다
     private fun buildRecyclerView() {
         val layoutManager = LinearLayoutManager(requireContext())
         val horizontalLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -114,9 +111,7 @@ constructor(
                 if (selectedFriendList.size == 0) {
                     Toast.makeText(requireContext(), "1명 이상 선택해주세요", Toast.LENGTH_SHORT).show()
                 } else {
-                    when (whichRequest) {
-                        "addChatRoom" -> chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userViewModel.userData.value!!, selectedFriendList))
-                    }
+                    chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userViewModel.userData.value!!, selectedFriendList))
                 }
             }
         }

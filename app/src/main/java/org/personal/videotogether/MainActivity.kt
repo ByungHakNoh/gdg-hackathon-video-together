@@ -5,6 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import dagger.hilt.android.AndroidEntryPoint
+import io.sentry.Sentry
+import io.sentry.android.AndroidSentryClientFactory
+import io.sentry.event.BreadcrumbBuilder
+import io.sentry.event.UserBuilder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.util.SharedPreferenceHelper
 import org.personal.videotogether.viewmodel.*
@@ -27,18 +31,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         socketViewModel.setStateEvent(SocketStateEvent.ConnectToTCPServer)
+        setSentry()
+    }
+    override fun onStart() {
+        super.onStart()
         sharedPreferenceHelper.setBoolean(this, getText(R.string.is_app_on).toString(), true)
         Log.i("TAG", "onCreate: ${sharedPreferenceHelper.getBoolean(this, getText(R.string.is_app_on).toString() )}")
     }
 
-    // TODO : 시스템에서 종료할 때 생각하기
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         sharedPreferenceHelper.setBoolean(this, getText(R.string.is_app_on).toString(), false)
         Log.i("TAG", "onCreate: ${sharedPreferenceHelper.getBoolean(this, getText(R.string.is_app_on).toString() )}")
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    private fun setSentry() {
+        val sentryDSN = "https://94899e959a144d99abef9f1e3acca503@o438649.ingest.sentry.io/5403740"
+        Sentry.init(sentryDSN, AndroidSentryClientFactory(this))
+        Sentry.getContext().user = UserBuilder().setUsername("visitors").build()
+
+        Sentry.getContext().recordBreadcrumb(BreadcrumbBuilder().setMessage("test").build())
     }
 }

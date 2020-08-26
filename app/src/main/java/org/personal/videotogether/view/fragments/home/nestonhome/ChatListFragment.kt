@@ -32,6 +32,7 @@ import org.personal.videotogether.view.dialog.InvitationDialog
 import org.personal.videotogether.view.fragments.home.nestonhomedetail.HomeDetailBlankFragmentDirections
 import org.personal.videotogether.viewmodel.ChatStateEvent
 import org.personal.videotogether.viewmodel.ChatViewModel
+import org.personal.videotogether.viewmodel.FriendStateEvent
 import org.personal.videotogether.viewmodel.UserViewModel
 
 @ExperimentalCoroutinesApi
@@ -81,12 +82,12 @@ constructor(
     private fun subscribeObservers() {
         // 로컬에 데이터가 없으면(새로 로그인을 하게되면) -> 서버에서 데이터 가져오기
         chatViewModel.chatRoomList.observe(viewLifecycleOwner, Observer { localChatRoomList ->
-
             if (localChatRoomList == null) {
-                chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
+                // 로그아웃하면서 chatRoomList 라이브 데이터가 null 이 될 때 유저 데이터가 null 이면 서버에 요청 X
+                if (userViewModel.userData.value != null) requestChatRoom()
             } else {
                 if (localChatRoomList.isEmpty()) {
-                    chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
+                    requestChatRoom()
                 } else {
                     chatRoomList.clear()
                     localChatRoomList.forEach { chatRoomData ->
@@ -100,17 +101,20 @@ constructor(
         // 서버에서 채팅방 가져오는 라이브 데이터 -> 성공 시 채팅방 리스트 라이브 데이터 업데이트
         chatViewModel.getChatRoomList.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
-                is DataState.Loading -> {
-                    Log.i(TAG, "getChatRoomList: 로딩")
-                }
-                is DataState.NoData -> {
-                    Log.i(TAG, "getChatRoomList: 데이터 없음")
-                }
-                is DataState.Error -> {
-                    Log.i(TAG, "getChatRoomList: 에러 발생")
-                }
+                is DataState.Loading -> Log.i(TAG, "getChatRoomList: 로딩")
+                is DataState.NoData -> Log.i(TAG, "getChatRoomList: 데이터 없음")
+                is DataState.Error -> Log.i(TAG, "getChatRoomList: 에러 발생")
             }
         })
+    }
+
+    // 로컬에 데이터가 없으면 서버에 데이터 요청
+    private fun requestChatRoom() {
+        if (chatRoomList.isNotEmpty()) {
+            chatRoomList.clear()
+            chatRoomAdapter.notifyDataSetChanged()
+        }
+        chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
     }
 
     private fun buildRecyclerView() {

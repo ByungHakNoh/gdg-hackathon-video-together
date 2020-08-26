@@ -34,6 +34,8 @@ class MyApplication : Application() {
         }
     }
 
+
+
     companion object{
         // 채널 ID
         const val CHAT_NOTIFICATION_CHANNEL_ID = "Chatting"

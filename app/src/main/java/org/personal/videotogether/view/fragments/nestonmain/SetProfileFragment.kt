@@ -69,6 +69,7 @@ constructor(
             when (dataState) {
                 is DataState.Success<Boolean?> -> {
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)
+
                     mainNavController.navigate(R.id.action_setProfileFragment_to_mainHomeFragment)
                 }
                 is DataState.NoData -> {
@@ -120,7 +121,7 @@ constructor(
                     } else {
                         Toast.makeText(requireContext(), "프로필 사진을 정해주세요", Toast.LENGTH_SHORT).show() // TODO : 프로필 없을 때도 기본이미지 예외처리 하기
                     }
-                }else {
+                } else {
                     Toast.makeText(requireContext(), "이름을 입력해주세요", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -185,19 +186,19 @@ constructor(
 
     private val getGalleryImage by lazy {
         registerForActivityResult(ActivityResultContracts.GetContent()) { imageUri ->
-            convertUriToBitmap(imageUri)
+            if (imageUri != null) convertUriToBitmap(imageUri)
         }
     }
 
     // 카메라로 찍은 이미지 비트맵으로 전환해서 받아오기
     private val getCameraImage by lazy {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            convertUriToBitmap (cameraImage)
+            convertUriToBitmap(cameraImage)
         }
     }
 
-    private fun convertUriToBitmap (imageUri: Uri) {
-        CoroutineScope(Dispatchers.Main).launch {
+    private fun convertUriToBitmap(imageUri: Uri) {
+        CoroutineScope(Main).launch {
             imageHandler.imageUriToBitmap(requireContext(), imageUri).onEach { dataState ->
                 when (dataState) {
                     is DataState.Success<Bitmap?> -> {
@@ -208,7 +209,7 @@ constructor(
                         Log.i(TAG, "test : Error")
                     }
                 }
-            }.launchIn(CoroutineScope(Dispatchers.Main))
+            }.launchIn(CoroutineScope(Main))
         }
     }
 }

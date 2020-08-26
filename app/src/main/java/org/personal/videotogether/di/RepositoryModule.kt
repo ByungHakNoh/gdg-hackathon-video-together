@@ -30,9 +30,11 @@ object RepositoryModule {
         retrofitRequest: RetrofitRequest,
         userDAO: UserDAO,
         userCacheMapper: UserCacheMapper,
-        userMapper: UserMapper
+        userMapper: UserMapper,
+        chatRoomDAO: ChatRoomDAO,
+        friendDAO: FriendDAO
     ): UserRepository {
-        return UserRepository(retrofitRequest, userDAO, userCacheMapper, userMapper)
+        return UserRepository(retrofitRequest, userDAO, userCacheMapper, userMapper, chatRoomDAO, friendDAO)
     }
 
     @Singleton

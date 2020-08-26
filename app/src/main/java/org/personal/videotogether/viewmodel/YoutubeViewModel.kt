@@ -28,13 +28,16 @@ constructor(
     private val _youtubeSearchedPage: MutableLiveData<DataState<YoutubePageData?>> = MutableLiveData()
     val youtubeSearchedPage: LiveData<DataState<YoutubePageData?>> get() = _youtubeSearchedPage
 
+    // 유투브 재생 데이터
     private val _currentPlayedYoutube: MutableLiveData<YoutubeData?> = MutableLiveData()
     val currentPlayedYoutube: LiveData<YoutubeData?> get() = _currentPlayedYoutube
 
     // ------------------ Video Together live data ------------------
+    // 유투브 같이보기가 설정되어있는지 확인하는 데이터
     private val _setVideoTogether: MutableLiveData<Boolean?> = MutableLiveData()
     val setVideoTogether: LiveData<Boolean?> get() = _setVideoTogether
 
+    // 유투브 같이보기 초대되어 참여중인지 확인하는 데이터
     private val _isJoiningVideoTogether: MutableLiveData<Boolean?> = MutableLiveData()
     val isJoiningVideoTogether: LiveData<Boolean?> get() = _isJoiningVideoTogether
 
@@ -58,6 +61,7 @@ constructor(
                         youtubeStateEvent.channelThumbnail
                     ).onEach { dataState ->
                         _youtubeDefaultPage.value = dataState
+                        _youtubeDefaultPage.value = null
                     }.launchIn(viewModelScope)
                 }
 
@@ -101,6 +105,13 @@ constructor(
 
                 is YoutubeStateEvent.SetJoiningVideoTogether -> {
                     _isJoiningVideoTogether.value = youtubeStateEvent.isJoining
+                }
+
+                // ------------------ Sign Out ------------------
+                is YoutubeStateEvent.SignOut -> {
+                    _setVideoTogether.value = null
+                    _isJoiningVideoTogether.value = null
+                    _currentPlayedYoutube.value = null
                 }
             }
         }

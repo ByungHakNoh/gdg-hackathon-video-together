@@ -9,6 +9,7 @@ import org.personal.videotogether.util.SharedPreferenceHelper
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.util.view.ImageHandler
 import org.personal.videotogether.util.view.ViewHandler
+import org.personal.videotogether.view.fragments.nestonmain.HomeFragment
 import org.personal.videotogether.view.fragments.nestonmain.SetProfileFragment
 import org.personal.videotogether.view.fragments.nestonmain.SignInFragment
 import org.personal.videotogether.view.fragments.nestonmain.SignUpFragment
@@ -38,6 +39,10 @@ constructor(
 
             SetProfileFragment::class.java.name -> {
                 SetProfileFragment(dataStateHandler, imageHandler)
+            }
+
+            HomeFragment::class.java.name -> {
+                HomeFragment(sharedPreferenceHelper)
             }
 
             else -> super.instantiate(classLoader, className)

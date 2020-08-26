@@ -57,17 +57,17 @@ constructor(
     private fun subscribeObservers() {
         // 이미 가져온 유저 데이터 사용
         userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
-            Glide.with(requireContext()).load(userData!!.profileImageUrl).into(profileIV)
-            nameTV.text = userData.name
+            if (userData != null) {
+                Glide.with(requireContext()).load(userData.profileImageUrl).into(profileIV)
+                nameTV.text = userData.name
+            }
         })
 
         // 로컬에서 친구 목록 불러오기
         friendViewModel.friendList.observe(viewLifecycleOwner, Observer { localFriendList ->
-            if (localFriendList == null) {
-                friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userViewModel.userData.value!!.id))
-            } else {
+            if (localFriendList != null) {
                 if (localFriendList.isEmpty()) {
-                    friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userViewModel.userData.value!!.id))
+                    requestFriendData(userViewModel.userData.value!!.id)
                 } else {
                     friendList.clear()
                     localFriendList.forEach { friendData ->
@@ -78,33 +78,24 @@ constructor(
             }
         })
 
-        // 로컬에 데이터가 없을 때 서버에서 친구 데이터 요청 (새로 로그인 시)
+        // 로컬에 데이터가 없으면 서버에 데이터 요청하기
         friendViewModel.updatedFriendList.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
-                is DataState.Loading -> Log.i(TAG, "updatedFriendList: Loading")
-                is DataState.NoData -> Log.i(TAG, "updatedFriendList: No Data")
-                is DataState.Error -> Log.i(TAG, "updatedFriendList: Error - ${dataState.exception}")
+                is DataState.Loading -> Log.i(TAG, "updatedFriendList: 로딩")
+                is DataState.Success<List<FriendData>?> -> Log.i(TAG, "updatedFriendList: 성공")
+                is DataState.NoData -> Log.i(TAG, "updatedFriendList: 데이터 없음")
+                is DataState.Error -> Log.i(TAG, "updatedFriendList: 에러 발생")
             }
         })
+    }
 
-        // 서버에서 데이터 가져온 데이터 -> 성공 시 friendList 업데이트
-        friendViewModel.updatedFriendList.observe(viewLifecycleOwner, Observer { dataState ->
-            when (dataState) {
-                is DataState.Loading -> {
-                    Log.i(TAG, "updatedFriendList: 로딩")
-                }
-                is DataState.Success<List<FriendData>?> -> {
-                    Log.i(TAG, "updatedFriendList: 성공")
-                }
-                is DataState.NoData -> {
-                    // TODO: 데이터가 없으면 친구 추가 문구 띄워주기
-                }
-                is DataState.Error -> {
-                    Log.i(TAG, "updatedFriendList: 에러 발생")
-                    friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromLocal)
-                }
-            }
-        })
+    // 로컬에 데이터가 없으면 서버에 데이터 요청
+    private fun requestFriendData(userId: Int) {
+        if (friendList.isNotEmpty()) {
+            friendList.clear()
+            friendListAdapter.notifyDataSetChanged()
+        }
+        friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userId))
     }
 
     private fun setListener() {

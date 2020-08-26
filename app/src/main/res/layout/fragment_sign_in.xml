@@ -50,7 +50,7 @@
                 style="@style/MainEditTextStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="30dp"
                 android:hint="@string/password"
                 android:inputType="textPassword"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -69,35 +69,17 @@
                 app:layout_constraintLeft_toLeftOf="@+id/passwordET"
                 app:layout_constraintTop_toBottomOf="@id/passwordET" />
 
-            <CheckBox
-                android:id="@+id/autoSignInCB"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="50dp"
-                app:layout_constraintBottom_toTopOf="@id/signInBtn"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/checkInputTV" />
-
-            <TextView
-                android:id="@+id/autoSignInTV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/auto_sign_in"
-                app:layout_constraintTop_toTopOf="@id/autoSignInCB"
-                app:layout_constraintBottom_toBottomOf="@id/autoSignInCB"
-                app:layout_constraintLeft_toRightOf="@id/autoSignInCB"/>
-
             <Button
                 android:id="@+id/signInBtn"
                 style="@style/MainButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/sign_in"
-                android:layout_marginTop="20sp"
+                android:layout_marginTop="40sp"
                 app:layout_constraintBottom_toTopOf="@+id/signUpTV"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/autoSignInTV" />
+                app:layout_constraintTop_toBottomOf="@id/checkInputTV" />
 
             <TextView
                 android:id="@+id/signUpTV"

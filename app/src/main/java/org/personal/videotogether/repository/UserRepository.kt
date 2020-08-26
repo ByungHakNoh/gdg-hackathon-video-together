@@ -3,7 +3,11 @@ package org.personal.videotogether.repository
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.domianmodel.UserData
+import org.personal.videotogether.room.ChatDAO
+import org.personal.videotogether.room.ChatRoomDAO
+import org.personal.videotogether.room.FriendDAO
 import org.personal.videotogether.room.entity.UserCacheEntity
 import org.personal.videotogether.room.entity.UserCacheMapper
 import org.personal.videotogether.room.UserDAO
@@ -18,7 +22,9 @@ constructor(
     private val retrofitRequest: RetrofitRequest,
     private val userDAO: UserDAO,
     private val userCacheMapper: UserCacheMapper,
-    private val userMapper: UserMapper
+    private val userMapper: UserMapper,
+    private val chatRoomDAO: ChatRoomDAO,
+    private val friendDAO: FriendDAO
 ) {
 
     private val TAG by lazy { javaClass.name }
@@ -75,10 +81,9 @@ constructor(
 
             if (response.code() == 200) {
                 val insertedId = response.body()!!
-                val userCacheEntity =
-                    UserCacheEntity(insertedId, email, password, null, null) // 이름과 프로필 이미지를 제외한 정보 저장
+                // 이름과 프로필 이미지를 제외한 정보 저장
+                val userCacheEntity = UserCacheEntity(insertedId, email, password, null, null)
 
-                userDAO.deleteAllUserData()
                 userDAO.insertUserData(userCacheEntity)
                 emit(DataState.Success(true))
             }
@@ -105,7 +110,14 @@ constructor(
             val requestData = RequestData("uploadUserProfile", postData)
             val response = retrofitRequest.uploadUserProfile(requestData)
 
-            if (response.code() == 200) emit(DataState.Success(true))
+            if (response.code() == 200) {
+                val userData = userMapper.mapFromEntity(response.body()!!)
+                val userCacheEntity = userCacheMapper.mapToEntity(userData)
+//                userDAO.deleteAllUserData()
+                userDAO.insertUserData(userCacheEntity)
+
+                emit(DataState.Success(true))
+            }
             if (response.code() == 204) emit(DataState.NoData)
 
         } catch (e: Exception) {
@@ -117,7 +129,6 @@ constructor(
 
     // 로그인
     suspend fun signIn(email: String, password: String): Flow<DataState<UserData>> = flow {
-        Log.i(TAG, "signIn: working?")
         emit(DataState.Loading)
 
         try {
@@ -131,7 +142,6 @@ constructor(
             if (response.code() == 200) {
                 val userData = userMapper.mapFromEntity(response.body()!!)
                 val userCacheEntity = userCacheMapper.mapToEntity(userData)
-                userDAO.deleteAllUserData()
                 userDAO.insertUserData(userCacheEntity)
 
                 emit(DataState.Success(userData))
@@ -142,6 +152,16 @@ constructor(
             e.printStackTrace()
             Log.e(TAG, "postCheckEmailValid: 서버 통신 에러발생($e)")
             emit(DataState.Error(e))
+        }
+    }
+
+    suspend fun signOut() {
+        try {
+            userDAO.deleteAllUserData()
+            chatRoomDAO.deleteAllChatRoomData()
+            friendDAO.deleteAllFriendsData()
+        } catch (e: Exception) {
+            Log.i(TAG, "signOut: 룸 에러 발생 $e")
         }
     }
 
@@ -167,7 +187,7 @@ constructor(
     }
 
     // 유저 프로필을 서버로 업로드하는 메소드
-    suspend fun updateUserProfile(userId:Int, base64Image: String?, name: String): Flow<DataState<UserData>> = flow {
+    suspend fun updateUserProfile(userId: Int, base64Image: String?, name: String): Flow<DataState<UserData>> = flow {
         emit(DataState.Loading)
 
         try {

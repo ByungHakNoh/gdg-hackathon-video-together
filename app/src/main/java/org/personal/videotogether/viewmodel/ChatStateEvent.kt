@@ -12,4 +12,5 @@ sealed class ChatStateEvent {
     data class GetChatMessageFromServer(val roomId: Int) : ChatStateEvent()
     data class GetChatMessageFromLocal(val roomId: Int) : ChatStateEvent()
     data class RefreshUnReadCount(val roomId: Int) : ChatStateEvent()
+    object SignOut : ChatStateEvent()
 }

@@ -32,15 +32,20 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
 import org.personal.videotogether.domianmodel.YoutubeData
+import org.personal.videotogether.repository.SocketRepository
 import org.personal.videotogether.repository.SocketRepository.Companion.JOIN_YOUTUBE_ROOM
 import org.personal.videotogether.service.MyFirebaseMessagingService.Companion.RECEIVE_VIDEO_TOGETHER_INVITATION
+import org.personal.videotogether.util.SharedPreferenceHelper
 import org.personal.videotogether.view.dialog.InvitationDialog
 import org.personal.videotogether.viewmodel.*
 import java.lang.Exception
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogListener, NavController.OnDestinationChangedListener {
+class HomeFragment
+constructor(
+    private val sharedPreferenceHelper: SharedPreferenceHelper
+) : Fragment(R.layout.fragment_home), InvitationDialog.DialogListener, NavController.OnDestinationChangedListener {
 
     private val TAG = javaClass.name
 
@@ -72,24 +77,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
         subscribeObservers()
         setListener()
         defineReceiver()
-        testSentry()
         userViewModel.setStateEvent(UserStateEvent.GetUserDataFromLocal)
-    }
-
-    // TODO : 지우기
-    private fun testSentry() {
-        val sentryDSN = "https://94899e959a144d99abef9f1e3acca503@o438649.ingest.sentry.io/5403740"
-        Sentry.init(sentryDSN, AndroidSentryClientFactory(requireContext()))
-        Sentry.getContext().user = UserBuilder().setUsername("visitors").build()
-
-        Sentry.getContext().recordBreadcrumb(BreadcrumbBuilder().setMessage("test").build())
-        try {
-            val integer = 3
-            val string = Integer.valueOf("df")
-            val test = integer + string
-        }catch (e: Exception) {
-            Sentry.capture(e)
-        }
     }
 
     override fun onResume() {
@@ -127,32 +115,27 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
                 homeDetailNavController.backStack.count() > 2 -> homeDetailNavController.popBackStack()
                 homeNavController.backStack.count() > 2 -> homeNavController.popBackStack()
                 else -> {
+                    socketViewModel.setStateEvent(SocketStateEvent.DisconnectFromTCPServer)
                     remove()
-                    killProcess()
+                    requireActivity().finish()
                 }
             }
         }
-    }
-
-    // 앱 종료하는 메소드 : 액티비티 백스텍 제거해서 종료
-    private fun killProcess() {
-
-        // TODO : 뒤로가기 버튼으로 액티비티 스택을 지우면 SocketViewModel onCleared 에서 tcp disconnect 가 호출 되지 않음 -> 해결방안 찾기
-        socketViewModel.setStateEvent(SocketStateEvent.DisconnectFromTCPServer)
-        requireActivity().moveTaskToBack(true)
-        requireActivity().finishAndRemoveTask()
     }
 
     private fun subscribeObservers() {
         // 사용자 정보를 room 으로부터 가져옴
         // 유저 정보를 이용해 친구 데이터 업데이트, 채팅 소켓 등록을 함
         userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
-            friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromLocal)
-            chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromLocal)
-            // 유저 Id를 로컬에서 가져오면 -> 서버의 소켓 클라이언트 정보 업데이트 + 서버에서
-            socketViewModel.setStateEvent(SocketStateEvent.RegisterSocket(userData!!))
-            socketViewModel.setStateEvent(SocketStateEvent.ReceiveFromTCPServer)
-            checkVideoTogether()
+            if (userData != null) {
+                Log.i(TAG, "friendList:  = user -  ${userViewModel.userData.value}")
+                friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromLocal)
+                chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromLocal)
+                // 유저 Id를 로컬에서 가져오면 -> 서버의 소켓 클라이언트 정보 업데이트 + 서버에서
+                socketViewModel.setStateEvent(SocketStateEvent.RegisterSocket(userData))
+                socketViewModel.setStateEvent(SocketStateEvent.ReceiveFromTCPServer)
+                checkVideoTogether()
+            }
         })
 
         // 유투브 재생 시 하단 유튜브 플레이어 보여주기
@@ -232,11 +215,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
         inflater.inflate(R.menu.app_bar_menu, menu)
 
         when (homeNavController.currentDestination?.label) {
-            "친구 목록" -> {
+            "친구" -> {
                 menu.removeItem(R.id.selectFriendsFragment)
                 menu.removeItem(R.id.youtubeSearchFragment)
             }
-            "채팅 목록" -> {
+            "채팅" -> {
                 menu.removeItem(R.id.youtubeSearchFragment)
                 menu.removeItem(R.id.addFriendFragment)
             }
@@ -254,6 +237,16 @@ class HomeFragment : Fragment(R.layout.fragment_home), InvitationDialog.DialogLi
         when (item.itemId) {
             R.id.youtubeSearchFragment -> {
                 homeNavController.navigate(R.id.action_youtubeFragment_to_youtubeSearchFragment)
+            }
+            // TODO : 로그아웃 기능 추가 -> 새로 추가한 기능 확인하기
+            R.id.signInFragment -> {
+                // 로그아웃 상태 -> 로켈에 데이터 삭제 및, 라이브 데이터 null 로 변경
+                userViewModel.setStateEvent(UserStateEvent.SignOut)
+                friendViewModel.setStateEvent(FriendStateEvent.SignOut)
+                chatViewModel.setStateEvent(ChatStateEvent.SignOut)
+                youtubeViewModel.setStateEvent(YoutubeStateEvent.SignOut)
+                sharedPreferenceHelper.setBoolean(requireContext(), getString(R.string.auto_sign_in_key), false)
+                mainNavController.popBackStack()
             }
             else -> {
                 NavigationUI.onNavDestinationSelected(item, homeDetailNavController)

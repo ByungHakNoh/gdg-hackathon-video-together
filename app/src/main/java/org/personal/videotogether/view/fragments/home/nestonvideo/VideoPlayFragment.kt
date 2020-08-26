@@ -95,8 +95,8 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
             if (youtubeData != null) {
                 videoTitleTV.text = youtubeData.title
                 channelTitleTV.text = youtubeData.channelTitle
-                Log.i(TAG, "youtube title: ${videoTitleTV.text}")
-                Log.i(TAG, "youtube title: ${channelTitleTV.text}")
+                Log.i(TAG, "youtube title: -  ${videoTitleTV.text}")
+                Log.i(TAG, "youtube title: - ${channelTitleTV.text}")
 
                 youtubePlayer.cueVideo(youtubeData.videoId, 0f)
                 youtubePlayer.play()
@@ -174,7 +174,7 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
 
         if (youtubeSeekBarSB != null) youtubePlayer.addListener(youtubeSeekBarSB)
 
-        subscribeObservers()
+        if (isAdded) subscribeObservers()
     }
 
     // 영상 상태가 변했을 때 : 재생 여부 확인 후 재생 버튼 상태 변화 시켜줌

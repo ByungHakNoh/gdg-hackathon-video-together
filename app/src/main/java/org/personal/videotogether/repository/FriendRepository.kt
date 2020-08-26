@@ -45,7 +45,6 @@ constructor(
                 val serverFriendList = friendMapper.mapFromEntityList(response.body()!!)
                 val friendCacheEntityList = friendCacheMapper.mapToEntityList(serverFriendList)
 
-                friendDAO.deleteAllFriendsData()
                 friendCacheEntityList.forEach { friendCacheEntity ->
                     friendDAO.insertFriendsData(friendCacheEntity)
                 }
@@ -53,10 +52,7 @@ constructor(
 
                 emit(DataState.Success(localFriendList))
             }
-            if (response.code() == 204) {
-                friendDAO.deleteAllFriendsData()
-                emit(DataState.NoData)
-            }
+            if (response.code() == 204) emit(DataState.NoData)
 
         } catch (e: Exception) {
             e.printStackTrace()

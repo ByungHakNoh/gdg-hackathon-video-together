@@ -49,7 +49,11 @@ constructor(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_room, parent, false)
-        if (isSelectable) view.findViewById<CheckBox>(R.id.checkboxCB).visibility = View.VISIBLE
+        if (isSelectable) {
+            view.findViewById<CheckBox>(R.id.checkboxCB).visibility = View.VISIBLE
+            view.findViewById<TextView>(R.id.unReadMessageCountTV).visibility = View.GONE
+            view.findViewById<TextView>(R.id.latestMessageTimeTV).visibility = View.GONE
+        }
         return ViewHolder(view, itemClickListener)
     }
 

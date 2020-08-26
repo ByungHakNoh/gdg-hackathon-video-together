@@ -4,10 +4,12 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.personal.videotogether.domianmodel.FriendData
 import org.personal.videotogether.repository.FriendRepository
 import org.personal.videotogether.util.DataState
@@ -69,6 +71,11 @@ constructor(
                         _addFriendList.value = dataState
                         _addFriendList.value = null
                     }.launchIn(viewModelScope)
+                }
+
+                // ------------------ Sign Out ------------------
+                is FriendStateEvent.SignOut -> {
+                    withContext(Main){_friendList.value = null}
                 }
             }
         }

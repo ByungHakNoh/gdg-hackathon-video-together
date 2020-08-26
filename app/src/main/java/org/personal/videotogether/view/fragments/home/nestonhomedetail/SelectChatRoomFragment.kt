@@ -50,15 +50,15 @@ constructor(
     private fun subscribeObservers() {
         // 로컬에 데이터가 없으면(새로 로그인을 하게되면) -> 서버에서 데이터 가져오기
         chatViewModel.chatRoomList.observe(viewLifecycleOwner, Observer { localChatRoomList ->
-
             if (localChatRoomList == null) {
-                chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
+                requestChatRoom()
             } else {
                 if (localChatRoomList.isEmpty()) {
-                    chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
+                    requestChatRoom()
                 } else {
                     chatRoomList.clear()
                     localChatRoomList.forEach { chatRoomData ->
+                        chatRoomData.isSelected = false
                         chatRoomList.add(chatRoomData)
                     }
                     chatRoomAdapter.notifyDataSetChanged()
@@ -69,17 +69,20 @@ constructor(
         // 서버에서 채팅방 가져오는 라이브 데이터 -> 성공 시 채팅방 리스트 라이브 데이터 업데이트
         chatViewModel.getChatRoomList.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
-                is DataState.Loading -> {
-                    Log.i(TAG, "getChatRoomList: 로딩")
-                }
-                is DataState.NoData -> {
-                    Log.i(TAG, "getChatRoomList: 데이터 없음")
-                }
-                is DataState.Error -> {
-                    Log.i(TAG, "getChatRoomList: 에러 발생")
-                }
+                is DataState.Loading -> Log.i(TAG, "getChatRoomList: 로딩")
+                is DataState.NoData -> Log.i(TAG, "getChatRoomList: 데이터 없음")
+                is DataState.Error -> Log.i(TAG, "getChatRoomList: 에러 발생")
             }
         })
+    }
+
+    // 로컬에 데이터가 없으면 서버에 데이터 요청
+    private fun requestChatRoom() {
+        if (chatRoomList.isNotEmpty()) {
+            chatRoomList.clear()
+            chatRoomAdapter.notifyDataSetChanged()
+        }
+        chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
     }
 
     private fun setListener() {
@@ -109,13 +112,13 @@ constructor(
                     val chatParticipants = chatRoomList[selectedItemPosition!!].participantList
                     val currentYoutubeData = youtubeViewModel.currentPlayedYoutube.value!!
 
-                    chatRoomList[selectedItemPosition!!].participantList.forEach { userData ->
+                    chatParticipants.forEach { userData ->
                         if (userData.id != userId) friendsIds.add(userData.id)
                     }
 
                     // 룸 아이디는 userId 로 사용
                     socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(CREATE_YOUTUBE_ROOM, userId.toString()))
-                    youtubeViewModel.setStateEvent(YoutubeStateEvent.InviteVideoTogether(inviterUserData!!, friendsIds,currentYoutubeData))
+                    youtubeViewModel.setStateEvent(YoutubeStateEvent.InviteVideoTogether(inviterUserData!!, friendsIds, currentYoutubeData))
                     requireActivity().onBackPressed()
                 }
             }

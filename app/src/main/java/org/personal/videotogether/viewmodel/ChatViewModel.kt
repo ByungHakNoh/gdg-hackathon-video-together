@@ -4,10 +4,12 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.personal.videotogether.domianmodel.ChatData
 import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.repository.ChatRepository
@@ -24,8 +26,8 @@ constructor(
     private val _chatRoomList: MutableLiveData<List<ChatRoomData>?> = MutableLiveData()
     val chatRoomList: LiveData<List<ChatRoomData>?> get() = _chatRoomList
 
-    private val _chatMessage : MutableLiveData<List<ChatData>?> = MutableLiveData()
-    val chatMessage: LiveData<List<ChatData>?> get() = _chatMessage
+//    private val _chatMessage : MutableLiveData<List<ChatData>?> = MutableLiveData()
+//    val chatMessage: LiveData<List<ChatData>?> get() = _chatMessage
 
     // ------------------ Add Chat Room live data ------------------
     private val _addChatRoom: MutableLiveData<DataState<ChatRoomData?>> = MutableLiveData()
@@ -42,7 +44,6 @@ constructor(
     fun setStateEvent(chatStateEvent: ChatStateEvent) {
         viewModelScope.launch(IO) {
             when (chatStateEvent) {
-
                 is ChatStateEvent.GetChatRoomsFromLocal -> {
                     chatRepository.getChatRoomFromLocal().onEach { chatRoomList ->
                         _chatRoomList.value = chatRoomList
@@ -67,16 +68,16 @@ constructor(
 
                 // ------------------ 채팅 메시지 관련 ------------------
                 is ChatStateEvent.UploadChatMessage -> {
-                    chatRepository.uploadChatMessage( chatStateEvent.chatData)
+                    chatRepository.uploadChatMessage(chatStateEvent.chatData)
                 }
 
                 // 사용 X
-                is ChatStateEvent.GetChatMessageFromLocal -> {
-                    chatRepository.getChatMessageFromLocal(chatStateEvent.roomId).onEach { dataState ->
-                        _chatMessage.value = dataState
-                        _chatMessage.value = null
-                    }.launchIn(viewModelScope)
-                }
+//                is ChatStateEvent.GetChatMessageFromLocal -> {
+//                    chatRepository.getChatMessageFromLocal(chatStateEvent.roomId).onEach { dataState ->
+//                        _chatMessage.value = dataState
+//                        _chatMessage.value = null
+//                    }.launchIn(viewModelScope)
+//                }
 
                 is ChatStateEvent.GetChatMessageFromServer -> {
                     chatRepository.getChatMessageFromServer(chatStateEvent.roomId).onEach { dataState ->
@@ -87,6 +88,10 @@ constructor(
 
                 is ChatStateEvent.RefreshUnReadCount -> {
                     chatRepository.refreshUnReadCount(chatStateEvent.roomId)
+                }
+
+                is ChatStateEvent.SignOut -> {
+                    withContext(Main) { _chatRoomList.value = null }
                 }
             }
         }

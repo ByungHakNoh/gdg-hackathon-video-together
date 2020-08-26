@@ -16,8 +16,6 @@ class SocketRepository {
     private lateinit var tcpClient: TCPClient
 
     private var isTCPClientStopped = false // 클라이언트 연결 여부
-    private var isSocketRegistered = false // 소켓 등록 헀는지 여부
-    private var isReceivingMessage = false // 서버에서 데이터 받는지 여부
 
     interface SocketListener {
         fun onChatMessage(chatData: ChatData)
@@ -32,7 +30,10 @@ class SocketRepository {
         try {
             tcpClient = TCPClient("3.34.22.62", 20205)
 
-            if (tcpClient.connect()) Log.e(TAG, "connectToTCPServer: 연결 완료")
+            if (tcpClient.connect()) {
+                isTCPClientStopped = false
+                Log.e(TAG, "connectToTCPServer: 연결 완료")
+            }
             else Log.e(TAG, "connectToTCPServer: tcp 서버 연결 안됨")
 
         } catch (e: Exception) {
@@ -45,9 +46,7 @@ class SocketRepository {
         Log.i(TAG, "sendToTCPServer: disconnect")
         try {
             tcpClient.writeMessage("quit")
-
             isTCPClientStopped = true
-            isSocketRegistered = false
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -56,9 +55,7 @@ class SocketRepository {
     }
 
     fun registerSocket(userData: UserData) {
-        if (isSocketRegistered) return
-        isSocketRegistered = true
-
+        Log.i(TAG, "registerSocket: register")
         try {
             val socketInfo = "registerUserInfo@${userData.id}@${userData.name}@${userData.profileImageUrl}"
             tcpClient.writeMessage(socketInfo)
@@ -70,9 +67,6 @@ class SocketRepository {
     }
 
     fun receiveFromTCPServer(socketListener: SocketListener) {
-        if (isReceivingMessage) return
-        isReceivingMessage = true
-
         try {
             Log.i(TAG, "receiveFromTCPServer: receiving data start")
             while (!isTCPClientStopped) {
@@ -88,13 +82,18 @@ class SocketRepository {
                     when (splitMessageData[0]) {
                         "chat" -> socketListener.onChatMessage(formChatData(splitMessageData))
                         "youtubeChat" -> socketListener.onYoutubeChatMessage(formChatData(splitMessageData))
-                        "youtubeState" -> socketListener.onYoutubePlayerState(formYoutubeResponse(splitMessageData))
-                        "youtubeJoinRoom" -> socketListener.onYoutubeJoinRoom(formYoutubeJoinResponse(splitMessageData))
+                        "youtubeState" -> {
+                            Log.i(TAG, "receiveFromTCPServer: $splitMessageData")
+                            socketListener.onYoutubePlayerState(formYoutubeResponse(splitMessageData))
+                        }
+                        "youtubeJoinRoom" -> {
+                            Log.i(TAG, "receiveFromTCPServer: $splitMessageData")
+                            socketListener.onYoutubeJoinRoom(formYoutubeJoinResponse(splitMessageData))
+                        }
                     }
                 }
             }
-//            tcpClient.socketClose()
-            isReceivingMessage = false
+            tcpClient.socketClose()
             Log.i(TAG, "receiveFromTCPServer: receiving data stop")
 
         } catch (e: Exception) {

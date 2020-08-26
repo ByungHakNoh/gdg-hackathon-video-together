@@ -9,7 +9,8 @@ sealed class YoutubeStateEvent {
     data class GetNextYoutubeDefaultPage(val nextPageUrl: String, val nextPageToken:String, val channelTitle: String, val channelThumbnail: String) : YoutubeStateEvent()
     data class GetNextYoutubeSearchedPage(val nextPageUrl: String, val nextPageToken:String, val channelTitle: String, val channelThumbnail: String) : YoutubeStateEvent()
     data class SetFrontPlayer(val youtubeData: YoutubeData?) : YoutubeStateEvent()
-    data class SetVideoTogether(val isVideoTogetherOn: Boolean) : YoutubeStateEvent()
+    data class SetVideoTogether(val isVideoTogetherOn: Boolean?) : YoutubeStateEvent()
     data class SetJoiningVideoTogether(val isJoining: Boolean) : YoutubeStateEvent()
     data class InviteVideoTogether(val inviterData: UserData, val friendIds: List<Int>, val youtubeData: YoutubeData) : YoutubeStateEvent()
+    object SignOut: YoutubeStateEvent()
 }

@@ -14,7 +14,7 @@ interface RetrofitRequest {
     suspend fun uploadUser(@Body requestData: RequestData): Response<Int>
 
     @POST("sign-up")
-    suspend fun uploadUserProfile(@Body requestData: RequestData): Response<*>
+    suspend fun uploadUserProfile(@Body requestData: RequestData): Response<UserEntity>
 
     @POST("sign-in")
     suspend fun signIn(@Body requestData: RequestData): Response<UserEntity>

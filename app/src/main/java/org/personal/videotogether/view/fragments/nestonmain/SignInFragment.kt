@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -21,6 +22,8 @@ import org.personal.videotogether.util.DataState
 import org.personal.videotogether.util.SharedPreferenceHelper
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.util.view.ViewHandler
+import org.personal.videotogether.viewmodel.SocketStateEvent
+import org.personal.videotogether.viewmodel.SocketViewModel
 import org.personal.videotogether.viewmodel.UserStateEvent
 import org.personal.videotogether.viewmodel.UserViewModel
 import java.lang.Error
@@ -38,24 +41,36 @@ constructor(
 
     private lateinit var mainNavController: NavController
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
+    private val socketViewModel by lazy { ViewModelProvider(requireActivity())[SocketViewModel::class.java] }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         mainNavController = Navigation.findNavController(view)
+        setBackPressCallback()
         checkAutoSignIn()
         subscribeObservers()
         setListener()
+    }
+
+    private fun setBackPressCallback() {
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            socketViewModel.setStateEvent(SocketStateEvent.DisconnectFromTCPServer)
+            remove()
+            requireActivity().finish()
+        }
     }
 
     // 자동 로그인 체크
     private fun checkAutoSignIn() {
         val isAutoSignIn = sharedPreferenceHelper.getBoolean(requireContext(), getString(R.string.auto_sign_in_key))
 
-        if (isAutoSignIn) mainNavController.navigate(R.id.action_signInFragment_to_mainHomeFragment)
+        if (isAutoSignIn) {
+            mainNavController.navigate(R.id.action_signInFragment_to_mainHomeFragment)
+        }
     }
 
-    private fun subscribeObservers(){
+    private fun subscribeObservers() {
         // live data : 로그인 확인
         userViewModel.signInState.observe(viewLifecycleOwner, Observer { dataState ->
             when (dataState) {
@@ -67,12 +82,8 @@ constructor(
                     val userId = dataState.data!!.id
                     val firebaseToken = sharedPreferenceHelper.getString(requireContext(), getString(R.string.firebase_messaging_token))
 
-                    if (autoSignInCB.isChecked) {
-                        sharedPreferenceHelper.setBoolean(requireContext(), getString(R.string.auto_sign_in_key), true)
-                    } else {
-                        sharedPreferenceHelper.setBoolean(requireContext(), getString(R.string.auto_sign_in_key), false)
-                    }
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)
+                    sharedPreferenceHelper.setBoolean(requireContext(), getString(R.string.auto_sign_in_key), true)
                     userViewModel.setStateEvent(UserStateEvent.UploadFirebaseToken(userId, firebaseToken!!))
                     mainNavController.navigate(R.id.action_signInFragment_to_mainHomeFragment)
                 }

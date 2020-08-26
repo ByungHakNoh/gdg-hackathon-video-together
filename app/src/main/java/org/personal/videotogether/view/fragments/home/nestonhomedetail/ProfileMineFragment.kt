@@ -49,7 +49,7 @@ import org.personal.videotogether.viewmodel.UserViewModel
 @AndroidEntryPoint
 class ProfileMineFragment
 constructor(
-    private val dataStateHandler:DataStateHandler,
+    private val dataStateHandler: DataStateHandler,
     private val imageHandler: ImageHandler,
     private val viewHandler: ViewHandler
 ) : Fragment(R.layout.fragment_profile_mine), View.OnClickListener, ChoiceDialog.DialogListener, TextWatcher {
@@ -249,7 +249,7 @@ constructor(
 
     private val getGalleryImage by lazy {
         registerForActivityResult(ActivityResultContracts.GetContent()) { imageUri ->
-            convertUriToBitmap(imageUri)
+            if (imageUri != null) convertUriToBitmap(imageUri)
         }
     }
 

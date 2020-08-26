@@ -15,7 +15,7 @@ import org.personal.videotogether.room.entity.UserCacheEntity
         ChatRoomCacheEntity::class,
         ChatCacheEntity::class
     ],
-    version = 6,
+    version = 8,
     exportSchema = false
 )
 abstract class VideoTogetherDatabase : RoomDatabase() {

@@ -36,6 +36,7 @@ class TCPClient(private val serverName: String, private val serverPort: Int) {
 
     fun readMessage(): String? {
         if (!socket!!.isClosed) {
+            Log.i(TAG, "receiveFromTCPServer: working")
             return bufferedReader?.readLine()
         }
         return null

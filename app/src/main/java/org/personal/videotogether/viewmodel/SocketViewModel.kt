@@ -1,8 +1,11 @@
 package org.personal.videotogether.viewmodel
 
+import android.app.Application
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.core.content.res.TypedArrayUtils.getText
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
@@ -41,7 +44,6 @@ constructor(
 
     private val _youtubeChatMessage: MutableLiveData<ChatData?> = MutableLiveData()
     val youtubeChatMessage: LiveData<ChatData?> get() = _youtubeChatMessage
-
     // 액티비티 onCreate 에서 연결한 소켓 제거
     override fun onCleared() {
         super.onCleared()

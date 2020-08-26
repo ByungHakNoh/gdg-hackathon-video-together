@@ -7,4 +7,5 @@ sealed class FriendStateEvent {
     data class GetFriendListFromServer(val userId: Int) : FriendStateEvent()
     data class SearchFriend(val userId: Int, val friendEmail: String) : FriendStateEvent()
     data class AddFriend(val userId: Int, val friendUserData: FriendData) : FriendStateEvent()
+    object SignOut : FriendStateEvent()
 }

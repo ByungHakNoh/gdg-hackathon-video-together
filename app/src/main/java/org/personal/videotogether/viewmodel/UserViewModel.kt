@@ -4,10 +4,12 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.personal.videotogether.domianmodel.UserData
 import org.personal.videotogether.repository.UserRepository
 import org.personal.videotogether.util.DataState
@@ -88,6 +90,7 @@ constructor(
                 is UserStateEvent.UploadFirebaseToken -> {
                     userRepository.uploadFirebaseToken(userStateEvent.userId, userStateEvent.firebaseToken).onEach { dataState ->
                         _uploadFirebaseToken.value = dataState
+                        _uploadFirebaseToken.value = null
                     }.launchIn(viewModelScope)
                 }
 
@@ -95,10 +98,16 @@ constructor(
                 is UserStateEvent.UpdateProfile -> {
                     userRepository.updateUserProfile(userStateEvent.userId, userStateEvent.base64Image, userStateEvent.name).onEach { dataState ->
                         _updateUserDataState.value = dataState
-                        _updateUserDataState.value= null
+                        _updateUserDataState.value = null
 
                         if (dataState is DataState.Success) _userData.value = dataState.data
                     }.launchIn(viewModelScope)
+                }
+
+                // ------------------ Sign Out ------------------
+                is UserStateEvent.SignOut -> {
+                    withContext(Main) { _userData.value = null }
+                    userRepository.signOut()
                 }
             }
         }

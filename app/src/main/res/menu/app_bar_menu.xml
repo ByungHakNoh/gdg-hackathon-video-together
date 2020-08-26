@@ -21,4 +21,10 @@
         android:icon="@drawable/chat_add"
         android:title="@string/add_chat_room"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/signInFragment"
+        android:icon="@drawable/ic_baseline_exit_to_app_24"
+        android:title="@string/add_chat_room"
+        app:showAsAction="ifRoom" />
 </menu>

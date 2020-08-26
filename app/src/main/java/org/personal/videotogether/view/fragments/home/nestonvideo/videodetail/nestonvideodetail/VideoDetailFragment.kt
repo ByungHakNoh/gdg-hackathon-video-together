@@ -25,6 +25,7 @@ import org.personal.videotogether.view.adapter.ChatAdapter
 import org.personal.videotogether.view.adapter.ItemClickListener
 import org.personal.videotogether.view.adapter.YoutubeAdapter
 import org.personal.videotogether.viewmodel.*
+import java.lang.Exception
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -61,7 +62,9 @@ class VideoDetailFragment : Fragment(R.layout.fragment_video_detail), ItemClickL
     private fun subscribeObservers() {
 
         // 로컬에서 유저데이터를 가져오고 난 후에 리사이클러 뷰 만들기 (채팅 어뎁터에 유저 id 필요하기 때문)
-        userViewModel.userData.observe(viewLifecycleOwner, Observer { buildRecyclerView() })
+        userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
+            if (userData != null) buildRecyclerView()
+        })
 
         youtubeViewModel.currentPlayedYoutube.observe(viewLifecycleOwner, Observer { youtubeData ->
             if (youtubeData != null) {
@@ -102,12 +105,22 @@ class VideoDetailFragment : Fragment(R.layout.fragment_video_detail), ItemClickL
         })
 
         youtubeViewModel.setVideoTogether.observe(viewLifecycleOwner, Observer { isVideoTogetherOn ->
-            if (isVideoTogetherOn!!) {
-                videoTogetherChatCL.visibility = View.VISIBLE
-            } else {
-                videoTogetherChatCL.visibility = View.GONE
-                chatList.clear()
-                chatAdapter.notifyDataSetChanged()
+            Log.i(TAG, "setVideoTogether: -  $isVideoTogetherOn")
+            if (isVideoTogetherOn != null) {
+                if (isVideoTogetherOn) {
+                    videoTogetherChatCL.visibility = View.VISIBLE
+                } else {
+                    // TODO : 가끔 에러가 발생 원인 확인하기
+                    try {
+                        if (userViewModel.userData.value != null) {
+                            videoTogetherChatCL.visibility = View.GONE
+                            chatList.clear()
+                            chatAdapter.notifyDataSetChanged()
+                        }
+                    } catch (e: Exception) {
+                        Log.i(TAG, "subscribeObservers: $e")
+                    }
+                }
             }
         })
 

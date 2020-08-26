@@ -43,7 +43,7 @@ import org.personal.videotogether.viewmodel.*
 class HomeFragment
 constructor(
     private val sharedPreferenceHelper: SharedPreferenceHelper
-) : Fragment(R.layout.fragment_home), InvitationDialog.DialogListener, AlertDialog.DialogListener,NavController.OnDestinationChangedListener {
+) : Fragment(R.layout.fragment_home), InvitationDialog.DialogListener, AlertDialog.DialogListener, NavController.OnDestinationChangedListener {
 
     private val TAG = javaClass.name
 
@@ -143,16 +143,11 @@ constructor(
         })
 
         chatViewModel.chatNotificationData.observe(viewLifecycleOwner, Observer { chatRoomData ->
-            if (chatRoomData != null) {
-                val action = HomeDetailBlankFragmentDirections.actionHomeDetailBlankFragmentToChattingFragment(chatRoomData)
-                homeDetailNavController.navigate(action)
-            }
+            if (chatRoomData != null) notificationToChat(chatRoomData)
         })
 
         youtubeViewModel.youtubeNotificationData.observe(viewLifecycleOwner, Observer { inviteYoutubeData ->
-            if (inviteYoutubeData != null) {
-                notificationToVideoTogether(inviteYoutubeData)
-            }
+            if (inviteYoutubeData != null) notificationToVideoTogether(inviteYoutubeData)
         })
     }
 
@@ -207,12 +202,12 @@ constructor(
 
     private fun checkNotificationIntent() {
         if (requireActivity().intent.hasExtra("request")) {
-            when(requireActivity().intent.getStringExtra("request")) {
-                "chat"-> {
+            when (requireActivity().intent.getStringExtra("request")) {
+                "chat" -> {
                     val chatRoomData = requireActivity().intent.getParcelableExtra<ChatRoomData>("chatRoomData")!!
                     notificationToChat(chatRoomData)
                 }
-                "youtube"-> {
+                "youtube" -> {
                     val inviteYoutubeData = requireActivity().intent.getParcelableExtra<InviteYoutubeData>("inviteYoutubeData")!!
                     notificationToVideoTogether(inviteYoutubeData)
                 }
@@ -221,7 +216,7 @@ constructor(
     }
 
     // 노티피케이션에서 채팅으로 들어갈 때
-    private fun notificationToChat (chatRoomData: ChatRoomData) {
+    private fun notificationToChat(chatRoomData: ChatRoomData) {
         val action = HomeDetailBlankFragmentDirections.actionHomeDetailBlankFragmentToChattingFragment(chatRoomData)
         homeDetailNavController.navigate(action)
     }

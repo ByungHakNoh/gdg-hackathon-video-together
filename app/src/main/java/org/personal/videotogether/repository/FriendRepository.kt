@@ -38,6 +38,7 @@ constructor(
     }
 
     // 서버에서 친구 데이터 가져오기
+    // TODO : 다음 서버 짤 때는 중복되는 컬럼 생기지 않게 짜기
     suspend fun getFriendListFromServer(userId: Int): Flow<DataState<List<FriendData>?>> = flow {
         emit(DataState.Loading)
 

@@ -1,16 +1,20 @@
 package org.personal.videotogether
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.navigation.Navigation
 import dagger.hilt.android.AndroidEntryPoint
 import io.sentry.Sentry
 import io.sentry.android.AndroidSentryClientFactory
 import io.sentry.event.BreadcrumbBuilder
 import io.sentry.event.UserBuilder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.util.SharedPreferenceHelper
+import org.personal.videotogether.view.fragments.home.nestonhomedetail.HomeDetailBlankFragmentDirections
 import org.personal.videotogether.viewmodel.*
 import javax.inject.Inject
 
@@ -33,16 +37,29 @@ class MainActivity : AppCompatActivity() {
         socketViewModel.setStateEvent(SocketStateEvent.ConnectToTCPServer)
         setSentry()
     }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        when (intent!!.getStringExtra("request")) {
+            "chat" -> {
+                val chatRoomData = intent.getParcelableExtra<ChatRoomData>("chatRoomData")!!
+                val homeDetailFragment = Navigation.findNavController(this, R.id.homeDetailFragmentContainer)
+                val action = HomeDetailBlankFragmentDirections.actionHomeDetailBlankFragmentToChattingFragment(chatRoomData)
+                homeDetailFragment.navigate(action)
+            }
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         sharedPreferenceHelper.setBoolean(this, getText(R.string.is_app_on).toString(), true)
-        Log.i("TAG", "onCreate: ${sharedPreferenceHelper.getBoolean(this, getText(R.string.is_app_on).toString() )}")
+        Log.i("TAG", "onCreate: ${sharedPreferenceHelper.getBoolean(this, getText(R.string.is_app_on).toString())}")
     }
 
     override fun onStop() {
         super.onStop()
         sharedPreferenceHelper.setBoolean(this, getText(R.string.is_app_on).toString(), false)
-        Log.i("TAG", "onCreate: ${sharedPreferenceHelper.getBoolean(this, getText(R.string.is_app_on).toString() )}")
+        Log.i("TAG", "onCreate: ${sharedPreferenceHelper.getBoolean(this, getText(R.string.is_app_on).toString())}")
     }
 
     private fun setSentry() {

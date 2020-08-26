@@ -114,6 +114,9 @@ class ProfileFriendFragment : Fragment(R.layout.fragment_profile_friend), View.O
     private fun navigateToChatting(chatRoom : ChatRoomData) {
         val action = ProfileFriendFragmentDirections.actionProfileFriendFragmentToChattingFragment(chatRoom)
         homeDetailNavController.navigate(action)
-        homeNavController.navigate(R.id.action_friendsListFragment_to_chatListFragment)
+        when (homeNavController.currentDestination?.id) {
+            R.id.friendsListFragment -> homeNavController.navigate(R.id.action_friendsListFragment_to_chatListFragment)
+            else -> Log.i(TAG, "onConfirm: ${homeNavController.currentDestination}")
+        }
     }
 }

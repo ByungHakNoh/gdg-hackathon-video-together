@@ -19,7 +19,7 @@ constructor(
     }
 
     override fun mapToEntity(domainModel: YoutubePageData): YoutubePageEntity {
-        return return YoutubePageEntity(
+        return YoutubePageEntity(
             nextPageUrl = domainModel.nextPageUrl,
             nextPageToken = domainModel.nextPageToken,
             youtubeDataList = youtubeMapper.mapToEntityList(domainModel.youtubeDataList)

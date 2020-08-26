@@ -27,6 +27,4 @@ data class ChatCacheEntity(
 
     @ColumnInfo(name = "message_time")
     val messageTime : String
-//    @ColumnInfo(name = "is_chat_read")
-//    val isChatRead: Boolean
 )

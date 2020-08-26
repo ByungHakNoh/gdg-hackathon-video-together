@@ -15,9 +15,6 @@ constructor(
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
-        return when (className) {
-
-            else -> super.instantiate(classLoader, className)
-        }
+        return  super.instantiate(classLoader, className)
     }
 }

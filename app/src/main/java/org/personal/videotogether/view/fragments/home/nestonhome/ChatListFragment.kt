@@ -19,28 +19,25 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_chat_list.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.R
-import org.personal.videotogether.domianmodel.ChatData
 import org.personal.videotogether.domianmodel.ChatRoomData
-import org.personal.videotogether.domianmodel.YoutubeData
 import org.personal.videotogether.service.MyFirebaseMessagingService
 import org.personal.videotogether.util.DataState
+import org.personal.videotogether.util.SharedPreferenceHelper
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.util.view.ViewHandler
 import org.personal.videotogether.view.adapter.ChatRoomAdapter
 import org.personal.videotogether.view.adapter.ItemClickListener
-import org.personal.videotogether.view.dialog.InvitationDialog
 import org.personal.videotogether.view.fragments.home.nestonhomedetail.HomeDetailBlankFragmentDirections
 import org.personal.videotogether.viewmodel.ChatStateEvent
 import org.personal.videotogether.viewmodel.ChatViewModel
-import org.personal.videotogether.viewmodel.FriendStateEvent
 import org.personal.videotogether.viewmodel.UserViewModel
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class ChatListFragment
 constructor(
-    private val dataStateHandler: DataStateHandler,
-    private val viewHandler: ViewHandler
+    private val viewHandler: ViewHandler,
+    private val sharedPreferenceHelper: SharedPreferenceHelper
 ) : Fragment(R.layout.fragment_chat_list), ItemClickListener {
 
     private val TAG by lazy { javaClass.name }
@@ -80,15 +77,17 @@ constructor(
     }
 
     private fun subscribeObservers() {
+
+        userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
+            if (userData != null) {
+                chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userData.id))
+            }
+        })
+
         // 로컬에 데이터가 없으면(새로 로그인을 하게되면) -> 서버에서 데이터 가져오기
         chatViewModel.chatRoomList.observe(viewLifecycleOwner, Observer { localChatRoomList ->
-            if (localChatRoomList == null) {
-                // 로그아웃하면서 chatRoomList 라이브 데이터가 null 이 될 때 유저 데이터가 null 이면 서버에 요청 X
-                if (userViewModel.userData.value != null) requestChatRoom()
-            } else {
-                if (localChatRoomList.isEmpty()) {
-                    requestChatRoom()
-                } else {
+            if (localChatRoomList != null) {
+                if (localChatRoomList.isNotEmpty()) {
                     chatRoomList.clear()
                     localChatRoomList.forEach { chatRoomData ->
                         chatRoomList.add(chatRoomData)
@@ -131,15 +130,19 @@ constructor(
             override fun onReceive(context: Context?, intent: Intent?) {
                 when (intent?.action) {
                     MyFirebaseMessagingService.RECEIVE_CHAT_MESSAGE -> {
-                        val chatData = intent.getParcelableExtra<ChatData>("chatData")!!
-                        val currentRoomId = intent.getIntExtra("currentChatRoomId", 0)
+                        val chatRoomData = intent.getParcelableExtra<ChatRoomData>("chatRoomData")!!
+                        val currentRoomId = sharedPreferenceHelper.getInt(requireContext(), getText(R.string.current_chat_room_id).toString())
                         chatRoomList.forEach { chatRoom ->
-                            if (chatData.roomId == chatRoom.id) {
-                                if (chatData.roomId != currentRoomId) chatRoom.unReadChatCount += 1
-                                chatRoom.lastChatMessage = chatData.message
+                            if (chatRoomData.id == chatRoom.id) {
+                                // 현재 참여하고 있는 방이 아니라면 안읽은 메시지 더해주기
+                                if (chatRoomData.id != currentRoomId) {
+                                    chatRoom.unReadChatCount += 1
+                                }
+                                chatRoom.lastChatMessage = chatRoomData.lastChatMessage
+                                chatRoom.lastChatTime = chatRoomData.lastChatTime
+
                                 chatRoomList.remove(chatRoom)
                                 chatRoomList.add(0, chatRoom)
-
                                 chatRoomAdapter.notifyDataSetChanged()
                                 return
                             }

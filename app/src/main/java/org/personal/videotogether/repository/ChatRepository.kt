@@ -20,6 +20,7 @@ import org.personal.videotogether.server.entity.FriendMapper
 import org.personal.videotogether.server.entity.UserMapper
 import org.personal.videotogether.util.DataState
 import java.lang.Exception
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 @SuppressLint("SimpleDateFormat")
@@ -63,9 +64,7 @@ constructor(
                 val chatRoomList = chatRoomMapper.mapFromEntityList(chatRoomEntityList)
                 val chatRoomCacheEntityList = chatRoomCacheMapper.mapToEntityList(chatRoomList)
 
-                chatRoomCacheEntityList.forEach { chatRoomEntity ->
-                    chatRoomDAO.insertChatRoom(chatRoomEntity)
-                }
+                chatRoomCacheEntityList.forEach { chatRoomEntity -> chatRoomDAO.insertChatRoom(chatRoomEntity) }
 
                 emit(DataState.Success(orderChatRooms()))
             }
@@ -79,16 +78,23 @@ constructor(
     }
 
     // 채팅 방 룸에서 가져와서 마지막 메시지 시간에 따라 정렬하는 메소드 -> 채팅방을 서버, 로컬에서 가져올 때 사용
-    private suspend fun orderChatRooms() : List<ChatRoomData>? {
+    private suspend fun orderChatRooms(): List<ChatRoomData>? {
         val localChatRoomList = chatRoomCacheMapper.mapFromEntityList(chatRoomDAO.getChatRooms())
-        val simpleDateFormat = SimpleDateFormat("hh:mm a")
-        return localChatRoomList.sortedByDescending { chatRoom ->
+        val currentTimeDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val orderedChatRoomList = localChatRoomList.sortedByDescending { chatRoom ->
             if (chatRoom.lastChatTime != null) {
-                simpleDateFormat.parse(chatRoom.lastChatTime!!).time
+                currentTimeDateFormat.parse(chatRoom.lastChatTime!!).time
             } else {
                 0
             }
         }
+        orderedChatRoomList.forEach { chatRoom ->
+            if (chatRoom.lastChatTime != null) {
+                val messageTime = currentTimeDateFormat.parse(chatRoom.lastChatTime!!).time
+                chatRoom.lastChatTime = DateFormat.getTimeInstance(DateFormat.SHORT).format(messageTime)
+            }
+        }
+        return orderedChatRoomList
     }
 
     // 채팅방 업로드
@@ -123,10 +129,12 @@ constructor(
     }
 
     // ------------------ 채팅 데이터 관련 메소드 모음 ------------------
-    suspend fun uploadChatMessage(chatData: ChatData) {
+    suspend fun uploadChatMessage(userId: Int, participantIds: ArrayList<Int>, chatData: ChatData) {
         try {
             val chatEntity = chatMapper.mapToEntity(chatData)
             val postData = HashMap<String, Any?>().apply {
+                put("userId", userId)
+                put("participantIds", participantIds)
                 put("chatData", chatEntity)
             }
             val requestData = RequestData("uploadChatMessage", postData)
@@ -196,11 +204,16 @@ constructor(
     }
 
     // 채팅방 읽지 않은 메시지 초기화하는 메소드
-    suspend fun refreshUnReadCount(roomId:Int) {
+    suspend fun refreshUnReadChatCount(userId: Int, roomId: Int) {
         try {
-            chatRoomDAO.refreshUnReadCount(roomId)
-            Log.i(TAG, "refreshUnReadCount: refreshed")
-        }catch (e : Exception) {
+            val putData = HashMap<String, Any>().apply {
+                put("userId", userId)
+                put("roomId", roomId)
+            }
+            val requestData = RequestData("refreshUnReadChatCount", putData)
+            val response = retrofitRequest.refreshUnReadChatCount(requestData)
+            if (response.code() == 200) Log.i(TAG, "refreshUnReadChatCount: server refreshed unread chat count")
+        } catch (e: Exception) {
             Log.i(TAG, "refreshUnReadCount: 에러 발생 - $e")
         }
     }

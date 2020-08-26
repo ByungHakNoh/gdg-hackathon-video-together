@@ -49,11 +49,9 @@ constructor(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_room, parent, false)
-        if (isSelectable) {
-            view.findViewById<CheckBox>(R.id.checkboxCB).visibility = View.VISIBLE
-            view.findViewById<TextView>(R.id.unReadMessageCountTV).visibility = View.GONE
-            view.findViewById<TextView>(R.id.latestMessageTimeTV).visibility = View.GONE
-        }
+
+        if (isSelectable) view.findViewById<CheckBox>(R.id.checkboxCB).visibility = View.VISIBLE
+
         return ViewHolder(view, itemClickListener)
     }
 
@@ -68,23 +66,27 @@ constructor(
         Glide.with(context).load(chatRoomData.participantList[1].profileImageUrl).into(holder.chatRoomProfileIV)
         holder.nameTV.text = viewHandler.formChatRoomName(chatRoomData.participantList, myUserId)
         holder.latestChatMessageTV.text = chatRoomData.lastChatMessage
-        holder.latestMessageTimeTV.text = chatRoomData.lastChatTime
         holder.participantCountTV.text = if (participantCount > 1) {
             participantCount.toString()
         } else {
             ""
         }
 
-        if (chatRoomData.unReadChatCount == 0) {
-            holder.unReadMessageCountTV.visibility = View.GONE
-        } else {
-            holder.unReadMessageCountTV.visibility = View.VISIBLE
-            holder.unReadMessageCountTV.text = chatRoomData.unReadChatCount.toString()
-        }
-
+        // 채팅 방 선택하는 프래그먼트에 사용할 때
         if (isSelectable) {
             if (chatRoomData.isSelected != null) {
                 holder.checkBoxCB.isChecked = chatRoomData.isSelected!!
+            }
+            // 채팅 방만 보여주고 싶을 때
+        } else {
+            // 마지막 채팅 메시지
+            holder.latestMessageTimeTV.text = chatRoomData.lastChatTime
+            // 안읽은 채팅 메시지 갯수 관련
+            if (chatRoomData.unReadChatCount == 0) {
+                holder.unReadMessageCountTV.visibility = View.GONE
+            } else {
+                holder.unReadMessageCountTV.visibility = View.VISIBLE
+                holder.unReadMessageCountTV.text = chatRoomData.unReadChatCount.toString()
             }
         }
     }

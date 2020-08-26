@@ -95,6 +95,11 @@
         <action
             android:id="@+id/action_searchFragment2_to_profileFriendFragment"
             app:destination="@id/profileFriendFragment" />
+        <action
+            android:id="@+id/action_searchFragment2_to_chattingFragment"
+            app:destination="@id/chattingFragment"
+            app:popUpTo="@id/searchFragment2"
+            app:popUpToInclusive="true"/>
     </fragment>
 
 </navigation>

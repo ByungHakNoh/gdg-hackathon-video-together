@@ -42,6 +42,7 @@ constructor(
     // args : 채팅 방 데이터 받아옴
     private val argument: ChattingFragmentArgs by navArgs()
     private val chatRoomData by lazy { argument.chatRoomData }
+    private val participantIds by lazy { ArrayList<Int>() }
 
     private val userViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
     private val chatViewModel by lazy { ViewModelProvider(requireActivity())[ChatViewModel::class.java] }
@@ -55,14 +56,13 @@ constructor(
 
         homeDetailNavController = Navigation.findNavController(view)
         homeToolbarTB.title = viewHandler.formChatRoomName(chatRoomData.participantList, userViewModel.userData.value!!.id)
-
+        // 파이어베이스 전송할 친구들 id 리스트에 담기
+        chatRoomData.participantList.forEach { userData -> participantIds.add(userData.id) }
         subscribeObservers()
         setListener()
         buildRecyclerview()
         socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(JOIN_CHAT_ROOM, chatRoomData.id.toString()))
         chatViewModel.setStateEvent(ChatStateEvent.GetChatMessageFromServer(chatRoomData.id))
-        chatViewModel.setStateEvent(ChatStateEvent.RefreshUnReadCount(chatRoomData.id))
-        chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromLocal)
     }
 
     override fun onResume() {
@@ -72,38 +72,30 @@ constructor(
 
     override fun onPause() {
         super.onPause()
+        Log.i(TAG, "life: pause")
+        val userData = userViewModel.userData.value!!
+
+        chatViewModel.setStateEvent(ChatStateEvent.RefreshUnReadCount(userData.id, chatRoomData.id))
+        chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userData.id))
         sharedPreferenceHelper.setInt(requireContext(), getText(R.string.current_chat_room_id).toString(), 0)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(EXIT_CHAT_ROOM))
+    }
+
     private fun subscribeObservers() {
-        socketViewModel.chatMessage.observe(viewLifecycleOwner, Observer { chatData ->
-            if (chatData != null) {
-                chatList.add(chatData)
-                chatAdapter.notifyItemInserted(chatList.size - 1)
-                chattingBoxRV.scrollToPosition(chatAdapter.itemCount - 1)
-            }
-        })
-
-//        // TODO : 채팅 로컬에서 가져올 수 있도록 구현하기
-//        chatViewModel.chatMessage.observe(viewLifecycleOwner, Observer { chatHistory ->
-//            if (chatHistory != null) {
-//                chatList.clear()
-//                chatHistory.forEach { chatData ->  chatList.add(chatData)}
-//                chatAdapter.notifyDataSetChanged()
-//                chattingBoxRV.scrollToPosition(chatAdapter.itemCount - 1)
-//            }
-//        })
-
-        chatViewModel.getChatFromServer.observe(viewLifecycleOwner, Observer { dataState->
-            when(dataState) {
-                is DataState.Loading-> {
+        chatViewModel.getChatFromServer.observe(viewLifecycleOwner, Observer { dataState ->
+            when (dataState) {
+                is DataState.Loading -> {
                     Log.i(TAG, "getChatMessageList: 로딩중")
                 }
                 is DataState.Success -> {
                     val responseChatList = dataState.data
 
                     chatList.clear()
-                    responseChatList.forEach { chatData ->  chatList.add(chatData)}
+                    responseChatList.forEach { chatData -> chatList.add(chatData) }
                     chatAdapter.notifyDataSetChanged()
                     chattingBoxRV.scrollToPosition(chatAdapter.itemCount - 1)
                 }
@@ -113,6 +105,14 @@ constructor(
                 is DataState.Error -> {
                     Log.i(TAG, "getChatMessageList: 서버 연결 문제")
                 }
+            }
+        })
+
+        socketViewModel.chatMessage.observe(viewLifecycleOwner, Observer { chatData ->
+            if (chatData != null) {
+                chatList.add(chatData)
+                chatAdapter.notifyItemInserted(chatList.size - 1)
+                chattingBoxRV.scrollToPosition(chatAdapter.itemCount - 1)
             }
         })
     }
@@ -130,11 +130,6 @@ constructor(
         chattingBoxRV.adapter = chatAdapter
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(EXIT_CHAT_ROOM))
-    }
-
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.backBtn -> requireActivity().onBackPressed()
@@ -142,11 +137,11 @@ constructor(
                 val message = chattingInputED.text.toString()
 
                 if (message.trim().isNotEmpty()) {
-                    val userData= userViewModel.userData.value!!
+                    val userData = userViewModel.userData.value!!
                     val chatData = ChatData(chatRoomData.id, userData.id, userData.name!!, userData.profileImageUrl!!, message, null)
 
                     socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(SEND_CHAT_MESSAGE, chatRoomData.id.toString(), message))
-                    chatViewModel.setStateEvent(ChatStateEvent.UploadChatMessage(chatData))
+                    chatViewModel.setStateEvent(ChatStateEvent.UploadChatMessage(userData.id, participantIds, chatData))
                     chattingInputED.text = null
                 }
             }

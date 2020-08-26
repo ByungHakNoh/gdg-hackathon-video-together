@@ -55,9 +55,10 @@ constructor(
     }
 
     private fun subscribeObservers() {
-        // 이미 가져온 유저 데이터 사용
+        // 이미 가져온 유저 데이터 사용 -> 유저 데이터는 HomeFragment 에서 쿼리 요청
         userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
             if (userData != null) {
+                friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData.id)) // 친구 데이터 가져오기
                 Glide.with(requireContext()).load(userData.profileImageUrl).into(profileIV)
                 nameTV.text = userData.name
             }
@@ -66,9 +67,7 @@ constructor(
         // 로컬에서 친구 목록 불러오기
         friendViewModel.friendList.observe(viewLifecycleOwner, Observer { localFriendList ->
             if (localFriendList != null) {
-                if (localFriendList.isEmpty()) {
-                    requestFriendData(userViewModel.userData.value!!.id)
-                } else {
+                if (localFriendList.isNotEmpty()) {
                     friendList.clear()
                     localFriendList.forEach { friendData ->
                         friendList.add(friendData)

@@ -48,14 +48,15 @@ constructor(
     }
 
     private fun subscribeObservers() {
+        userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
+            if (userData != null) {
+                chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userData.id))
+            }
+        })
         // 로컬에 데이터가 없으면(새로 로그인을 하게되면) -> 서버에서 데이터 가져오기
         chatViewModel.chatRoomList.observe(viewLifecycleOwner, Observer { localChatRoomList ->
-            if (localChatRoomList == null) {
-                requestChatRoom()
-            } else {
-                if (localChatRoomList.isEmpty()) {
-                    requestChatRoom()
-                } else {
+            if (localChatRoomList != null) {
+                if (localChatRoomList.isNotEmpty()) {
                     chatRoomList.clear()
                     localChatRoomList.forEach { chatRoomData ->
                         chatRoomData.isSelected = false

@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -23,9 +24,7 @@ import org.personal.videotogether.util.view.ViewHandler
 import org.personal.videotogether.view.adapter.ChatRoomAdapter
 import org.personal.videotogether.view.adapter.FriendListAdapter
 import org.personal.videotogether.view.adapter.ItemClickListener
-import org.personal.videotogether.viewmodel.ChatViewModel
-import org.personal.videotogether.viewmodel.FriendViewModel
-import org.personal.videotogether.viewmodel.UserViewModel
+import org.personal.videotogether.viewmodel.*
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -37,6 +36,7 @@ constructor(
     private val TAG by lazy { javaClass.name }
 
     private lateinit var homeDetailNavController: NavController
+    private lateinit var homeNavController: NavController
 
     private val userViewModel: UserViewModel by lazy { ViewModelProvider(requireActivity())[UserViewModel::class.java] }
     private val friendViewModel: FriendViewModel by lazy { ViewModelProvider(requireActivity())[FriendViewModel::class.java] }
@@ -56,7 +56,9 @@ constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val homeFragmentContainer: FragmentContainerView = view.rootView.findViewById(R.id.homeFragmentContainer)
         homeDetailNavController = Navigation.findNavController(view)
+        homeNavController = Navigation.findNavController(homeFragmentContainer)
 
         subscribeObservers()
         setListener()
@@ -64,21 +66,35 @@ constructor(
     }
 
     private fun subscribeObservers() {
-        // 친구 목록 불러오기
-        friendViewModel.friendList.observe(viewLifecycleOwner, Observer { dataState ->
-            friendList.clear()
-            dataState!!.forEach { friendData ->
-                friendList.add(friendData)
+        userViewModel.userData.observe(viewLifecycleOwner, Observer { userData ->
+            if (userData != null) {
+                friendViewModel.setStateEvent(FriendStateEvent.GetFriendListFromServer(userData.id))
+                chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userData.id))
             }
-            friendListAdapter.notifyDataSetChanged()
+        })
+        // 친구 목록 불러오기
+        friendViewModel.friendList.observe(viewLifecycleOwner, Observer { localFriendList ->
+            if (localFriendList != null) {
+                if (localFriendList.isNotEmpty()) {
+                    friendList.clear()
+                    localFriendList.forEach { friendData ->
+                        friendList.add(friendData)
+                    }
+                    friendListAdapter.notifyDataSetChanged()
+                }
+            }
         })
 
         chatViewModel.chatRoomList.observe(viewLifecycleOwner, Observer { localChatRoomList ->
-            chatRoomList.clear()
-            localChatRoomList!!.forEach { chatRoomData ->
-                chatRoomList.add(chatRoomData)
+            if (localChatRoomList != null) {
+                if (localChatRoomList.isNotEmpty()) {
+                    chatRoomList.clear()
+                    localChatRoomList.forEach { chatRoomData ->
+                        chatRoomList.add(chatRoomData)
+                    }
+                    chatRoomAdapter.notifyDataSetChanged()
+                }
             }
-            chatRoomAdapter.notifyDataSetChanged()
         })
     }
 
@@ -114,9 +130,14 @@ constructor(
                 homeDetailNavController.navigate(action)
             }
 
-            // TODO : 채팅방 들어가는 방법 생각해보기
             R.id.chatRoomItemCL -> {
                 val chatRoomData = getSelectedChatRoom(itemPosition)
+                val action = SearchFragmentDirections.actionSearchFragment2ToChattingFragment(chatRoomData)
+                homeDetailNavController.navigate(action)
+                when (homeNavController.currentDestination?.id) {
+                    R.id.friendsListFragment -> homeNavController.navigate(R.id.action_friendsListFragment_to_chatListFragment)
+                    else -> Log.i(TAG, "onConfirm: ${homeNavController.currentDestination}")
+                }
             }
         }
     }

@@ -26,7 +26,7 @@ class MyApplication : Application() {
             val youtubeChannel = NotificationChannel(YOUTUBE_NOTIFICATION_CHANNEL_ID, "YoutubeNotification", importanceHigh)
             youtubeChannel.description = "This channel is for Youtube notification"
 
-            val chattingChannel = NotificationChannel(YOUTUBE_NOTIFICATION_CHANNEL_ID, "ChattingNotification", importanceHigh)
+            val chattingChannel = NotificationChannel(CHAT_NOTIFICATION_CHANNEL_ID, "ChattingNotification", importanceHigh)
             chattingChannel.description = "This channel is for Chatting notification"
 
             getSystemService(NotificationManager::class.java)?.createNotificationChannel(youtubeChannel)

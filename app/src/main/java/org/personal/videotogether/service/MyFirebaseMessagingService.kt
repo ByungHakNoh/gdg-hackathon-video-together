@@ -1,5 +1,7 @@
 package org.personal.videotogether.service
 
+import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
@@ -17,7 +19,9 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import org.personal.videotogether.MainActivity
 import org.personal.videotogether.MyApplication.Companion.CHAT_NOTIFICATION_CHANNEL_ID
 import org.personal.videotogether.MyApplication.Companion.YOUTUBE_NOTIFICATION_CHANNEL_ID
 import org.personal.videotogether.R
@@ -30,6 +34,7 @@ import org.personal.videotogether.util.SharedPreferenceHelper
 import java.lang.Integer.parseInt
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -64,8 +69,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-        Log.i(TAG, "onMessageReceived: receive")
-
+        Log.i(TAG, "onMessageReceived: receive - $remoteMessage")
         val request = remoteMessage.data["request"]!!
         val gson = Gson()
 
@@ -97,20 +101,19 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 if (currentChatRoomId != chatData.roomId) {
                     Glide.with(this).asBitmap().load(chatData.profileImageUrl).into(object : CustomTarget<Bitmap>() {
                         override fun onResourceReady(resource: Bitmap, transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?) {
+                            Log.i(TAG, "onMessageReceived: show notifi working")
                             showChatNotification(chatRoomData, chatData, resource)
                         }
                         override fun onLoadCleared(placeholder: Drawable?) {}
                     })
                 }
-                sendChatBroadcast(chatData, currentChatRoomId)
-                // 채팅 방 최근 메시지 업데이트
-                CoroutineScope(Dispatchers.IO).launch {
-                    chatRepository.updateChatRoomLastMessage(chatRoomData, currentChatRoomId)
-                }
+                sendChatBroadcast(chatRoomData)
             }
         }
     }
 
+    // ------------------ 유투브 브로드캐스트, 노티피케이션 메소드 모음 ------------------
+    // 유투브 브로드캐스트 : 홈 프래그먼트에서 받으며 받으면 유투브 재생 및 같이보기 방 참여 요청을 한다
     private fun sendVideoTogetherBroadcast(roomId: Int, inviterName: String, youtubeData: YoutubeData) {
         val toHomeFragment = Intent().apply {
             action = RECEIVE_VIDEO_TOGETHER_INVITATION
@@ -121,13 +124,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         LocalBroadcastManager.getInstance(this).sendBroadcast(toHomeFragment)
     }
 
+    // 유투브 노티피케이션 : 앱이 꺼져있을 때에 노티피케이션을 제공하며, 클릭 시 홈 프래그먼트로 이동하여 유투브 재생 및 같이보기 방 참여 요청을 함
     private fun showVideoTogetherNotification(roomId: Int, inviterName: String, youtubeData: YoutubeData) {
 
         val message = "$inviterName 이 유투브 같이보기에 초대했습니다"
         val argument = Bundle().apply {
             putParcelable("youtubeData", youtubeData)
         }
-        val pendingIntent = NavDeepLinkBuilder(this)
+
+        val pendingIntent: PendingIntent = NavDeepLinkBuilder(this)
             .setGraph(R.navigation.main_nav_graph)
             .setDestination(R.id.homeFragment)
             .setArguments(argument)
@@ -146,28 +151,29 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         manager.notify(roomId, notification)
     }
 
-    private fun sendChatBroadcast(chatData: ChatData, currentChatRoomId: Int) {
+    // ------------------ 채팅 브로드캐스트, 노티피케이션 메소드 모음 ------------------
+    // 채팅 브로드캐스트 : 채팅방 안읽은 메시지, 메시지 시간 업데이트
+    private fun sendChatBroadcast(chatRoomData: ChatRoomData) {
         val toHomeFragment = Intent().apply {
             action = RECEIVE_CHAT_MESSAGE
-            putExtra("chatData", chatData)
-            putExtra("currentChatRoomId", currentChatRoomId)
+            putExtra("chatRoomData", chatRoomData)
         }
         LocalBroadcastManager.getInstance(this).sendBroadcast(toHomeFragment)
     }
 
+    // 채팅 노티피케이션 : 앱이 켜져있으면 - intent 사용, 앱이 꺼져있으면 NavBuilder 사용
+    // TODO : 꺼져있을 때 구현하기
     private fun showChatNotification(
         chatRoomData: ChatRoomData,
         chatData: ChatData,
         profileImageBitmap: Bitmap
     ) {
-        val argument = Bundle().apply {
-            putParcelable("chatRoomData", chatRoomData)
+        // 앱이 켜져 있을 때
+        val intent = Intent(this, MainActivity::class.java).apply {
+            putExtra("request", "chat")
+            putExtra("chatRoomData", chatRoomData)
         }
-        val pendingIntent = NavDeepLinkBuilder(this)
-            .setGraph(R.navigation.main_nav_graph)
-            .setDestination(R.id.homeFragment)
-            .setArguments(argument)
-            .createPendingIntent()
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val notification = NotificationCompat.Builder(this, CHAT_NOTIFICATION_CHANNEL_ID)
             .setAutoCancel(true)

@@ -68,7 +68,7 @@ constructor(
 
                 // ------------------ 채팅 메시지 관련 ------------------
                 is ChatStateEvent.UploadChatMessage -> {
-                    chatRepository.uploadChatMessage(chatStateEvent.chatData)
+                    chatRepository.uploadChatMessage(chatStateEvent.userId, chatStateEvent.participantIds, chatStateEvent.chatData)
                 }
 
                 // 사용 X
@@ -87,7 +87,7 @@ constructor(
                 }
 
                 is ChatStateEvent.RefreshUnReadCount -> {
-                    chatRepository.refreshUnReadCount(chatStateEvent.roomId)
+                    chatRepository.refreshUnReadChatCount(chatStateEvent.userId, chatStateEvent.roomId)
                 }
 
                 is ChatStateEvent.SignOut -> {

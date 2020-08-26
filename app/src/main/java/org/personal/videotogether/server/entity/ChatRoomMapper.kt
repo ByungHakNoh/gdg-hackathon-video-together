@@ -15,7 +15,7 @@ constructor(
             lastChatMessage = entity.lastChatMessage,
             lastChatTime = entity.lastChatTime,
             participantList = userMapper.mapFromEntityList(entity.participantList),
-            unReadChatCount = 0,
+            unReadChatCount = entity.un_read_chat_count,
             isSelected = false
         )
     }
@@ -25,11 +25,12 @@ constructor(
             id = domainModel.id,
             lastChatMessage = domainModel.lastChatMessage,
             lastChatTime = domainModel.lastChatTime,
+            un_read_chat_count = domainModel.unReadChatCount,
             participantList = userMapper.mapToEntityList(domainModel.participantList)
         )
     }
 
-    fun mapFromEntityList (entityList:List<ChatRoomEntity>) : List<ChatRoomData> {
+    fun mapFromEntityList(entityList: List<ChatRoomEntity>): List<ChatRoomData> {
         return entityList.map { chatRoomEntity ->
             mapFromEntity(chatRoomEntity)
         }

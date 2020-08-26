@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.personal.videotogether.util.SharedPreferenceHelper
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.util.view.ImageHandler
 import org.personal.videotogether.util.view.ViewHandler
@@ -17,7 +18,8 @@ class HomeFragmentFactory
 @Inject
 constructor(
     private val dataStateHandler: DataStateHandler,
-    private val viewHandler: ViewHandler
+    private val viewHandler: ViewHandler,
+    private val sharedPreferenceHelper: SharedPreferenceHelper
 ) : FragmentFactory() {
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -29,7 +31,7 @@ constructor(
             }
 
             ChatListFragment::class.java.name -> {
-                ChatListFragment(dataStateHandler, viewHandler)
+                ChatListFragment(viewHandler, sharedPreferenceHelper)
             }
 
             else -> super.instantiate(classLoader, className)

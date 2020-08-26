@@ -36,6 +36,7 @@ import org.personal.videotogether.repository.SocketRepository
 import org.personal.videotogether.repository.SocketRepository.Companion.JOIN_YOUTUBE_ROOM
 import org.personal.videotogether.service.MyFirebaseMessagingService.Companion.RECEIVE_VIDEO_TOGETHER_INVITATION
 import org.personal.videotogether.util.SharedPreferenceHelper
+import org.personal.videotogether.view.dialog.AlertDialog
 import org.personal.videotogether.view.dialog.InvitationDialog
 import org.personal.videotogether.viewmodel.*
 import java.lang.Exception
@@ -45,7 +46,7 @@ import java.lang.Exception
 class HomeFragment
 constructor(
     private val sharedPreferenceHelper: SharedPreferenceHelper
-) : Fragment(R.layout.fragment_home), InvitationDialog.DialogListener, NavController.OnDestinationChangedListener {
+) : Fragment(R.layout.fragment_home), InvitationDialog.DialogListener, AlertDialog.DialogListener,NavController.OnDestinationChangedListener {
 
     private val TAG = javaClass.name
 
@@ -194,7 +195,19 @@ constructor(
         }
     }
 
-    // ------------------ 초대 다이얼로그 리스너 ------------------
+    // ------------------ 다이얼로그 리스너 ------------------
+    // 로그아웃 확인 다이얼로그 리스너
+    override fun onConfirm() {
+        // 로그아웃 상태 -> 로켈에 데이터 삭제 및, 라이브 데이터 null 로 변경
+        userViewModel.setStateEvent(UserStateEvent.SignOut)
+        friendViewModel.setStateEvent(FriendStateEvent.SignOut)
+        chatViewModel.setStateEvent(ChatStateEvent.SignOut)
+        youtubeViewModel.setStateEvent(YoutubeStateEvent.SignOut)
+        sharedPreferenceHelper.setBoolean(requireContext(), getString(R.string.auto_sign_in_key), false)
+        mainNavController.popBackStack()
+    }
+
+    // 유투브 초대 다이얼로그 리스너
     override fun onConfirm(roomId: Int, inviterName: String, youtubeData: YoutubeData) {
         youtubeViewModel.setStateEvent(YoutubeStateEvent.SetVideoTogether(true))
         youtubeViewModel.setStateEvent(YoutubeStateEvent.SetJoiningVideoTogether(true))
@@ -238,15 +251,15 @@ constructor(
             R.id.youtubeSearchFragment -> {
                 homeNavController.navigate(R.id.action_youtubeFragment_to_youtubeSearchFragment)
             }
-            // TODO : 로그아웃 기능 추가 -> 새로 추가한 기능 확인하기
+            // 로그아웃 버튼 -> 다이얼로그 띄워주고 확인 누르면 로그인 화면으로 이동
             R.id.signInFragment -> {
-                // 로그아웃 상태 -> 로켈에 데이터 삭제 및, 라이브 데이터 null 로 변경
-                userViewModel.setStateEvent(UserStateEvent.SignOut)
-                friendViewModel.setStateEvent(FriendStateEvent.SignOut)
-                chatViewModel.setStateEvent(ChatStateEvent.SignOut)
-                youtubeViewModel.setStateEvent(YoutubeStateEvent.SignOut)
-                sharedPreferenceHelper.setBoolean(requireContext(), getString(R.string.auto_sign_in_key), false)
-                mainNavController.popBackStack()
+                val signOutDialog = AlertDialog()
+                val bundle = Bundle().apply {
+                    putString("title", "로그아웃 확인")
+                    putString("message", "로그아웃 하시겠습니까?")
+                }
+                signOutDialog.arguments = bundle
+                if (isAdded) signOutDialog.show(childFragmentManager, "SignOutDialog")
             }
             else -> {
                 NavigationUI.onNavDestinationSelected(item, homeDetailNavController)

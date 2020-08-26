@@ -21,9 +21,6 @@ class InvitationDialog : DialogFragment(), DialogInterface.OnClickListener {
     private lateinit var dialogListener: DialogListener
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        Log.i(TAG, "onCreateDialog: $roomId")
-        Log.i(TAG, "onCreateDialog: $inviterName")
-        Log.i(TAG, "onCreateDialog: $youtubeData")
         return AlertDialog.Builder(context, R.style.AlertDialogCustom)
             .setTitle("유투브 같이보기 초대")
             .setMessage("$inviterName 이 유투브 같이보기에 초대했습니다\n수락하시겠습니까?")

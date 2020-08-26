@@ -61,6 +61,9 @@ interface RetrofitRequest {
     @POST("chat")
     suspend fun uploadChatMessage(@Body requestData: RequestData): Response<ChatEntity?>
 
+    @PUT("chat")
+    suspend fun refreshUnReadChatCount(@Body requestData: RequestData): Response<*>
+
     // ------------------------ 유투브 관련 ------------------------
     @GET("youtube")
     suspend fun getDefaultYoutubeList(

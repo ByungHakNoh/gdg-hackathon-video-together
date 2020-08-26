@@ -63,7 +63,7 @@ constructor(
                 }
 
                 is ChatStateEvent.AddChatRoom -> {
-                    chatRepository.addChatRoom(chatStateEvent.userData, chatStateEvent.participantList).onEach { dataState ->
+                    chatRepository.addChatRoom(chatStateEvent.userData, chatStateEvent.participantList, chatStateEvent.friendIds).onEach { dataState ->
                         _addChatRoom.value = dataState
                         _addChatRoom.value = null
                     }.launchIn(viewModelScope)

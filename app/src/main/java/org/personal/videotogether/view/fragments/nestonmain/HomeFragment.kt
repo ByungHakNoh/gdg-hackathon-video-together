@@ -31,6 +31,7 @@ import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.domianmodel.InviteYoutubeData
 import org.personal.videotogether.domianmodel.YoutubeData
 import org.personal.videotogether.repository.SocketRepository.Companion.JOIN_YOUTUBE_ROOM
+import org.personal.videotogether.service.MyFirebaseMessagingService.Companion.RECEIVE_ADD_CHAT_ROOM
 import org.personal.videotogether.service.MyFirebaseMessagingService.Companion.RECEIVE_VIDEO_TOGETHER_INVITATION
 import org.personal.videotogether.util.SharedPreferenceHelper
 import org.personal.videotogether.view.dialog.AlertDialog
@@ -60,7 +61,12 @@ constructor(
     private val socketViewModel by lazy { ViewModelProvider(requireActivity())[SocketViewModel::class.java] }
 
     private lateinit var broadcastReceiver: BroadcastReceiver
-    private val intentFilter by lazy { IntentFilter().apply { addAction(RECEIVE_VIDEO_TOGETHER_INVITATION) } }
+    private val intentFilter by lazy {
+        IntentFilter().apply {
+            addAction(RECEIVE_VIDEO_TOGETHER_INVITATION)
+            addAction(RECEIVE_ADD_CHAT_ROOM)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,55 +157,7 @@ constructor(
         })
     }
 
-    // 비디오 같이보기 arguments 가 있는지 확인
-    // arguments 가 존재하면 해당 유투브 재생 및 유투브 같이보기 방 참여
-    private fun checkVideoTogether() {
-        val youtubeData = argument.youtubeData
-        val roomId = argument.roomId
-
-        if (youtubeData != null) {
-            youtubeViewModel.setStateEvent(YoutubeStateEvent.SetVideoTogether(true))
-            youtubeViewModel.setStateEvent(YoutubeStateEvent.SetJoiningVideoTogether(true))
-            youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(youtubeData))
-            socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(JOIN_YOUTUBE_ROOM, roomId.toString()))
-
-            homeNavController.navigate(R.id.action_friendsListFragment_to_youtubeFragment2)
-        }
-    }
-
-    private fun setListener() {
-        homeNavController.addOnDestinationChangedListener(this)
-    }
-
-    private fun defineReceiver() {
-
-        broadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                when (intent?.action) {
-                    RECEIVE_VIDEO_TOGETHER_INVITATION -> {
-                        val roomId = intent.getIntExtra("roomId", 0)
-                        val inviterName = intent.getStringExtra("inviterName")
-                        val youtubeData = intent.getParcelableExtra<YoutubeData>("youtubeData")
-
-                        val invitationDialog = InvitationDialog()
-                        val bundle = Bundle().apply {
-                            putInt("roomId", roomId)
-                            putString("inviterName", inviterName)
-                            putParcelable("youtubeData", youtubeData)
-                        }
-                        invitationDialog.arguments = bundle
-                        if (isAdded) {
-                            Log.i(TAG, "onReceive: isAdded")
-                            invitationDialog.show(childFragmentManager, "invitationDialog")
-                        } else {
-                            Log.i(TAG, "onReceive: isNotAdded")
-                        }
-                    }
-                }
-            }
-        }
-    }
-
+    // 알림을 눌러서 앱이 실행됬는지 확인하는 메소드
     private fun checkNotificationIntent() {
         if (requireActivity().intent.hasExtra("request")) {
             when (requireActivity().intent.getStringExtra("request")) {
@@ -228,6 +186,40 @@ constructor(
         youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(inviteYoutubeData.youtubeData))
         socketViewModel.setStateEvent(SocketStateEvent.SendToTCPServer(JOIN_YOUTUBE_ROOM, inviteYoutubeData.roomId.toString()))
         homeNavController.navigate(R.id.action_friendsListFragment_to_youtubeFragment2)
+    }
+
+    private fun setListener() {
+        homeNavController.addOnDestinationChangedListener(this)
+    }
+
+    private fun defineReceiver() {
+        broadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                when (intent?.action) {
+                    RECEIVE_VIDEO_TOGETHER_INVITATION -> {
+                        val roomId = intent.getIntExtra("roomId", 0)
+                        val inviterName = intent.getStringExtra("inviterName")
+                        val youtubeData = intent.getParcelableExtra<YoutubeData>("youtubeData")
+                        val invitationDialog = InvitationDialog()
+                        val bundle = Bundle().apply {
+                            putInt("roomId", roomId)
+                            putString("inviterName", inviterName)
+                            putParcelable("youtubeData", youtubeData)
+                        }
+                        invitationDialog.arguments = bundle
+                        if (isAdded) {
+                            Log.i(TAG, "onReceive: isAdded")
+                            invitationDialog.show(childFragmentManager, "invitationDialog")
+                        } else {
+                            Log.i(TAG, "onReceive: isNotAdded")
+                        }
+                    }
+                    RECEIVE_ADD_CHAT_ROOM -> {
+                        chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userViewModel.userData.value!!.id))
+                    }
+                }
+            }
+        }
     }
 
     // ------------------ 다이얼로그 리스너 ------------------

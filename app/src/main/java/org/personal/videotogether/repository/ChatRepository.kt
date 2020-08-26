@@ -98,7 +98,7 @@ constructor(
     }
 
     // 채팅방 업로드
-    suspend fun addChatRoom(userData: UserData, participantList: List<FriendData>): Flow<DataState<ChatRoomData?>> = flow {
+    suspend fun addChatRoom(userData: UserData, participantList: List<FriendData>, friendIds: ArrayList<Int>): Flow<DataState<ChatRoomData?>> = flow {
         emit(DataState.Loading)
 
         try {
@@ -107,6 +107,7 @@ constructor(
             val postData = HashMap<String, Any>().apply {
                 put("user", userEntity)
                 put("participants", friendDataEntity)
+                put("friendIds", friendIds)
             }
             val requestData = RequestData("addChatRoom", postData)
             val response = retrofitRequest.addChatRoom(requestData)

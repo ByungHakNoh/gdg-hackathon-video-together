@@ -152,7 +152,6 @@ constructor(
                 if (profileImageBitmap == null) {
                     if (nameTV.text.toString() == userData.name) {
                         Toast.makeText(requireContext(), "프로필이 변경 전과 동일합니다", Toast.LENGTH_SHORT).show()
-
                         // 이름만 변경했을 때
                     } else {
                         userViewModel.setStateEvent(UserStateEvent.UpdateProfile(userData.id, null, nameTV.text.toString()))

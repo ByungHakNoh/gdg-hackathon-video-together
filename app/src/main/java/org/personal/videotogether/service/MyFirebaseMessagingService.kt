@@ -111,6 +111,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 }
                 sendChatBroadcast(chatRoomData)
             }
+
+            "addChatRoom" -> sendAddChatRoomBroadcast()
         }
     }
 
@@ -187,8 +189,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         manager.notify(chatData.roomId, notification)
     }
 
+    private fun sendAddChatRoomBroadcast() {
+        val toHomeFragment = Intent().apply { action = RECEIVE_ADD_CHAT_ROOM }
+        LocalBroadcastManager.getInstance(this).sendBroadcast(toHomeFragment)
+    }
+
     companion object {
         const val RECEIVE_VIDEO_TOGETHER_INVITATION = "INTENT_ACTION_SEND_VIDEO_TOGETHER"
         const val RECEIVE_CHAT_MESSAGE = "INTENT_ACTION_SEND_CHAT"
+        const val RECEIVE_ADD_CHAT_ROOM = "INTENT_ACTION_ADD_CHAT_ROOM"
     }
 }

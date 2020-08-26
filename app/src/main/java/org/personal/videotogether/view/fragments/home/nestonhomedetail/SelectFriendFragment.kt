@@ -127,12 +127,21 @@ constructor(
                             }
                         }
                         // 중복된 1대1 채팅이 존재하지 않다면 채팅방 생성
-                        chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userViewModel.userData.value!!, selectedFriendList))
+                        chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userViewModel.userData.value!!, selectedFriendList, getFriendIdList()))
                     }
-                    else -> chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userViewModel.userData.value!!, selectedFriendList))
+                    else -> chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userViewModel.userData.value!!, selectedFriendList, getFriendIdList()))
                 }
             }
         }
+    }
+
+    private fun getFriendIdList(): ArrayList<Int> {
+        val userData = userViewModel.userData.value!!
+        val friendIds = ArrayList<Int>()
+        selectedFriendList.forEach { friendData ->
+            if (friendData.id != userData.id) friendIds.add(friendData.id)
+        }
+        return friendIds
     }
 
     override fun onItemClick(view: View?, itemPosition: Int) {

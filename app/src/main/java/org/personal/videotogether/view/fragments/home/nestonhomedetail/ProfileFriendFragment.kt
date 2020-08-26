@@ -58,14 +58,14 @@ class ProfileFriendFragment : Fragment(R.layout.fragment_profile_friend), View.O
                 if (chatRoom.participantList.size == 2) {
                     chatRoom.participantList.forEach { userData ->
                         Log.i(TAG, "chatRoomList: $chatRoom")
-                        if (userData.id == friendData.id)  existedChatRoom = chatRoom
+                        if (userData.id == friendData.id) existedChatRoom = chatRoom
                     }
                 }
             }
         })
 
         chatViewModel.addChatRoom.observe(viewLifecycleOwner, Observer { dataState ->
-            when(dataState) {
+            when (dataState) {
                 is DataState.Loading -> {
                     Log.i(TAG, "addChatRoom: no data")
                 }
@@ -102,16 +102,17 @@ class ProfileFriendFragment : Fragment(R.layout.fragment_profile_friend), View.O
                 if (existedChatRoom == null) {
                     val userData = userViewModel.userData.value!!
                     val participants = ArrayList<FriendData>().apply { add(friendData) }
-
-                    chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userData, participants))
+                    val friendIdList = ArrayList<Int>().apply { add(friendData.id) }
+                    chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userData, participants, friendIdList))
                 } else {
+
                     navigateToChatting(existedChatRoom!!)
                 }
             }
         }
     }
 
-    private fun navigateToChatting(chatRoom : ChatRoomData) {
+    private fun navigateToChatting(chatRoom: ChatRoomData) {
         val action = ProfileFriendFragmentDirections.actionProfileFriendFragmentToChattingFragment(chatRoom)
         homeDetailNavController.navigate(action)
         when (homeNavController.currentDestination?.id) {

@@ -38,7 +38,7 @@ constructor(
             }
 
             SetProfileFragment::class.java.name -> {
-                SetProfileFragment(dataStateHandler, imageHandler)
+                SetProfileFragment(dataStateHandler, imageHandler, sharedPreferenceHelper)
             }
 
             HomeFragment::class.java.name -> {

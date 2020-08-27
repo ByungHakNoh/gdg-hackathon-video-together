@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.personal.videotogether.R
 import org.personal.videotogether.util.DataState
+import org.personal.videotogether.util.SharedPreferenceHelper
 import org.personal.videotogether.util.view.DataStateHandler
 import org.personal.videotogether.util.view.ImageHandler
 import org.personal.videotogether.view.dialog.ChoiceDialog
@@ -44,7 +45,8 @@ import org.personal.videotogether.viewmodel.UserViewModel
 class SetProfileFragment
 constructor(
     private val dataStateHandler: DataStateHandler,
-    private val imageHandler: ImageHandler
+    private val imageHandler: ImageHandler,
+    private val sharedPreferenceHelper: SharedPreferenceHelper
 ) : Fragment(R.layout.fragment_set_profile), TextWatcher, View.OnClickListener, ChoiceDialog.DialogListener {
 
     private val TAG = javaClass.name
@@ -69,7 +71,7 @@ constructor(
             when (dataState) {
                 is DataState.Success<Boolean?> -> {
                     dataStateHandler.displayLoadingDialog(false, childFragmentManager)
-
+                    sharedPreferenceHelper.setBoolean(requireContext(), getString(R.string.auto_sign_in_key), true)
                     mainNavController.navigate(R.id.action_setProfileFragment_to_mainHomeFragment)
                 }
                 is DataState.NoData -> {
@@ -110,7 +112,9 @@ constructor(
                             imageHandler.bitmapToString(profileImageBitmap).onEach { dataState ->
                                 when (dataState) {
                                     is DataState.Success<String> -> {
-                                        userViewModel.setStateEvent(UserStateEvent.UploadUserProfile(dataState.data, nameET.text.toString()))
+                                        // TODO : 파이어베이스 토큰 요청 나눠 보내기
+                                        val firebaseToken = sharedPreferenceHelper.getString(requireContext(), getString(R.string.firebase_messaging_token))
+                                        userViewModel.setStateEvent(UserStateEvent.UploadUserProfile(dataState.data, nameET.text.toString(), firebaseToken!!))
                                     }
                                     is DataState.Error -> {
                                         Log.i(TAG, "onClick: ${dataState.exception}")
@@ -167,7 +171,7 @@ constructor(
                 checkCameraPermission(isGranted[CAMERA]!!)
             } else {
                 if (isGranted[WRITE_EXTERNAL_STORAGE]!!) {
-                    checkCameraPermission (isGranted[CAMERA]!!)
+                    checkCameraPermission(isGranted[CAMERA]!!)
                 } else {
                     Toast.makeText(requireContext(), "저장소 쓰기 권한을 취소하셨습니다", Toast.LENGTH_SHORT).show()
                 }
@@ -191,6 +195,7 @@ constructor(
             Toast.makeText(requireContext(), "카메라 권한을 취소하셨습니다", Toast.LENGTH_SHORT).show()
         }
     }
+
     private val getGalleryImage by lazy {
         registerForActivityResult(ActivityResultContracts.GetContent()) { imageUri ->
             if (imageUri != null) convertUriToBitmap(imageUri)

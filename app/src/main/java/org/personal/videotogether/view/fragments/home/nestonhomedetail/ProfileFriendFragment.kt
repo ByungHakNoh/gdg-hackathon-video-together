@@ -105,7 +105,6 @@ class ProfileFriendFragment : Fragment(R.layout.fragment_profile_friend), View.O
                     val friendIdList = ArrayList<Int>().apply { add(friendData.id) }
                     chatViewModel.setStateEvent(ChatStateEvent.AddChatRoom(userData, participants, friendIdList))
                 } else {
-
                     navigateToChatting(existedChatRoom!!)
                 }
             }

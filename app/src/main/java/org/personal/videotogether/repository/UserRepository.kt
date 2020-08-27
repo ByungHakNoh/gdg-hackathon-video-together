@@ -99,7 +99,7 @@ constructor(
     }
 
     // 유저 프로필을 서버로 업로드하는 메소드
-    suspend fun uploadUserProfile(base64Image: String, name: String): Flow<DataState<Boolean?>> = flow {
+    suspend fun uploadUserProfile(base64Image: String, name: String, firebaseToken: String): Flow<DataState<Boolean?>> = flow {
         emit(DataState.Loading)
 
         try {
@@ -108,6 +108,7 @@ constructor(
                 put("id", userTableId)
                 put("base64Image", base64Image)
                 put("name", name)
+                put("firebaseToken", firebaseToken)
             }
             val requestData = RequestData("uploadUserProfile", postData)
             val response = retrofitRequest.uploadUserProfile(requestData)

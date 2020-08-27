@@ -73,7 +73,7 @@ constructor(
 
                 // ------------------ Set Profile ------------------
                 is UserStateEvent.UploadUserProfile -> {
-                    userRepository.uploadUserProfile(userStateEvent.base64Image, userStateEvent.name).onEach { dataState ->
+                    userRepository.uploadUserProfile(userStateEvent.base64Image, userStateEvent.name, userStateEvent.firebaseToken).onEach { dataState ->
                         _uploadUserProfileState.value = dataState
                         _uploadUserProfileState.value = null
                     }.launchIn(viewModelScope)

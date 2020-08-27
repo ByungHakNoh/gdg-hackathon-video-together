@@ -65,19 +65,20 @@ constructor(
         chatViewModel.setStateEvent(ChatStateEvent.GetChatMessageFromServer(chatRoomData.id))
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         sharedPreferenceHelper.setInt(requireContext(), getText(R.string.current_chat_room_id).toString(), chatRoomData.id)
+        Log.i(TAG, "onStop: ${sharedPreferenceHelper.getInt(requireContext(), getText(R.string.current_chat_room_id).toString())}")
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.i(TAG, "life: pause")
+    override fun onStop() {
+        super.onStop()
         val userData = userViewModel.userData.value!!
 
         chatViewModel.setStateEvent(ChatStateEvent.RefreshUnReadCount(userData.id, chatRoomData.id))
         chatViewModel.setStateEvent(ChatStateEvent.GetChatRoomsFromServer(userData.id))
         sharedPreferenceHelper.setInt(requireContext(), getText(R.string.current_chat_room_id).toString(), 0)
+        Log.i(TAG, "onStop: ${sharedPreferenceHelper.getInt(requireContext(), getText(R.string.current_chat_room_id).toString())}")
     }
 
     override fun onDestroyView() {

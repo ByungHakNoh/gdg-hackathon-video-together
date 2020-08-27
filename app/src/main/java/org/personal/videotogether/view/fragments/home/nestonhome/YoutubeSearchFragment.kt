@@ -129,7 +129,13 @@ class YoutubeSearchFragment : Fragment(R.layout.fragment_youtube_search), View.O
 
     // ------------------ 아이템 클릭 리스너 메소드 모음 ------------------
     override fun onItemClick(view: View?, itemPosition: Int) {
-        val youtubeData = youtubeList[itemPosition]
-        youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(youtubeData))
+        val isVideoTogetherOn = youtubeViewModel.setVideoTogether.value
+
+        if (isVideoTogetherOn == null || !isVideoTogetherOn) {
+            val youtubeData = youtubeList[itemPosition]
+            youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(youtubeData))
+        } else {
+            Toast.makeText(requireContext(), "유투브 같이보기 실행중 입니다", Toast.LENGTH_SHORT).show()
+        }
     }
 }

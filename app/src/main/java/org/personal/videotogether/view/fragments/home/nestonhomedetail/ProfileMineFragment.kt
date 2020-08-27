@@ -225,24 +225,32 @@ constructor(
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(), arrayOf(WRITE_EXTERNAL_STORAGE, CAMERA)
         ) { isGranted ->
-            if (isGranted[WRITE_EXTERNAL_STORAGE]!!) {
-                if (isGranted[CAMERA]!!) {
-                    val values = ContentValues().apply {
-                        put(MediaStore.Images.Media.TITLE, "pillPicture")
-                        put(MediaStore.Images.Media.DESCRIPTION, "From Camera")
-                    }
-                    cameraImage = context?.contentResolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)!!
-
-                    val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-                        putExtra(MediaStore.EXTRA_OUTPUT, cameraImage)
-                    }
-                    getCameraImage.launch(cameraIntent)
-                } else {
-                    Toast.makeText(requireContext(), "카메라 권한을 취소하셨습니다", Toast.LENGTH_SHORT).show()
-                }
+            if (isGranted[WRITE_EXTERNAL_STORAGE] == null) {
+                checkCameraPermission(isGranted[CAMERA]!!)
             } else {
-                Toast.makeText(requireContext(), "저장소 쓰기 권한을 취소하셨습니다", Toast.LENGTH_SHORT).show()
+                if (isGranted[WRITE_EXTERNAL_STORAGE]!!) {
+                    checkCameraPermission (isGranted[CAMERA]!!)
+                } else {
+                    Toast.makeText(requireContext(), "저장소 쓰기 권한을 취소하셨습니다", Toast.LENGTH_SHORT).show()
+                }
             }
+        }
+    }
+
+    private fun checkCameraPermission(isGranted: Boolean) {
+        if (isGranted) {
+            val values = ContentValues().apply {
+                put(MediaStore.Images.Media.TITLE, "pillPicture")
+                put(MediaStore.Images.Media.DESCRIPTION, "From Camera")
+            }
+            cameraImage = context?.contentResolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)!!
+
+            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+                putExtra(MediaStore.EXTRA_OUTPUT, cameraImage)
+            }
+            getCameraImage.launch(cameraIntent)
+        } else {
+            Toast.makeText(requireContext(), "카메라 권한을 취소하셨습니다", Toast.LENGTH_SHORT).show()
         }
     }
 

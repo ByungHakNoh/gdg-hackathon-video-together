@@ -48,8 +48,6 @@ constructor(
 
     private val TAG = javaClass.name
 
-    private val argument: HomeFragmentArgs by navArgs()
-
     private lateinit var mainNavController: NavController
     private lateinit var homeNavController: NavController
     private lateinit var homeDetailNavController: NavController
@@ -60,6 +58,7 @@ constructor(
     private val youtubeViewModel: YoutubeViewModel by lazy { ViewModelProvider(requireActivity())[YoutubeViewModel::class.java] }
     private val socketViewModel by lazy { ViewModelProvider(requireActivity())[SocketViewModel::class.java] }
 
+    // 로컬 브로드 캐스트 관련 : 유투브 초대, 채팅방 추가 관련 암시적 intent 메시지 받음
     private lateinit var broadcastReceiver: BroadcastReceiver
     private val intentFilter by lazy {
         IntentFilter().apply {
@@ -67,6 +66,8 @@ constructor(
             addAction(RECEIVE_ADD_CHAT_ROOM)
         }
     }
+
+    private var isNotificationIntentChecked = false // 알림을 클릭해서 앱을 실행시켰는지 확인 여부
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -159,17 +160,20 @@ constructor(
 
     // 알림을 눌러서 앱이 실행됬는지 확인하는 메소드
     private fun checkNotificationIntent() {
-        if (requireActivity().intent.hasExtra("request")) {
-            when (requireActivity().intent.getStringExtra("request")) {
-                "chat" -> {
-                    val chatRoomData = requireActivity().intent.getParcelableExtra<ChatRoomData>("chatRoomData")!!
-                    notificationToChat(chatRoomData)
-                }
-                "youtube" -> {
-                    val inviteYoutubeData = requireActivity().intent.getParcelableExtra<InviteYoutubeData>("inviteYoutubeData")!!
-                    notificationToVideoTogether(inviteYoutubeData)
+        if (!isNotificationIntentChecked) {
+            if (requireActivity().intent.hasExtra("request")) {
+                when (requireActivity().intent.getStringExtra("request")) {
+                    "chat" -> {
+                        val chatRoomData = requireActivity().intent.getParcelableExtra<ChatRoomData>("chatRoomData")!!
+                        notificationToChat(chatRoomData)
+                    }
+                    "youtube" -> {
+                        val inviteYoutubeData = requireActivity().intent.getParcelableExtra<InviteYoutubeData>("inviteYoutubeData")!!
+                        notificationToVideoTogether(inviteYoutubeData)
+                    }
                 }
             }
+            isNotificationIntentChecked = true
         }
     }
 

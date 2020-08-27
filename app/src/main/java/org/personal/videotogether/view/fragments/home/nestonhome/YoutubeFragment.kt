@@ -3,6 +3,7 @@ package org.personal.videotogether.view.fragments.home.nestonhome
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -105,8 +106,14 @@ class YoutubeFragment : Fragment(R.layout.fragment_youtube), ItemClickListener, 
 
     // ------------------ 리사이클러뷰 아이템 클릭 리스너 메소드 모음 ------------------
     override fun onItemClick(view: View?, itemPosition: Int) {
-        val youtubeData = youtubeList[itemPosition]
-        youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(youtubeData))
+        val isVideoTogetherOn = youtubeViewModel.setVideoTogether.value
+
+        if (isVideoTogetherOn == null || !isVideoTogetherOn) {
+            val youtubeData = youtubeList[itemPosition]
+            youtubeViewModel.setStateEvent(YoutubeStateEvent.SetFrontPlayer(youtubeData))
+        } else {
+            Toast.makeText(requireContext(), "유투브 같이보기 실행중 입니다", Toast.LENGTH_SHORT).show()
+        }
     }
 
     // ------------------ 리사이클러뷰 새로고침 리스너 ------------------

@@ -27,6 +27,7 @@ import org.personal.videotogether.repository.SocketRepository.Companion.EXIT_YOU
 import org.personal.videotogether.repository.SocketRepository.Companion.SEND_VISITOR_PLAYER_STATE
 import org.personal.videotogether.repository.SocketRepository.Companion.SEND_YOUTUBE_PLAYER_STATE
 import org.personal.videotogether.repository.SocketRepository.Companion.SYNC_YOUTUBE_PLAYER
+import org.personal.videotogether.server.entity.YoutubeEntity
 import org.personal.videotogether.viewmodel.SocketStateEvent
 import org.personal.videotogether.viewmodel.SocketViewModel
 import org.personal.videotogether.viewmodel.YoutubeStateEvent
@@ -125,6 +126,8 @@ class VideoPlayFragment : Fragment(R.layout.fragment_video_play), View.OnClickLi
                 Log.i(TAG, "youtubeJoinRoomData: $youtubeJoinRoomData")
                 when (youtubeJoinRoomData.flag) {
                     "empty" -> {
+                        youtubeViewModel.setStateEvent(YoutubeStateEvent.SetJoiningVideoTogether(false))
+                        youtubeViewModel.setStateEvent(YoutubeStateEvent.SetVideoTogether(false))
                         Toast.makeText(requireContext(), "방이 더이상 존재하지 않습니다", Toast.LENGTH_SHORT).show()
                     }
                     "visitorJoin" -> {

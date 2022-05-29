@@ -3,13 +3,8 @@ package org.personal.videotogether
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.activity.viewModels
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.Navigation
 import dagger.hilt.android.AndroidEntryPoint
 import io.sentry.Sentry
 import io.sentry.android.AndroidSentryClientFactory
@@ -18,9 +13,7 @@ import io.sentry.event.UserBuilder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.domianmodel.InviteYoutubeData
-import org.personal.videotogether.domianmodel.YoutubeData
 import org.personal.videotogether.util.SharedPreferenceHelper
-import org.personal.videotogether.view.fragments.home.nestonhomedetail.HomeDetailBlankFragmentDirections
 import org.personal.videotogether.viewmodel.*
 import javax.inject.Inject
 

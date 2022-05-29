@@ -5,7 +5,6 @@ import retrofit2.Response
 import retrofit2.http.*
 
 interface RetrofitRequest {
-
     // ------------------------ 로그인/회원가입 관련 ------------------------
     @POST("sign-up")
     suspend fun checkEmailValidation(@Body requestData: RequestData): Response<*>

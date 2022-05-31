@@ -54,7 +54,8 @@ object RetrofitModule {
     @Provides
     fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient): Retrofit.Builder {
         return Retrofit.Builder()
-            .baseUrl("https://couple-space.tk/")
+            //.baseUrl("https://couple-space.tk/")
+            .baseUrl("http://10.0.2.2:8080")
             .client(okHttpClient)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))

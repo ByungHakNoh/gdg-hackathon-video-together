@@ -3,9 +3,7 @@ package org.personal.videotogether.repository
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.personal.videotogether.domianmodel.ChatRoomData
 import org.personal.videotogether.domianmodel.UserData
-import org.personal.videotogether.room.ChatDAO
 import org.personal.videotogether.room.ChatRoomDAO
 import org.personal.videotogether.room.FriendDAO
 import org.personal.videotogether.room.entity.UserCacheEntity
@@ -49,17 +47,12 @@ constructor(
     // 회원가입 시 이메일 중복 체크하는 요청
     suspend fun postCheckEmailValid(email: String): Flow<DataState<Boolean?>> = flow {
         emit(DataState.Loading)
-
+        Log.e(TAG, "test")
         try {
-            val postData = HashMap<String, Any?>().apply {
-                put("email", email)
-            }
-            val requestData = RequestData("checkDuplicatedEmail", postData)
+            val response = retrofitRequest.existsUserByEmail(email)
 
-            val response = retrofitRequest.checkEmailValidation(requestData)
-
-            if (response.code() == 200) emit(DataState.Success(true))
-            if (response.code() == 204) emit(DataState.Success(false))
+            if (response.code() == 200) emit(DataState.Success(false))
+            if (response.code() == 404) emit(DataState.Success(true))
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -74,12 +67,7 @@ constructor(
         emit(DataState.Loading)
 
         try {
-            val postData = HashMap<String, Any?>().apply {
-                put("email", email)
-                put("password", password)
-            }
-            val requestData = RequestData("uploadUser", postData)
-            val response = retrofitRequest.uploadUser(requestData)
+            val response = retrofitRequest.uploadUser(email, password)
 
             if (response.code() == 200) {
                 val insertedId = response.body()!!
@@ -135,12 +123,7 @@ constructor(
         emit(DataState.Loading)
 
         try {
-            val postData = HashMap<String, Any?>().apply {
-                put("email", email)
-                put("password", password)
-            }
-            val requestData = RequestData("signIn", postData)
-            val response = retrofitRequest.signIn(requestData)
+            val response = retrofitRequest.signIn(email, password)
 
             if (response.code() == 200) {
                 val userData = userMapper.mapFromEntity(response.body()!!)

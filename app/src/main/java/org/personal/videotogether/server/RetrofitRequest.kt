@@ -6,20 +6,20 @@ import retrofit2.http.*
 
 interface RetrofitRequest {
     // ------------------------ 로그인/회원가입 관련 ------------------------
-    @POST("sign-up")
-    suspend fun checkEmailValidation(@Body requestData: RequestData): Response<*>
+    @GET("api/v1/user/email/{email}")
+    suspend fun existsUserByEmail(@Path("email") email: String): Response<Void>
 
-    @POST("sign-up")
-    suspend fun uploadUser(@Body requestData: RequestData): Response<Int>
+    @POST("api/v1/user/register")
+    suspend fun uploadUser(@Body email: String, @Body password: String): Response<Int>
 
-    @POST("sign-up")
+    @PUT("api/v1/user/profile")
     suspend fun uploadUserProfile(@Body requestData: RequestData): Response<UserEntity>
 
-    @POST("sign-in")
-    suspend fun signIn(@Body requestData: RequestData): Response<UserEntity>
+    @POST("api/v1/user/login")
+    suspend fun signIn(@Body email: String, @Body password: String): Response<UserEntity>
 
     @POST("sign-in")
-    suspend fun uploadFirebaseToken(@Body requestData: RequestData) : Response<*>
+    suspend fun uploadFirebaseToken(@Body requestData: RequestData): Response<*>
 
     @PUT("profile")
     suspend fun updateUserProfile(@Body requestData: RequestData): Response<UserEntity>
@@ -27,8 +27,8 @@ interface RetrofitRequest {
     // ------------------------ 친구 관련 ------------------------
     @GET("friend-list")
     suspend fun getFriendsList(
-        @Query("request") request:String,
-        @Query("userId") userId : Int
+        @Query("request") request: String,
+        @Query("userId") userId: Int
     ): Response<List<FriendEntity>?>
 
     @GET("add-friend")
@@ -87,5 +87,5 @@ interface RetrofitRequest {
     ): Response<YoutubePageEntity?>
 
     @POST("youtube")
-    suspend fun inviteFriends(@Body requestData: RequestData) : Response<*>
+    suspend fun inviteFriends(@Body requestData: RequestData): Response<*>
 }

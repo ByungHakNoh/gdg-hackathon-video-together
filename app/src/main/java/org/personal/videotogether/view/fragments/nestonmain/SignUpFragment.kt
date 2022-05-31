@@ -148,7 +148,6 @@ constructor(
                     changeValidationStyle(emailValidationTV, R.string.email_invalid, R.color.red)
                 }
             }
-
             passwordET.text.hashCode() -> {
                 val regex = Regex("^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[\$@!%*#?&]).{8,15}.\$")
                 PWValidationTV.visibility = View.VISIBLE
@@ -162,7 +161,6 @@ constructor(
                 }
                 checkPasswordCheck(editor, passwordCheckET)
             }
-
             passwordCheckET.text.hashCode() -> {
                 PWCheckValidationTV.visibility = View.VISIBLE
                 checkPasswordCheck(editor, passwordET)
